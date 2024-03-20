@@ -9,7 +9,7 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "tamagui": "1.74.8",
+    "tamagui": "^1.91.3",
     "@tamagui/font-inter": "1.74.8",
     "@tamagui/shorthands": "1.74.8",
     "@tamagui/themes": "1.74.8",
@@ -30,8 +30,11 @@
     "react-native-web": "~0.19.6",
     "expo": "~50.0.5",
     "expo-status-bar": "~1.11.1",
+    "react-native-mmkv": "^2.12.1",
     "react": "18.2.0",
-    "react-native": "0.73.4"
+    "sharp-cli": "^4.2.0",
+    "react-native": "0.73.4",
+    "@tanstack/react-query": "^5.25.0"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",
