@@ -19,7 +19,7 @@
     "@tamagui/shorthands": "^1.91.3",
     "@tamagui/themes": "^1.91.3",
     "@tanstack/react-query": "^5.25.0",
-    "expo": "~50.0.5",
+    "expo": "~50.0.14",
     "expo-constants": "~15.4.5",
     "expo-font": "~11.10.2",
     "expo-linking": "~6.2.2",
@@ -29,7 +29,7 @@
     "expo-web-browser": "~12.8.2",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.73.4",
+    "react-native": "0.73.6",
     "react-native-gesture-handler": "~2.14.0",
     "react-native-mmkv": "^2.12.1",
     "react-native-reanimated": "~3.6.2",
@@ -37,7 +37,8 @@
     "react-native-screens": "~3.29.0",
     "react-native-web": "~0.19.6",
     "sharp-cli": "^4.2.0",
-    "tamagui": "^1.91.3"
+    "tamagui": "^1.91.3",
+    "expo-linear-gradient": "~12.7.2"
   },
   "devDependencies": {
     "@babel/core": "^7.20.0",

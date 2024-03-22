@@ -18,10 +18,10 @@
     },
 
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/png/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
-      "image": "./assets/splash.png",
+      "image": "./assets/png/splash.png",
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
@@ -31,7 +31,7 @@
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./assets/png/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       }
     }
