@@ -277,7 +277,6 @@ export default function Page() {
               pagingEnabled
               onMomentumScrollEnd={updateCurrentSlideIndex}
               data={onboardingSteps}
-              // contentContainerStyle={{ height: height * 0.75 }}
               horizontal
               showsHorizontalScrollIndicator={false}
               showsVerticalScrollIndicator={false}
