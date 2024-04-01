@@ -1,11 +1,19 @@
-import { createAnimations } from '@tamagui/animations-react-native';
-import { createInterFont } from '@tamagui/font-inter';
-import { createMedia } from '@tamagui/react-native-media-driver';
-import { shorthands } from '@tamagui/shorthands';
-import { themes, tokens } from '@tamagui/themes';
-import { createTamagui, styled, SizableText, H1, YStack } from 'tamagui';
+import { createAnimations } from '@tamagui/animations-react-native'
+import { createInterFont } from '@tamagui/font-inter'
+import { createMedia } from '@tamagui/react-native-media-driver'
+import { shorthands } from '@tamagui/shorthands'
+import { themes, tokens } from '@tamagui/themes'
+import {
+  createTamagui,
+  styled,
+  SizableText,
+  H1,
+  YStack,
+  Stack,
+  createCheckbox,
+} from 'tamagui'
 
-type AppConfig = typeof config;
+type AppConfig = typeof config
 
 declare module 'tamagui' {
   interface TamaguiCustomConfig extends AppConfig {}
@@ -29,11 +37,41 @@ const animations = createAnimations({
     stiffness: 250,
     type: 'spring',
   },
-});
+})
 
-const headingFont = createInterFont();
+const Frame = styled(YStack, {
+  borderWidth: 1,
+  borderColor: '$borderColor',
+  borderRadius: 5,
+  alignItems: 'center',
+  justifyContent: 'center',
+  variants: {
+    checked: {
+      indeterminate: {},
+      true: {
+        backgroundColor: '$color5',
+      },
+      false: {
+        backgroundColor: '$color3',
+      },
+    },
+  } as const,
 
-const bodyFont = createInterFont();
+  defaultVariants: {
+    checked: false,
+  },
+})
+
+const Indicator = styled(YStack, {})
+
+const headingFont = createInterFont()
+
+const bodyFont = createInterFont()
+
+export const Checkbox = createCheckbox({
+  Frame,
+  Indicator,
+})
 
 export const config = createTamagui({
   light: {
@@ -69,26 +107,26 @@ export const config = createTamagui({
     hoverNone: { hover: 'none' },
     pointerCoarse: { pointer: 'coarse' },
   }),
-});
+})
 
 export const Container = styled(YStack, {
   flex: 1,
   padding: 24,
-});
+})
 
 export const Main = styled(YStack, {
   justifyContent: 'space-between',
-});
+})
 
 export const Title = styled(H1, {
   color: '#000',
   size: '$12',
-});
+})
 
 export const Subtitle = styled(SizableText, {
   color: '#38434D',
   size: '$9',
-});
+})
 
 export const Button = styled(YStack, {
   alignItems: 'center',
@@ -107,11 +145,11 @@ export const Button = styled(YStack, {
   },
   shadowOpacity: 0.25,
   shadowRadius: 3.84,
-});
+})
 
 export const ButtonText = styled(SizableText, {
   color: '#FFFFFF',
   fontSize: 16,
   fontWeight: '600',
   textAlign: 'center',
-});
+})
