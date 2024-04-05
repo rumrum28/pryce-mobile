@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import { colorTokens } from '@tamagui/themes'
@@ -6,25 +5,96 @@ import { router } from 'expo-router'
 import {
   Button,
   Form,
-  H4,
   Input,
-  Spinner,
-  XGroup,
   XStack,
   View,
   Image,
   YStack,
   Text,
   Main,
-  Label,
+  Spinner,
 } from 'tamagui'
 import { SafeAreaView, TouchableOpacity } from 'react-native'
+import { useMMKVObject } from 'react-native-mmkv'
+import { z } from 'zod'
+import { useMutation } from '@tanstack/react-query'
+import { login } from '~/server/api'
+import { queryClient } from '~/hooks/queryClient'
+import { env } from '~/interfaces/env'
+import { UserInputs } from '~/interfaces/apiresults'
+
+// tell zod to only accept number that start with 09
+const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
+  message: 'Invalid phone number',
+})
 
 export default function LogIn() {
+  const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
   const [focused, setFocused] = useState(false)
   const [focusedPassword, setFocusedPassword] = useState(false)
+  const [phoneNumber, setPhoneNumber] = useState<string>('')
+  const [value, setValue] = useState<string>('')
+  const [type, setType] = useState<'password' | 'otp'>('password')
+  const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const [passwordIsVisible, setPasswordIsVisible] =
     React.useState<boolean>(false)
+
+  const loginResponse = useMutation({
+    mutationFn: login,
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['login'],
+      })
+      console.log('success')
+    },
+  })
+
+  const formatPhoneNumber = (input: string) => {
+    const numbers = input.replace(/\D/g, '')
+    const match = numbers.match(/^(\d{0,4})(\d{0,3})(\d{0,4})$/)
+
+    if (match) {
+      return `${match[1]}${match[2] ? ' ' + match[2] : ''}${match[3] ? ' ' + match[3] : ''}`
+    }
+
+    return numbers
+  }
+
+  const handleNumberChange = (n: string) => {
+    let result = false
+
+    if (n[0] === '0' && n[1] === '9') {
+      result = mobileOrDigitSchema.safeParse(n).success
+    } else {
+      result = mobileOrDigitSchema.safeParse(n).success
+    }
+
+    setInvalidNumber(!result)
+    const formatted = formatPhoneNumber(n)
+
+    if (formatted.replace(/\s+/g, '').length > 11) return null
+
+    setPhoneNumber(formatted)
+  }
+
+  const loginHandler = async () => {
+    const userData: UserInputs = {
+      phone_number: phoneNumber.replace(/\s+/g, ''),
+      value: '123456',
+      type: 'otp',
+    }
+
+    loginResponse.mutate(userData)
+  }
+
+  const backHandler = () => {
+    setIsGetStarted([
+      {
+        isGetStarted: false,
+      },
+    ])
+    router.push('/(onboarding)/home')
+  }
 
   return (
     <Main
@@ -41,7 +111,7 @@ export default function LogIn() {
           }}
         >
           <TouchableOpacity
-            onPress={() => router.back()}
+            onPress={backHandler}
             style={{ marginLeft: 10, padding: 10 }}
           >
             <AntDesign name="arrowleft" size={24} color="white" />
@@ -79,7 +149,7 @@ export default function LogIn() {
         >
           Login to Your Account
         </Text>
-        <Form gap="$3" onSubmit={() => {}}>
+        <Form gap="$3" onSubmit={loginHandler}>
           <XStack alignItems="center" gap="$3">
             <Input
               style={{
@@ -87,8 +157,14 @@ export default function LogIn() {
                 fontSize: 16,
                 position: 'relative',
                 paddingLeft: 40,
+                borderColor: invalidNumber
+                  ? colorTokens.light.red.red10
+                  : '#eee',
               }}
-              placeholder="+639 000 000 000"
+              placeholder="09"
+              keyboardType="number-pad"
+              value={phoneNumber}
+              onChangeText={handleNumberChange}
             />
 
             <AntDesign
@@ -138,16 +214,28 @@ export default function LogIn() {
               Forgot password?
             </Text>
           </TouchableOpacity>
-          <Form.Trigger asChild>
+          <Form.Trigger
+            asChild
+            disabled={
+              invalidNumber ||
+              phoneNumber.replace(/\s+/g, '').length < 11 ||
+              loginResponse.isPending
+            }
+          >
             <Button
               style={{
-                backgroundColor: colorTokens.light.orange.orange9,
+                backgroundColor:
+                  invalidNumber ||
+                  phoneNumber.replace(/\s+/g, '').length < 11 ||
+                  loginResponse.isPending
+                    ? '#ccc'
+                    : colorTokens.light.orange.orange9,
                 width: '100%',
                 borderRadius: 50,
                 marginTop: 20,
                 color: 'white',
               }}
-              onPress={() => router.push('/(onboarding)/home/otp')}
+              icon={loginResponse.isPending ? () => <Spinner /> : undefined}
             >
               Sign in
             </Button>
