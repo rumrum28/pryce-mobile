@@ -20,7 +20,7 @@ import {
 } from 'tamagui'
 import { SafeAreaView, TouchableOpacity } from 'react-native'
 
-export default function Page() {
+export default function Register() {
   const [focused, setFocused] = useState(false)
   const [focusedPassword, setFocusedPassword] = useState(false)
   const [passwordIsVisible, setPasswordIsVisible] =
@@ -33,26 +33,12 @@ export default function Page() {
         backgroundColor: colorTokens.light.orange.orange9,
       }}
     >
-      <SafeAreaView style={{ display: 'flex' }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={{ marginLeft: 10, padding: 10 }}
-          >
-            <AntDesign name="arrowleft" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
       <Image
         source={require('~/assets/98000.png')}
         style={{
           height: 250,
           width: '100%',
+          marginTop: 30,
         }}
         resizeMode="contain"
       />

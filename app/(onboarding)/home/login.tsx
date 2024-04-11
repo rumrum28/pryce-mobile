@@ -33,26 +33,12 @@ export default function LogIn() {
         backgroundColor: colorTokens.light.orange.orange9,
       }}
     >
-      <SafeAreaView style={{ display: 'flex' }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={{ marginLeft: 10, padding: 10 }}
-          >
-            <AntDesign name="arrowleft" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
       <Image
         source={require('~/assets/98000.png')}
         style={{
           height: 250,
           width: '100%',
+          marginTop: 30,
         }}
         resizeMode="contain"
       />
@@ -73,7 +59,6 @@ export default function LogIn() {
           style={{
             fontSize: 30,
             fontWeight: 'bold',
-
             textAlign: 'center',
           }}
         >
@@ -147,7 +132,7 @@ export default function LogIn() {
                 marginTop: 20,
                 color: 'white',
               }}
-              onPress={() => router.push('/(onboarding)/home/otp')}
+              onPress={() => router.push('/home/otp')}
             >
               Sign in
             </Button>
@@ -206,9 +191,7 @@ export default function LogIn() {
           <Text style={{ fontSize: 16, color: '#7C808D' }}>
             Dont have an account yet?{' '}
           </Text>
-          <TouchableOpacity
-            onPress={() => router.push('/(onboarding)/home/register')}
-          >
+          <TouchableOpacity onPress={() => router.push('/home/register')}>
             <Text
               style={{
                 fontSize: 16,

@@ -2,9 +2,11 @@ import { SafeAreaView, TextInput, TouchableOpacity } from 'react-native'
 import { Main, View, Text, Input } from 'tamagui'
 import { colorTokens } from '@tamagui/themes'
 import { Dimensions } from 'react-native'
+import { useRouter } from 'expo-router'
 
 export default function Page() {
   const { height } = Dimensions.get('window')
+  const router = useRouter()
 
   return (
     <Main
@@ -132,6 +134,7 @@ export default function Page() {
           <Text color={colorTokens.light.orange.orange9}>55</Text>s
         </Text>
         <TouchableOpacity
+          onPress={() => router.push('/home/fill-profile')}
           style={{
             backgroundColor: colorTokens.light.orange.orange9,
             borderRadius: 50,
