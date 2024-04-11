@@ -1,4 +1,5 @@
 import { colorTokens } from '@tamagui/themes'
+import { AddressProps } from '~/types/address'
 
 export type OnboardingData = {
   id: string
@@ -38,18 +39,6 @@ export const data: OnboardingData[] = [
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Utenim ad minim veniam. Utenim ad minim veniam. Utenim ad minim veniam.',
   },
 ]
-
-type Barangay = string
-
-export type AddressProps = {
-  id: string
-  city: string
-  province: string
-  pgi_region: string
-  status: string
-  code: string
-  barangays?: Barangay[]
-}
 
 export const island = [
   {

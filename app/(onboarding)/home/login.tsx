@@ -20,8 +20,8 @@ import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { login } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
-import { env } from '~/interfaces/env'
-import { UserInputs } from '~/interfaces/apiresults'
+import { env } from '~/types/env'
+import { UserInputs } from '~/types/apiresults'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
