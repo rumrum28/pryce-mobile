@@ -1,6 +1,7 @@
-import { MMKV } from 'react-native-mmkv'
-import { LoginResponse, ProfileResponse, UserInputs } from '~/types/apiresults'
+import { zustandStorage } from '~/hooks/userController'
+import { ProfileResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
+import { UseStorage } from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
 // const [favorites, setFavorites] = useMMKVObject<Favorites[]>('favorites'); // get all favorites
@@ -11,25 +12,24 @@ import { env } from '~/types/env'
 // });
 
 export const login = async (userData: UserInputs) => {
-  try {
-    const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(userData),
-    })
-    const data: LoginResponse = await response.json()
+  const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+    cache: 'no-store',
+  })
+  const data: UseStorage = await response.json()
 
-    const storage = new MMKV({
-      id: `user-${data.access_token}-storage`,
-      encryptionKey: `${env.EXPO_PUBLIC_ENCRYPT_KEY}`,
-    })
-
-    return data
-  } catch (error) {
-    console.log(error)
+  if (data.success) {
+    zustandStorage.setItem('message', data.message)
+    zustandStorage.setItem('email', data.email)
+    zustandStorage.setItem('accessToken', data.accessToken)
+    zustandStorage.setItem('users', JSON.stringify(data.users))
   }
+
+  return data.success
 }
 
 export const profile = async () => {
@@ -46,7 +46,6 @@ export const profile = async () => {
       `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`
     )
     const data: ProfileResponse = await response.json()
-    return data
     return data
   } catch (error) {
     console.log(error)

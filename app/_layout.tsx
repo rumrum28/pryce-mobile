@@ -6,6 +6,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { config } from '~/tamagui.config'
+import { ToastProvider } from '@tamagui/toast'
 
 export default function Layout() {
   const [loaded] = useFonts({
@@ -25,7 +26,9 @@ export default function Layout() {
     <TamaguiProvider config={config} defaultTheme="light">
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
-          <Slot />
+          <ToastProvider>
+            <Slot />
+          </ToastProvider>
         </QueryClientProvider>
       </GestureHandlerRootView>
     </TamaguiProvider>

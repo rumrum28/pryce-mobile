@@ -1,5 +1,4 @@
 import { StyleSheet, View, FlatList, ViewToken } from 'react-native'
-import React from 'react'
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,

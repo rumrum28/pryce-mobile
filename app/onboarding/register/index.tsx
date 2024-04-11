@@ -223,9 +223,7 @@ export default function Page() {
           <Text style={{ fontSize: 16, color: '#7C808D' }}>
             Already have an account?{' '}
           </Text>
-          <TouchableOpacity
-            onPress={() => router.push('/(onboarding)/home/login')}
-          >
+          <TouchableOpacity onPress={() => router.push('/onboarding/login')}>
             <Text
               style={{
                 fontSize: 16,

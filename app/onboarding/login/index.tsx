@@ -22,6 +22,10 @@ import { login } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
+import { zustandStorage } from '~/hooks/userController'
+import { UseUser } from '~/types/userStorage'
+import { ToastDemo } from '~/components/toast'
+import { ToastViewport } from '@tamagui/toast'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -41,11 +45,11 @@ export default function LogIn() {
 
   const loginResponse = useMutation({
     mutationFn: login,
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.invalidateQueries({
         queryKey: ['login'],
       })
-      console.log('success')
+      console.log(data)
     },
   })
 
@@ -80,8 +84,7 @@ export default function LogIn() {
   const loginHandler = async () => {
     const userData: UserInputs = {
       phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: '123456',
-      type: 'otp',
+      value: value,
     }
 
     loginResponse.mutate(userData)
@@ -93,7 +96,13 @@ export default function LogIn() {
         isGetStarted: false,
       },
     ])
-    router.push('/(onboarding)/home')
+    router.push('/onboarding')
+  }
+
+  const checkTest = async () => {
+    const checkUsers: UseUser | any = await zustandStorage.getItem('users')
+    const parseUsers: UseUser = JSON.parse(checkUsers)
+    console.log(parseUsers.totalSize)
   }
 
   return (
@@ -104,6 +113,16 @@ export default function LogIn() {
       }}
     >
       <SafeAreaView style={{ display: 'flex' }}>
+        <View>
+          <ToastViewport
+            style={{
+              width: '100%',
+              justifyContent: 'center',
+              alignItems: 'center',
+            }}
+          />
+        </View>
+
         <View
           style={{
             flexDirection: 'row',
@@ -149,6 +168,9 @@ export default function LogIn() {
         >
           Login to Your Account
         </Text>
+
+        <ToastDemo />
+
         <Form gap="$3" onSubmit={loginHandler}>
           <XStack alignItems="center" gap="$3">
             <Input
@@ -184,6 +206,8 @@ export default function LogIn() {
               }}
               placeholder="Password"
               secureTextEntry={!passwordIsVisible}
+              value={value}
+              onChangeText={(e) => setValue(e)}
             />
 
             <AntDesign
@@ -295,7 +319,8 @@ export default function LogIn() {
             Dont have an account yet?{' '}
           </Text>
           <TouchableOpacity
-            onPress={() => router.push('/(onboarding)/home/register')}
+            // onPress={() => router.push('/onboarding/register')}
+            onPress={checkTest}
           >
             <Text
               style={{

@@ -1,15 +1,6 @@
-type LoginType = 'otp' | 'password'
-
 export type UserInputs = {
   phone_number: string
   value: string
-  type: LoginType
-}
-
-export type LoginResponse = {
-  access_token: string
-  message: string
-  success: boolean
 }
 
 type ProfileAtributes = {
