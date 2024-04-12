@@ -24,8 +24,8 @@ import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
 import { zustandStorage } from '~/hooks/userController'
 import { UseUser } from '~/types/userStorage'
-import { ToastDemo } from '~/components/toast'
-import { ToastViewport } from '@tamagui/toast'
+import { ToastViewport, useToastController } from '@tamagui/toast'
+import { CurrentToast } from '~/components/toast'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -42,6 +42,7 @@ export default function LogIn() {
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const [passwordIsVisible, setPasswordIsVisible] =
     React.useState<boolean>(false)
+  const toast = useToastController()
 
   const loginResponse = useMutation({
     mutationFn: login,
@@ -49,7 +50,18 @@ export default function LogIn() {
       queryClient.invalidateQueries({
         queryKey: ['login'],
       })
-      console.log(data)
+
+      if (data) {
+        toast.show('Succesfully Login', {
+          message: 'Welcome to PRYCEGAS!',
+          native: false,
+        })
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number or password',
+          native: false,
+        })
+      }
     },
   })
 
@@ -113,15 +125,14 @@ export default function LogIn() {
       }}
     >
       <SafeAreaView style={{ display: 'flex' }}>
-        <View>
-          <ToastViewport
-            style={{
-              width: '100%',
-              justifyContent: 'center',
-              alignItems: 'center',
-            }}
-          />
-        </View>
+        <ToastViewport
+          style={{
+            width: '100%',
+            justifyContent: 'center',
+            alignItems: 'center',
+            marginTop: 20,
+          }}
+        />
 
         <View
           style={{
@@ -137,6 +148,7 @@ export default function LogIn() {
           </TouchableOpacity>
         </View>
       </SafeAreaView>
+
       <Image
         source={require('~/assets/98000.png')}
         style={{
@@ -168,8 +180,6 @@ export default function LogIn() {
         >
           Login to Your Account
         </Text>
-
-        <ToastDemo />
 
         <Form gap="$3" onSubmit={loginHandler}>
           <XStack alignItems="center" gap="$3">

@@ -7,6 +7,7 @@ import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { config } from '~/tamagui.config'
 import { ToastProvider } from '@tamagui/toast'
+import { CurrentToast } from '~/components/toast'
 
 export default function Layout() {
   const [loaded] = useFonts({
@@ -27,6 +28,7 @@ export default function Layout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
           <ToastProvider>
+            <CurrentToast />
             <Slot />
           </ToastProvider>
         </QueryClientProvider>
