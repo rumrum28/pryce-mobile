@@ -114,7 +114,7 @@ export default function LogIn() {
   const checkTest = async () => {
     const checkUsers: UseUser | any = await zustandStorage.getItem('users')
     const parseUsers: UseUser = JSON.parse(checkUsers)
-    console.log(parseUsers.totalSize)
+    console.log(parseUsers)
   }
 
   return (
@@ -319,6 +319,18 @@ export default function LogIn() {
           </TouchableOpacity>
         </Form>
 
+        <Button
+          style={{
+            width: '100%',
+            borderRadius: 50,
+
+            color: 'black',
+          }}
+          onPress={() => router.push('/(tabs)/shop')}
+          // icon={loginResponse.isPending ? () => <Spinner /> : undefined}
+        >
+          Test button
+        </Button>
         <View
           style={{
             flexDirection: 'row',

@@ -113,7 +113,7 @@ const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
   }
 
   useEffect(() => {
-    if (isGetStarted[0].isGetStarted) {
+    if (isGetStarted && isGetStarted[0].isGetStarted) {
       router.push('/onboarding/login')
     }
   }, [isGetStarted])
