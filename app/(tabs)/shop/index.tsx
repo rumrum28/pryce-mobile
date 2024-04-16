@@ -9,8 +9,6 @@ export default function Page() {
     <View style={{ flex: 1, padding: 15, backgroundColor: 'white' }}>
       <Header />
       <Search size="$4" />
-
-      <SelectDemoItem />
     </View>
   )
 }
