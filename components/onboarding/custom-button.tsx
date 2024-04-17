@@ -16,7 +16,6 @@ import Animated, {
 import { OnboardingData } from '../../data/data'
 import { router } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
-import { useMMKVObject } from 'react-native-mmkv'
 
 type Props = {
   dataLength: number
@@ -26,7 +25,7 @@ type Props = {
 }
 
 const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
-  const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
+  // const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
   const { width: SCREEN_WIDTH } = useWindowDimensions()
 
   const buttonAnimationStyle = useAnimatedStyle(() => {
@@ -103,20 +102,20 @@ const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
     if (flatListIndex.value < dataLength - 1) {
       flatListRef.current?.scrollToIndex({ index: flatListIndex.value + 1 })
     } else {
-      setIsGetStarted([
-        {
-          isGetStarted: true,
-        },
-      ])
+      // setIsGetStarted([
+      //   {
+      //     isGetStarted: true,
+      //   },
+      // ])
       router.push('/onboarding/login')
     }
   }
 
-  useEffect(() => {
-    if (isGetStarted[0].isGetStarted) {
-      router.push('/onboarding/login')
-    }
-  }, [isGetStarted])
+  // useEffect(() => {
+  //   if (isGetStarted[0].isGetStarted) {
+  //     router.push('/onboarding/login')
+  //   }
+  // }, [isGetStarted])
 
   return (
     <TouchableWithoutFeedback onPress={getStartedHandler}>

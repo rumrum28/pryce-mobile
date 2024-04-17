@@ -1,4 +1,3 @@
-import { zustandStorage } from '~/hooks/userController'
 import { ProfileResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
 import { UseStorage } from '~/types/userStorage'
@@ -23,10 +22,10 @@ export const login = async (userData: UserInputs) => {
   const data: UseStorage = await response.json()
 
   if (data.success) {
-    zustandStorage.setItem('message', data.message)
-    zustandStorage.setItem('email', data.email)
-    zustandStorage.setItem('accessToken', data.accessToken)
-    zustandStorage.setItem('users', JSON.stringify(data.users))
+    // zustandStorage.setItem('message', data.message)
+    // zustandStorage.setItem('email', data.email)
+    // zustandStorage.setItem('accessToken', data.accessToken)
+    // zustandStorage.setItem('users', JSON.stringify(data.users))
   }
 
   return data.success

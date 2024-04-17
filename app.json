@@ -28,7 +28,8 @@
       "**/*"
     ],
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.crspyfry.prycegas"
     },
     "android": {
       "adaptiveIcon": {
@@ -36,6 +37,14 @@
         "backgroundColor": "#ffffff"
       },
       "package": "com.crspyfry.prycegas"
+    },
+    "extra": {
+      "router": {
+        "origin": false
+      },
+      "eas": {
+        "projectId": "1437ccc5-186e-4afd-bd9a-8755be245c5e"
+      }
     }
   }
 }

@@ -15,14 +15,12 @@ import {
   Spinner,
 } from 'tamagui'
 import { SafeAreaView, TouchableOpacity } from 'react-native'
-import { useMMKVObject } from 'react-native-mmkv'
 import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { login } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
-import { zustandStorage } from '~/hooks/userController'
 import { UseUser } from '~/types/userStorage'
 import { ToastViewport, useToastController } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
@@ -33,7 +31,7 @@ const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
 })
 
 export default function LogIn() {
-  const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
+  // const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
   const [focused, setFocused] = useState(false)
   const [focusedPassword, setFocusedPassword] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState<string>('')
@@ -103,18 +101,18 @@ export default function LogIn() {
   }
 
   const backHandler = () => {
-    setIsGetStarted([
-      {
-        isGetStarted: false,
-      },
-    ])
+    // setIsGetStarted([
+    //   {
+    //     isGetStarted: false,
+    //   },
+    // ])
     router.push('/onboarding')
   }
 
   const checkTest = async () => {
-    const checkUsers: UseUser | any = await zustandStorage.getItem('users')
-    const parseUsers: UseUser = JSON.parse(checkUsers)
-    console.log(parseUsers.totalSize)
+    // const checkUsers: UseUser | any = await zustandStorage.getItem('users')
+    // const parseUsers: UseUser = JSON.parse(checkUsers)
+    // console.log(parseUsers.totalSize)
   }
 
   return (
@@ -343,6 +341,18 @@ export default function LogIn() {
             </Text>
           </TouchableOpacity>
         </View>
+
+        <TouchableOpacity onPress={() => router.push('/product')}>
+          <Text
+            style={{
+              fontSize: 16,
+              color: colorTokens.light.orange.orange9,
+              fontWeight: '500',
+            }}
+          >
+            product
+          </Text>
+        </TouchableOpacity>
       </YStack>
     </Main>
   )
