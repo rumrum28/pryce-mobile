@@ -11,21 +11,12 @@ export default function _layout() {
       screenOptions={{
         tabBarShowLabel: false,
         tabBarStyle: {
-          position: 'absolute',
-          bottom: 20,
-          left: 20,
-          right: 20,
-          elevation: 5,
+          borderWidth: 1,
+          borderColor: colorTokens.light.orange.orange9,
           backgroundColor: 'white',
-          borderRadius: 15,
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
           height: 90,
-          shadowColor: '#7F5DF0',
-          shadowOffset: {
-            width: 0,
-            height: 10,
-          },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.5,
         },
       }}
     >
@@ -101,41 +92,6 @@ export default function _layout() {
         }}
       />
       <Tabs.Screen
-        name="profile"
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={{
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Feather
-                name="user"
-                size={24}
-                color={
-                  focused
-                    ? colorTokens.light.orange.orange9
-                    : colorTokens.light.orange.orange6
-                }
-              />
-              <Text
-                style={{
-                  color: focused
-                    ? colorTokens.light.orange.orange9
-                    : colorTokens.light.orange.orange6,
-                  fontSize: 12,
-                }}
-              >
-                PROFILE
-              </Text>
-            </View>
-          ),
-          tabBarLabel: 'Profile',
-          headerTitle: 'Profile',
-        }}
-      />
-      <Tabs.Screen
         name="pgc"
         options={{
           tabBarIcon: ({ focused }) => (
@@ -168,6 +124,42 @@ export default function _layout() {
           ),
           tabBarLabel: 'PGC',
           headerTitle: 'PGC',
+        }}
+      />
+      <Tabs.Screen
+        name="profile"
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+              }}
+            >
+              <Feather
+                name="user"
+                size={24}
+                color={
+                  focused
+                    ? colorTokens.light.orange.orange9
+                    : colorTokens.light.orange.orange6
+                }
+              />
+              <Text
+                style={{
+                  color: focused
+                    ? colorTokens.light.orange.orange9
+                    : colorTokens.light.orange.orange6,
+                  fontSize: 12,
+                }}
+              >
+                ACCOUNT
+              </Text>
+            </View>
+          ),
+          tabBarLabel: 'Profile',
+          headerTitle: 'Profile',
+          headerShown: false,
         }}
       />
     </Tabs>
