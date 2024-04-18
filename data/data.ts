@@ -1,4 +1,5 @@
 import { colorTokens } from '@tamagui/themes'
+import { MaterialIcons } from '@expo/vector-icons'
 
 export type OnboardingData = {
   id: string
@@ -7,6 +8,18 @@ export type OnboardingData = {
   backgroundColor: string
   title: string
   description: string
+}
+
+type Barangay = string
+
+export type AddressProps = {
+  id: string
+  city: string
+  province: string
+  pgi_region: string
+  status: string
+  code: string
+  barangays?: Barangay[]
 }
 
 export const data: OnboardingData[] = [
@@ -38,18 +51,6 @@ export const data: OnboardingData[] = [
       'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Utenim ad minim veniam. Utenim ad minim veniam. Utenim ad minim veniam.',
   },
 ]
-
-type Barangay = string
-
-export type AddressProps = {
-  id: string
-  city: string
-  province: string
-  pgi_region: string
-  status: string
-  code: string
-  barangays?: Barangay[]
-}
 
 export const island = [
   {
@@ -13300,5 +13301,28 @@ export const address: AddressProps[] = [
     pgi_region: 'WVO2',
     status: 'included',
     code: '2005',
+  },
+]
+
+type IconProps = {
+  icon: keyof typeof MaterialIcons.glyphMap
+}
+
+export type ProfileProps = {
+  name: IconProps
+  title: string
+  subtitles: string[]
+}
+
+export const profile: ProfileProps[] = [
+  {
+    name: { icon: 'account-circle' },
+    title: 'My Account',
+    subtitles: ['User Profile', 'Save Addresses', 'Transaction History'],
+  },
+  {
+    name: { icon: 'help-center' },
+    title: 'Help Center',
+    subtitles: [],
   },
 ]

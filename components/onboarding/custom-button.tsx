@@ -4,7 +4,7 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native'
-import React from 'react'
+import React, { useEffect, useMemo } from 'react'
 import Animated, {
   AnimatedRef,
   SharedValue,
@@ -13,13 +13,9 @@ import Animated, {
   withSpring,
   withTiming,
 } from 'react-native-reanimated'
-import { useNavigation } from '@react-navigation/native'
 import { OnboardingData } from '../../data/data'
-import { StackNavigationProp } from '@react-navigation/stack'
 import { router } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
-import { AntDesign } from '@expo/vector-icons'
-//   import {RootStackParamList} from '../../../navigator/RootNavigator';
 
 type Props = {
   dataLength: number
@@ -29,9 +25,8 @@ type Props = {
 }
 
 const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
+  // const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
   const { width: SCREEN_WIDTH } = useWindowDimensions()
-  // const navigation = useNavigation<StackNavigationProp<RootStackParamList>>();
-  const AnimatedIcon = Animated.createAnimatedComponent(AntDesign)
 
   const buttonAnimationStyle = useAnimatedStyle(() => {
     return {
@@ -103,16 +98,27 @@ const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
     }
   })
 
+  const getStartedHandler = () => {
+    if (flatListIndex.value < dataLength - 1) {
+      flatListRef.current?.scrollToIndex({ index: flatListIndex.value + 1 })
+    } else {
+      // setIsGetStarted([
+      //   {
+      //     isGetStarted: true,
+      //   },
+      // ])
+      router.push('/onboarding/login')
+    }
+  }
+
+  // useEffect(() => {
+  //   if (isGetStarted[0].isGetStarted) {
+  //     router.push('/onboarding/login')
+  //   }
+  // }, [isGetStarted])
+
   return (
-    <TouchableWithoutFeedback
-      onPress={() => {
-        if (flatListIndex.value < dataLength - 1) {
-          flatListRef.current?.scrollToIndex({ index: flatListIndex.value + 1 })
-        } else {
-          router.push('/(onboarding)/home/login')
-        }
-      }}
-    >
+    <TouchableWithoutFeedback onPress={getStartedHandler}>
       <Animated.View
         style={[styles.container, buttonAnimationStyle, animatedColor]}
       >
