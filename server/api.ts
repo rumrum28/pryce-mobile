@@ -1,6 +1,6 @@
-import { ProfileResponse, UserInputs } from '~/types/apiresults'
+import { LoginResponse, ProfileResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
-import { UseStorage } from '~/types/userStorage'
+import { insertToPryce } from './SQLite'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
 // const [favorites, setFavorites] = useMMKVObject<Favorites[]>('favorites'); // get all favorites
@@ -19,13 +19,14 @@ export const login = async (userData: UserInputs) => {
     body: JSON.stringify(userData),
     cache: 'no-store',
   })
-  const data: UseStorage = await response.json()
+  const data: LoginResponse = await response.json()
 
   if (data.success) {
     // zustandStorage.setItem('message', data.message)
     // zustandStorage.setItem('email', data.email)
     // zustandStorage.setItem('accessToken', data.accessToken)
     // zustandStorage.setItem('users', JSON.stringify(data.users))
+    insertToPryce(data)
   }
 
   return data.success

@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from '@expo/vector-icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { colorTokens } from '@tamagui/themes'
 import { router } from 'expo-router'
 import {
@@ -21,9 +21,9 @@ import { login } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
-import { UseUser } from '~/types/userStorage'
 import { ToastViewport, useToastController } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
+import { createTablePryce, getFromPryce } from '~/server/SQLite'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -109,11 +109,21 @@ export default function LogIn() {
     router.push('/onboarding')
   }
 
-  const checkTest = async () => {
-    // const checkUsers: UseUser | any = await zustandStorage.getItem('users')
-    // const parseUsers: UseUser = JSON.parse(checkUsers)
-    // console.log(parseUsers.totalSize)
+  const checkPryceDB = async () => {
+    const checkUser = await getFromPryce()
+
+    if (!checkUser)
+      return toast.show('Error', {
+        message: 'Something is wrong in the server',
+        native: false,
+      })
+
+    console.log(checkUser)
   }
+
+  useEffect(() => {
+    createTablePryce()
+  }, [])
 
   return (
     <Main
@@ -251,7 +261,7 @@ export default function LogIn() {
             disabled={
               invalidNumber ||
               phoneNumber.replace(/\s+/g, '').length < 11 ||
-              loginResponse.isPending
+              loginResponse?.isPending
             }
           >
             <Button
@@ -259,7 +269,7 @@ export default function LogIn() {
                 backgroundColor:
                   invalidNumber ||
                   phoneNumber.replace(/\s+/g, '').length < 11 ||
-                  loginResponse.isPending
+                  loginResponse?.isPending
                     ? '#ccc'
                     : colorTokens.light.orange.orange9,
                 width: '100%',
@@ -267,7 +277,7 @@ export default function LogIn() {
                 marginTop: 20,
                 color: 'white',
               }}
-              icon={loginResponse.isPending ? () => <Spinner /> : undefined}
+              icon={loginResponse?.isPending ? () => <Spinner /> : undefined}
             >
               Sign in
             </Button>
@@ -328,7 +338,7 @@ export default function LogIn() {
           </Text>
           <TouchableOpacity
             // onPress={() => router.push('/onboarding/register')}
-            onPress={checkTest}
+            onPress={checkPryceDB}
           >
             <Text
               style={{

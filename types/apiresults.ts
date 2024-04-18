@@ -74,3 +74,25 @@ export type ProfileResponseSingle = {
 }
 
 export type ProfileResponse = ProfileResponseSingle[]
+
+export type UsersArray = {
+  totalSize: number
+  done: boolean
+  records: ProfileResponseSingle[]
+}
+
+export type LoginResponse = {
+  success: boolean
+  message: string
+  email: string
+  accessToken: string
+  password: boolean
+  users: UsersArray
+}
+
+export type GetUserChecker = {
+  access_token: string
+  email: string
+  id: number
+  selected_user: number
+}
