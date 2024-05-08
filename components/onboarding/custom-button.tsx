@@ -4,7 +4,6 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native'
-import React, { useEffect, useMemo } from 'react'
 import Animated, {
   AnimatedRef,
   SharedValue,
@@ -16,6 +15,7 @@ import Animated, {
 import { OnboardingData } from '../../data/data'
 import { router } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
+import pryceStore from '~/hooks/pryceStore'
 
 type Props = {
   dataLength: number
@@ -25,7 +25,9 @@ type Props = {
 }
 
 const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
-  // const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
+  const { setPryceSettings } = pryceStore((state) => ({
+    setPryceSettings: state.setPryceSettings,
+  }))
   const { width: SCREEN_WIDTH } = useWindowDimensions()
 
   const buttonAnimationStyle = useAnimatedStyle(() => {
@@ -98,24 +100,14 @@ const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
     }
   })
 
-  const getStartedHandler = () => {
+  const getStartedHandler = async () => {
     if (flatListIndex.value < dataLength - 1) {
       flatListRef.current?.scrollToIndex({ index: flatListIndex.value + 1 })
     } else {
-      // setIsGetStarted([
-      //   {
-      //     isGetStarted: true,
-      //   },
-      // ])
+      setPryceSettings('getStarted', 'false')
       router.push('/onboarding/login')
     }
   }
-
-  // useEffect(() => {
-  //   if (isGetStarted[0].isGetStarted) {
-  //     router.push('/onboarding/login')
-  //   }
-  // }, [isGetStarted])
 
   return (
     <TouchableWithoutFeedback onPress={getStartedHandler}>

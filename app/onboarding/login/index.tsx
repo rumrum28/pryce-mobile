@@ -1,5 +1,5 @@
 import { AntDesign, Feather } from '@expo/vector-icons'
-import React, { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { colorTokens } from '@tamagui/themes'
 import { router } from 'expo-router'
 import {
@@ -19,11 +19,9 @@ import { z } from 'zod'
 import { useMutation } from '@tanstack/react-query'
 import { login } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
-import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
 import { ToastViewport, useToastController } from '@tamagui/toast'
-import { CurrentToast } from '~/components/toast'
-import { createTablePryce, getFromPryce } from '~/server/SQLite'
+import pryceStore from '~/hooks/pryceStore'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -31,15 +29,29 @@ const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
 })
 
 export default function LogIn() {
-  // const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
+  const {
+    setPryceSettings,
+    pryceLogin,
+    testGetAllFromPryceTable,
+    testGetAllFromUsersTable,
+    testGetAllFromPryceSettingsTable,
+    pryceSettings,
+  } = pryceStore((state) => ({
+    setPryceSettings: state.setPryceSettings,
+    pryceLogin: state.pryceLogin,
+    testGetAllFromPryceTable: state.testGetAllFromPryceTable,
+    testGetAllFromUsersTable: state.testGetAllFromUsersTable,
+    testGetAllFromPryceSettingsTable: state.testGetAllFromPryceSettingsTable,
+    pryceSettings: state.pryceSettings,
+  }))
+
   const [focused, setFocused] = useState(false)
   const [focusedPassword, setFocusedPassword] = useState(false)
   const [phoneNumber, setPhoneNumber] = useState<string>('')
   const [value, setValue] = useState<string>('')
   const [type, setType] = useState<'password' | 'otp'>('password')
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
-  const [passwordIsVisible, setPasswordIsVisible] =
-    React.useState<boolean>(false)
+  const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
   const toast = useToastController()
 
   const loginResponse = useMutation({
@@ -49,11 +61,13 @@ export default function LogIn() {
         queryKey: ['login'],
       })
 
-      if (data) {
+      if (data.success) {
         toast.show('Succesfully Login', {
           message: 'Welcome to PRYCEGAS!',
           native: false,
         })
+
+        pryceLogin(data)
       } else {
         toast.show('Error', {
           message: 'Invalid phone number or password',
@@ -100,30 +114,20 @@ export default function LogIn() {
     loginResponse.mutate(userData)
   }
 
-  const backHandler = () => {
-    // setIsGetStarted([
-    //   {
-    //     isGetStarted: false,
-    //   },
-    // ])
+  const backHandler = async () => {
+    setPryceSettings('getStarted', 'true')
     router.push('/onboarding')
   }
 
-  const checkPryceDB = async () => {
-    const checkUser = await getFromPryce()
-
-    if (!checkUser)
-      return toast.show('Error', {
-        message: 'Something is wrong in the server',
-        native: false,
-      })
-
-    console.log(checkUser)
+  const testGetAllFromPryceTableButton = async () => {
+    testGetAllFromPryceTable()
   }
-
-  useEffect(() => {
-    createTablePryce()
-  }, [])
+  const testGetAllFromUsersTableButton = async () => {
+    testGetAllFromUsersTable()
+  }
+  const testGetAllFromPryceSettingsTableButton = async () => {
+    testGetAllFromPryceSettingsTable()
+  }
 
   return (
     <Main
@@ -337,8 +341,7 @@ export default function LogIn() {
             Dont have an account yet?{' '}
           </Text>
           <TouchableOpacity
-            // onPress={() => router.push('/onboarding/register')}
-            onPress={checkPryceDB}
+          // onPress={() => router.push('/onboarding/register')}
           >
             <Text
               style={{
@@ -363,6 +366,24 @@ export default function LogIn() {
             product
           </Text>
         </TouchableOpacity>
+
+        <View
+          style={{
+            flex: 1,
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+          }}
+        >
+          <TouchableOpacity onPress={testGetAllFromPryceTableButton}>
+            <Text>testGetAllFromPryceTable</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={testGetAllFromUsersTableButton}>
+            <Text>testGetAllFromUsersTable</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={testGetAllFromPryceSettingsTableButton}>
+            <Text>testGetAllFromPryceSettingsTable</Text>
+          </TouchableOpacity>
+        </View>
       </YStack>
     </Main>
   )

@@ -1,3 +1,9 @@
 npx expo prebuild
 npx expo run:android
 npx expo run:ios
+
+
+database
+1. sqlite3 PryceDB.db
+2. queries
+3. .quit
