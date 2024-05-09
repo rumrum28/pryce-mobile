@@ -8,6 +8,7 @@ import { queryClient } from '~/hooks/queryClient'
 import { config } from '~/tamagui.config'
 import { ToastProvider } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
+import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
 
 export default function Layout() {
   const [loaded] = useFonts({
@@ -27,10 +28,13 @@ export default function Layout() {
     <TamaguiProvider config={config} defaultTheme="light">
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
-          <ToastProvider>
-            <CurrentToast />
-            <Slot />
-          </ToastProvider>
+          <BottomSheetModalProvider>
+            <ToastProvider>
+              <CurrentToast />
+
+              <Slot />
+            </ToastProvider>
+          </BottomSheetModalProvider>
         </QueryClientProvider>
       </GestureHandlerRootView>
     </TamaguiProvider>

@@ -25,7 +25,7 @@ export const createTablePryce = async () => {
 
   db.transaction((tx) => {
     tx.executeSql(createTableQuery, [], () => {
-      console.log('table created')
+      // console.log('table created')
     })
   })
 }

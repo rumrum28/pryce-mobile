@@ -6,15 +6,21 @@ import {
   Platform,
   LayoutAnimation,
   TouchableOpacity,
+  Pressable,
 } from 'react-native'
 import React, { useState } from 'react'
 import { AntDesign, MaterialIcons, Entypo, Feather } from '@expo/vector-icons'
 import { ProfileProps } from '~/data/data'
 import { colorTokens } from '@tamagui/themes'
 import { Button } from 'tamagui'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 
-export default function Accordion({ name, title, subtitles }: ProfileProps) {
+export default function Accordion({
+  id,
+  name,
+  title,
+  subtitles,
+}: ProfileProps) {
   const [opened, setOpened] = useState(false)
 
   if (
@@ -36,11 +42,9 @@ export default function Accordion({ name, title, subtitles }: ProfileProps) {
   return (
     <View
       style={{
-        margin: 10,
+        marginHorizontal: 10,
         padding: 15,
         borderRadius: 6,
-        borderColor: colorTokens.light.gray.gray7,
-        borderWidth: 1,
       }}
     >
       <TouchableWithoutFeedback onPress={toggleAccordion}>
@@ -66,7 +70,7 @@ export default function Accordion({ name, title, subtitles }: ProfileProps) {
               style={{
                 textTransform: 'capitalize',
                 marginLeft: 10,
-                fontSize: 16,
+                fontSize: 20,
                 color: colorTokens.light.gray.gray12,
               }}
             >
@@ -88,7 +92,7 @@ export default function Accordion({ name, title, subtitles }: ProfileProps) {
             marginTop: 5,
           }}
         >
-          {subtitles.map((subtitle) => (
+          {/* {subtitles.map((subtitle) => (
             <View
               style={{
                 alignItems: 'center',
@@ -98,29 +102,33 @@ export default function Accordion({ name, title, subtitles }: ProfileProps) {
               }}
               key={subtitle}
             >
-              <Link
-                href="/(tabs)/profile/user-profile"
-                // style={{ marginRight: 15 }}
+              <Pressable
+                onPress={() =>
+                  router.push({
+                    pathname: '/(tabs)/profile/',
+                    params: { id: 1, subtitles: 'address' },
+                  })
+                }
               >
                 <Text
                   style={{
                     textTransform: 'capitalize',
-                    fontSize: 14,
+                    fontSize: 18,
 
                     color: colorTokens.light.gray.gray12,
                   }}
                 >
                   {subtitle}
                 </Text>
-              </Link>
+              </Pressable>
               <Feather
                 name="chevron-right"
-                size={20}
+                size={22}
                 color={colorTokens.light.orange.orange9}
                 style={{ alignItems: 'center' }}
               />
             </View>
-          ))}
+          ))} */}
         </View>
       )}
     </View>

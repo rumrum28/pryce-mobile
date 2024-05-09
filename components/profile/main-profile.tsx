@@ -4,14 +4,13 @@ import React from 'react'
 import { colorTokens } from '@tamagui/themes'
 import { SafeAreaView, TouchableOpacity } from 'react-native'
 import { Feather } from '@expo/vector-icons'
-import Bottom from './bottom'
 
 export default function MainProfile() {
   return (
     <View
       style={{
         marginHorizontal: 20,
-        marginTop: 90,
+        marginTop: 20,
       }}
     >
       <View
@@ -24,13 +23,12 @@ export default function MainProfile() {
           style={{
             elevation: 5,
             borderRadius: 20,
-            // top: -100,
             shadowOffset: {
               width: 0,
-              height: 10,
+              height: 5,
             },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.5,
+            shadowOpacity: 0.1,
+            shadowRadius: 16.0,
           }}
         >
           <Image
@@ -95,7 +93,6 @@ export default function MainProfile() {
           Expiration 2025-02-05
         </Text>
       </View>
-      <Bottom />
     </View>
   )
 }
