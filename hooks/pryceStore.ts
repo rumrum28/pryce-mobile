@@ -31,10 +31,36 @@ const transaction = async (data: any, t: any) => {
         break
       case 'setPryceSettings':
         if (data) {
-          await db.runAsync(`UPDATE pryce_settings set value=? WHERE type=?`, [
-            data.value,
-            data.type,
-          ])
+          await db.execAsync(`
+            CREATE TABLE IF NOT EXISTS pryce_settings (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              type TEXT,
+              value TEXT,
+              status INTEGER
+            );
+
+            
+          `)
+
+          const firstRow = await db.getFirstAsync(
+            'SELECT * FROM pryce_settings'
+          )
+          if (!firstRow) {
+            const result = await db.runAsync(
+              'INSERT INTO pryce_settings (type, value, status) VALUES (?, ?, ?)',
+              data.type,
+              data.value,
+              1
+            )
+            console.log(result.lastInsertRowId, result.changes)
+          } else {
+            await db.runAsync(
+              'UPDATE pryce_settings set value=? WHERE type=?',
+              data.value,
+              data.type
+            )
+          }
+
           const pryceSettingsResponse = await db.getAllAsync(
             'SELECT * FROM pryce_settings'
           )
