@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { AntDesign, Feather } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import { colorTokens } from '@tamagui/themes'
@@ -114,8 +115,15 @@ export default function LogIn() {
     // const parseUsers: UseUser = JSON.parse(checkUsers)
     // console.log(parseUsers.totalSize)
   }
+=======
+import { View, Text } from 'react-native'
+import React from 'react'
+import LogIn from '~/components/login/login'
+>>>>>>> origin/warren
 
+export default function Page() {
   return (
+<<<<<<< HEAD
     <Main
       style={{
         flex: 1,
@@ -355,5 +363,10 @@ export default function LogIn() {
         </TouchableOpacity>
       </YStack>
     </Main>
+=======
+    <View style={{ flex: 1 }}>
+      <LogIn />
+    </View>
+>>>>>>> origin/warren
   )
 }
