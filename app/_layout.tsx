@@ -1,5 +1,5 @@
 import { useFonts } from 'expo-font'
-import { Slot, SplashScreen } from 'expo-router'
+import { Slot } from 'expo-router'
 import { useEffect } from 'react'
 import { TamaguiProvider } from 'tamagui'
 import { GestureHandlerRootView } from 'react-native-gesture-handler'
@@ -18,7 +18,7 @@ export default function Layout() {
 
   useEffect(() => {
     if (loaded) {
-      SplashScreen.hideAsync()
+      // SplashScreen.hideAsync()
     }
   }, [loaded])
 

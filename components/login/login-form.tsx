@@ -4,32 +4,60 @@ import React, { useState } from 'react'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native'
 import { colorTokens } from '@tamagui/themes'
-import { UseMutationResult } from '@tanstack/react-query'
+import { useMutation } from '@tanstack/react-query'
 import { UserInputs } from '~/types/apiresults'
 import { useRouter } from 'expo-router'
+import { queryClient } from '~/hooks/queryClient'
+import { login } from '~/server/api'
+import { useToastController } from '@tamagui/toast'
 
 type MyComponentProps = {
-  loginResponse: UseMutationResult<boolean, Error, UserInputs, unknown>
   handleNumberChange: (n: string) => void
-  loginHandler: () => Promise<void>
-  checkPryceDB: () => Promise<boolean | undefined>
   phoneNumber: string
   invalidNumber: boolean
 }
 
 export default function LoginForm({
-  loginResponse,
   handleNumberChange,
-  loginHandler,
-  checkPryceDB,
   phoneNumber,
   invalidNumber,
 }: MyComponentProps) {
   const [value, setValue] = useState<string>('')
   const [passwordIsVisible, setPasswordIsVisible] =
     React.useState<boolean>(false)
-
+  const toast = useToastController()
   const router = useRouter()
+
+  const loginResponse = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['login'],
+      })
+
+      if (data) {
+        toast.show('Succesfully Login', {
+          message: 'Welcome to PRYCEGAS!',
+          native: false,
+        })
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number or password',
+          native: false,
+        })
+      }
+    },
+  })
+
+  const loginHandler = async () => {
+    const userData: UserInputs = {
+      phone_number: phoneNumber.replace(/\s+/g, ''),
+      value: value,
+    }
+
+    loginResponse.mutate(userData)
+  }
+
   return (
     <View>
       <Form gap="$3" onSubmit={loginHandler}>
@@ -164,7 +192,7 @@ export default function LoginForm({
         <Text style={{ fontSize: 14, color: '#7C808D' }}>
           Dont have an account yet?{' '}
         </Text>
-        <TouchableOpacity onPress={checkPryceDB}>
+        <TouchableOpacity onPress={() => {}}>
           <Text
             style={{
               fontSize: 14,

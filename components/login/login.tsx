@@ -8,15 +8,13 @@ import {
   useWindowDimensions,
 } from 'react-native'
 import { z } from 'zod'
-import { useMutation } from '@tanstack/react-query'
 import { login } from '~/server/api'
-import { queryClient } from '~/hooks/queryClient'
 import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
-import { ToastViewport, useToastController } from '@tamagui/toast'
+import { ToastViewport } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
-import { createTablePryce, getFromPryce } from '~/server/SQLite'
 import LoginForm from './login-form'
+import usePryceStore from '~/hooks/pryceStore'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -24,33 +22,12 @@ const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
 })
 
 export default function LogIn() {
+  const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width, height } = useWindowDimensions()
   const [phoneNumber, setPhoneNumber] = useState<string>('')
   const [value, setValue] = useState<string>('')
   const [type, setType] = useState<'password' | 'otp'>('password')
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
-  const toast = useToastController()
-
-  const loginResponse = useMutation({
-    mutationFn: login,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['login'],
-      })
-
-      if (data) {
-        toast.show('Succesfully Login', {
-          message: 'Welcome to PRYCEGAS!',
-          native: false,
-        })
-      } else {
-        toast.show('Error', {
-          message: 'Invalid phone number or password',
-          native: false,
-        })
-      }
-    },
-  })
 
   const formatPhoneNumber = (input: string) => {
     const numbers = input.replace(/\D/g, '')
@@ -80,39 +57,20 @@ export default function LogIn() {
     setPhoneNumber(formatted)
   }
 
-  const loginHandler = async () => {
-    const userData: UserInputs = {
-      phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: value,
-    }
-
-    loginResponse.mutate(userData)
-  }
-
   const backHandler = () => {
-    // setIsGetStarted([
-    //   {
-    //     isGetStarted: false,
-    //   },
-    // ])
+    setGetStarted(true)
     router.push('/onboarding')
   }
 
   const checkPryceDB = async () => {
-    const checkUser = await getFromPryce()
-
-    if (!checkUser)
-      return toast.show('Error', {
-        message: 'Something is wrong in the server',
-        native: false,
-      })
-
+    // const checkUser = await getFromPryce()
+    // if (!checkUser)
+    //   return toast.show('Error', {
+    //     message: 'Something is wrong in the server',
+    //     native: false,
+    //   })
     // console.log(checkUser)
   }
-
-  useEffect(() => {
-    createTablePryce()
-  }, [])
 
   return (
     <View
@@ -162,10 +120,7 @@ export default function LogIn() {
             Login to Your Account
           </Text>
           <LoginForm
-            loginResponse={loginResponse}
             handleNumberChange={handleNumberChange}
-            loginHandler={loginHandler}
-            checkPryceDB={checkPryceDB}
             invalidNumber={invalidNumber}
             phoneNumber={phoneNumber}
           />

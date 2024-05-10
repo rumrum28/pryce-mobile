@@ -21,14 +21,7 @@ export const login = async (userData: UserInputs) => {
   })
   const data: UseStorage = await response.json()
 
-  if (data.success) {
-    // zustandStorage.setItem('message', data.message)
-    // zustandStorage.setItem('email', data.email)
-    // zustandStorage.setItem('accessToken', data.accessToken)
-    // zustandStorage.setItem('users', JSON.stringify(data.users))
-  }
-
-  return data.success
+  return data
 }
 
 export const profile = async () => {

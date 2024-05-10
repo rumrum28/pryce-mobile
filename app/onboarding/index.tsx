@@ -9,8 +9,12 @@ import { data, OnboardingData } from '~/data/data'
 import RenderOnboardingItem from '~/components/onboarding/render-onboarding'
 import Pagination from '~/components/onboarding/pagination'
 import CustomButton from '~/components/onboarding/custom-button'
+import { useEffect } from 'react'
+import usePryceStore from '~/hooks/pryceStore'
+import { router } from 'expo-router'
 
 const OnboardingScreen = () => {
+  const getStarted = usePryceStore((state) => state.getStarted)
   const flatListRef = useAnimatedRef<FlatList<OnboardingData>>()
   const x = useSharedValue(0)
   const flatListIndex = useSharedValue(0)
@@ -30,6 +34,12 @@ const OnboardingScreen = () => {
       x.value = event.contentOffset.x
     },
   })
+
+  useEffect(() => {
+    if (!getStarted) {
+      router.push('/onboarding/login')
+    }
+  }, [getStarted])
 
   return (
     <View style={styles.container}>
