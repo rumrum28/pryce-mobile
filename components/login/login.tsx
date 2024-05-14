@@ -1,7 +1,7 @@
 import { AntDesign } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router'
-import { View, Image, YStack, Text } from 'tamagui'
+import { View, Image, YStack, Text, Button } from 'tamagui'
 import {
   SafeAreaView,
   TouchableOpacity,
@@ -81,7 +81,7 @@ export default function LogIn() {
         height: '100%',
       }}
     >
-      <SafeAreaView>
+      <SafeAreaView style={{ width, paddingHorizontal: 20 }}>
         <ToastViewport
           style={{
             width: '100%',
@@ -119,11 +119,24 @@ export default function LogIn() {
           >
             Login to Your Account
           </Text>
-          <LoginForm
+          <Button
+            style={{
+              width: '100%',
+              borderRadius: 50,
+              color: 'black',
+            }}
+            onPress={() => router.push('/(drawer)/shop')}
+            // onPress={() => router.push('/(tabs)/shop/')}
+            // icon={loginResponse.isPending ? () => <Spinner /> : undefined}
+          >
+            Test button
+          </Button>
+          {/* <LoginForm
+            loginResponse={loginResponse}
             handleNumberChange={handleNumberChange}
             invalidNumber={invalidNumber}
             phoneNumber={phoneNumber}
-          />
+          /> */}
         </YStack>
       </SafeAreaView>
       {/* <SafeAreaView style={{ display: 'flex' }}>

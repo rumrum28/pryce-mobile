@@ -143,36 +143,40 @@ export default function Header() {
               marginRight: 10,
             }}
           >
-            <TouchableOpacity>
-              <View
-                style={{
-                  position: 'absolute',
-                  left: 15,
-                  top: 10,
-                  width: 20,
-                  height: 20,
-                  borderRadius: 10,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: colorTokens.light.orange.orange9,
-                  zIndex: 10,
-                }}
-              >
-                <Text
-                  style={{
-                    color: 'white',
-                    fontWeight: 'bold',
-                  }}
-                >
-                  {items}
-                </Text>
-              </View>
-              <Feather
-                name="shopping-bag"
-                size={24}
-                color={colorTokens.light.orange.orange9}
-              />
-            </TouchableOpacity>
+            <Link href="/(drawer)/shop/(modal)/basket" asChild>
+              <TouchableOpacity>
+                {items > 0 ? (
+                  <View
+                    style={{
+                      position: 'absolute',
+                      left: 15,
+                      top: 10,
+                      width: 20,
+                      height: 20,
+                      borderRadius: 10,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: colorTokens.light.orange.orange9,
+                      zIndex: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: 'white',
+                        fontWeight: 'bold',
+                      }}
+                    >
+                      {items}
+                    </Text>
+                  </View>
+                ) : null}
+                <Feather
+                  name="shopping-bag"
+                  size={24}
+                  color={colorTokens.light.orange.orange9}
+                />
+              </TouchableOpacity>
+            </Link>
           </View>
         </View>
         {/* Search Bar */}

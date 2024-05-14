@@ -11,7 +11,7 @@ import {
   ListRenderItem,
   VirtualizedList,
 } from 'react-native'
-import { categories, filteredProducts } from '~/data/mock'
+import { filteredProducts } from '~/data/mock'
 
 export default function Products() {
   const renderItem: ListRenderItem<any> = ({ item, index }) => (

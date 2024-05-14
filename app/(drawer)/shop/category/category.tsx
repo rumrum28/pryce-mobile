@@ -18,7 +18,7 @@ import Animated, {
 import { Link, Stack, router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
-import { allProducts, getFilteredProductById } from '~/data/mock'
+import { allProducts, getFilteredProductByCategory } from '~/data/mock'
 import { formatCurrency } from '~/utils/utils'
 import useBasketStore from '~/utils/basketStore'
 import { SafeAreaView } from 'react-native-safe-area-context'
@@ -35,17 +35,17 @@ if (Platform.OS === 'ios') {
   paddingTop = 0
 }
 
-const Details = () => {
+const Category = () => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const { items, total } = useBasketStore()
 
   const { id } = useLocalSearchParams()
 
-  const item = getFilteredProductById(+id!)
+  const item = getFilteredProductByCategory(+id!)
 
-  const filteredProducts = allProducts.filter(
-    (product) => item?.name && product.name.includes(item.name)
+  const filteredCategory = allProducts.filter(
+    (product) => product.category === item?.name
   )
 
   const formattedPrice = formatCurrency(Number(total))
@@ -182,7 +182,7 @@ const Details = () => {
           </Text>
         </View>
         <FlatList
-          data={filteredProducts}
+          data={filteredCategory}
           scrollEnabled={false}
           renderItem={renderItem}
           ItemSeparatorComponent={() => (
@@ -215,7 +215,7 @@ const Details = () => {
           }}
         >
           <SafeAreaView
-            style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 10 }}
+            style={{ flex: 1, backgroundColor: 'white' }}
             edges={['bottom']}
           >
             <Link href="/(drawer)/shop/(modal)/basket" asChild>
@@ -266,7 +266,7 @@ const Details = () => {
     </View>
   )
 }
-export default Details
+export default Category
 
 const styles = StyleSheet.create({
   image: {

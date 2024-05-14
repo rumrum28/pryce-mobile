@@ -10,11 +10,10 @@ import StyledButton from '~/components/styled_button'
 
 export default function Basket() {
   const { products, total, clearCart, reduceProduct } = useBasketStore()
-  const [order, setOrder] = useState(false)
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white' }}>
-      {!order && (
+      {total > 0 ? (
         <>
           <FlatList
             data={products}
@@ -23,20 +22,43 @@ export default function Basket() {
                 style={{
                   height: 1,
                   backgroundColor: colorTokens.light.gray.gray5,
+                  marginHorizontal: 15,
                 }}
               />
             )}
             ListHeaderComponent={
               <View style={{ paddingHorizontal: 15 }}>
-                <Text
+                <View
                   style={{
-                    fontSize: 20,
-                    fontWeight: 'bold',
-                    marginVertical: 16,
+                    flex: 1,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
                   }}
                 >
-                  Items
-                </Text>
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontWeight: 'bold',
+                      marginVertical: 16,
+                    }}
+                  >
+                    Order Summary
+                  </Text>
+                  <Link href={'/'} asChild>
+                    <TouchableOpacity>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 'bold',
+                          color: colorTokens.light.orange.orange9,
+                        }}
+                      >
+                        Add Items
+                      </Text>
+                    </TouchableOpacity>
+                  </Link>
+                </View>
                 <View
                   style={{
                     height: 1,
@@ -55,8 +77,43 @@ export default function Basket() {
                     justifyContent: 'space-between',
                   }}
                 >
-                  <Text style={{ fontSize: 16 }}>{item.quantity}x</Text>
-                  <Text style={{ fontSize: 16 }}>{item.name}</Text>
+                  <View
+                    style={{
+                      alignItems: 'center',
+                      flexDirection: 'row',
+                      gap: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontSize: 14,
+                        color: colorTokens.light.orange.orange9,
+                        borderColor: colorTokens.light.gray.gray9,
+                        borderWidth: 1,
+                        padding: 5,
+                        fontWeight: 'bold',
+                        borderRadius: 5,
+                        marginBottom: 9,
+                      }}
+                    >
+                      {item.quantity}x
+                    </Text>
+
+                    <View>
+                      <Text style={{ fontSize: 16, paddingBottom: 8 }}>
+                        {item.name}
+                      </Text>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          color: colorTokens.light.orange.orange9,
+                          fontWeight: '600',
+                        }}
+                      >
+                        Edit
+                      </Text>
+                    </View>
+                  </View>
                   <Text style={{ fontSize: 16 }}>
                     {formatCurrency(item.quantity * item.unit_price)}
                   </Text>
@@ -127,20 +184,21 @@ export default function Basket() {
             }}
           >
             <SafeAreaView
-              style={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: 'white', paddingHorizontal: 10 }}
               edges={['bottom']}
             >
               <View
                 style={{
                   flexDirection: 'row',
                   justifyContent: 'space-between',
+                  alignItems: 'center',
+                  marginBottom: 16,
                 }}
               >
                 <Text
                   style={{
                     color: 'black',
-                    fontSize: 20,
-                    padding: 8,
+                    fontSize: 18,
                   }}
                 >
                   Total
@@ -150,7 +208,6 @@ export default function Basket() {
                     color: 'black',
                     fontSize: 16,
                     fontWeight: 'bold',
-                    padding: 8,
                   }}
                 >
                   <Text>{formatCurrency(total)}</Text>
@@ -163,7 +220,6 @@ export default function Basket() {
                       color: 'white',
                       fontSize: 16,
                       fontWeight: 'bold',
-                      padding: 8,
                     }}
                   >
                     Review payment and address
@@ -171,6 +227,12 @@ export default function Basket() {
                 </StyledButton>
               </Link>
             </SafeAreaView>
+          </View>
+        </>
+      ) : (
+        <>
+          <View>
+            <Text>Please add item to your cart</Text>
           </View>
         </>
       )}

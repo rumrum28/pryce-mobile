@@ -26,10 +26,8 @@ export default function _layout() {
         }}
       />
 
-      <Stack.Screen
-        name="category/[category]"
-        options={{ headerShown: true }}
-      />
+      <Stack.Screen name="category/category" options={{ headerShown: true }} />
+      <Stack.Screen name="details/details" options={{ headerShown: true }} />
       <Stack.Screen
         name="products/[products]"
         options={{ headerShown: true, headerTitle: '' }}

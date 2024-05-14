@@ -2,7 +2,13 @@ export const getProductById = (id: number) => {
   return allProducts.find((product) => product.id === id)
 }
 export const getFilteredProductById = (id: number) => {
-  return filteredProducts.find((filtered_product) => filtered_product.id === id)
+  return filteredProducts.find(
+    (filtered_product) => filtered_product.id === id
+  )!
+}
+
+export const getFilteredProductByCategory = (id: number) => {
+  return categories.find((product) => product.id === id)
 }
 
 export const allProducts = [
@@ -306,26 +312,36 @@ export const categories = [
     id: 1,
     img: require('~/assets/card-background.png'),
     name: 'Prycegas Club Membership',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
   },
   {
     id: 2,
     img: require('~/assets/tank.jpg'),
     name: 'LPG Product',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
   },
   {
     id: 3,
     img: require('~/assets/hose.jpg'),
     name: 'LPG Accessories',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
   },
   {
     id: 4,
     img: require('~/assets/oxygen.jpg'),
     name: 'Medical Gases Product',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
   },
   {
     id: 5,
     img: require('~/assets/medicine.png'),
     name: 'Pryce Pharma Product',
+    description:
+      'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industrys standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.',
   },
 ]
 

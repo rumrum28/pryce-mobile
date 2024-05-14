@@ -1,4 +1,5 @@
-import { View, Text, ScrollView, Image } from 'react-native'
+import { router } from 'expo-router'
+import { View, Text, ScrollView, Image, Pressable } from 'react-native'
 import { categories } from '~/data/mock'
 
 export default function Categories() {
@@ -26,16 +27,27 @@ export default function Categories() {
             borderRadius: 4,
           }}
         >
-          <Image
-            source={category.img}
-            style={{
-              height: '80%',
-              width: '100%',
-            }}
-          />
-          <Text style={{ fontSize: 11, fontWeight: 'bold', padding: 3 }}>
-            {category.name}
-          </Text>
+          <Pressable
+            onPress={() =>
+              router.push({
+                pathname: '/(drawer)/shop/category/category',
+                params: {
+                  id: category.id,
+                },
+              })
+            }
+          >
+            <Image
+              source={category.img}
+              style={{
+                height: '80%',
+                width: '100%',
+              }}
+            />
+            <Text style={{ fontSize: 11, fontWeight: 'bold', padding: 3 }}>
+              {category.name}
+            </Text>
+          </Pressable>
         </View>
       ))}
     </ScrollView>
