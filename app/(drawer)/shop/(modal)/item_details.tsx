@@ -17,12 +17,12 @@ export default function ItemDetails() {
   const [totalPriceNumber, setTotalPriceNumber] = useState(0)
   const [items, setItems] = useState(0)
 
-  const item = getProductById(+id)!
+  const item = getProductById(+id!)
 
   const { addProduct, reduceProduct } = useBasketStore()
 
   const addToCart = () => {
-    const selectedProduct = { ...item }
+    const selectedProduct = { ...item! }
     const unitPrice = selectedProduct.unit_price
     const numQuantity = quantity ?? 1
     addProduct(selectedProduct, numQuantity)
@@ -43,7 +43,7 @@ export default function ItemDetails() {
   const removeFromCart = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1)
-      reduceProduct(item)
+      reduceProduct(item!)
     }
   }
 
@@ -97,42 +97,45 @@ export default function ItemDetails() {
             style={{
               flexDirection: 'row',
               alignItems: 'center',
+              paddingHorizontal: 10,
               justifyContent: 'space-between',
+              gap: 10,
             }}
           >
-            <TouchableOpacity
-              onPress={removeFromCart}
-              style={{
-                backgroundColor: colorTokens.light.orange.orange9,
-                borderRadius: 20,
-                padding: 3,
-                marginHorizontal: 10,
-              }}
+            <View
+              style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}
             >
-              <AntDesign name="minus" size={24} color="white" />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                flex: 1,
-                textAlign: 'center',
-              }}
-            >
-              {quantity}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setQuantity(quantity + 1)}
-              style={{
-                backgroundColor: colorTokens.light.orange.orange9,
-                borderRadius: 20,
-                padding: 3,
-                marginHorizontal: 10,
-              }}
-            >
-              <Ionicons name="add" size={24} color="white" />
-            </TouchableOpacity>
-
+              <TouchableOpacity
+                onPress={removeFromCart}
+                style={{
+                  backgroundColor: colorTokens.light.orange.orange9,
+                  borderRadius: 20,
+                  padding: 3,
+                }}
+              >
+                <AntDesign name="minus" size={24} color="white" />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  flex: 1,
+                  textAlign: 'center',
+                }}
+              >
+                {quantity}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setQuantity(quantity + 1)}
+                style={{
+                  backgroundColor: colorTokens.light.orange.orange9,
+                  borderRadius: 20,
+                  padding: 3,
+                }}
+              >
+                <Ionicons name="add" size={24} color="white" />
+              </TouchableOpacity>
+            </View>
             <StyledButton
               style={{
                 width: 280,

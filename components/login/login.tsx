@@ -1,7 +1,7 @@
 import { AntDesign } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router'
-import { View, Image, YStack, Text } from 'tamagui'
+import { View, Image, YStack, Text, Button } from 'tamagui'
 import {
   SafeAreaView,
   TouchableOpacity,
@@ -15,7 +15,7 @@ import { env } from '~/types/env'
 import { UserInputs } from '~/types/apiresults'
 import { ToastViewport, useToastController } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
-import { createTablePryce, getFromPryce } from '~/server/SQLite'
+// import { createTablePryce, getFromPryce } from '~/server/SQLite'
 import LoginForm from './login-form'
 
 // tell zod to only accept number that start with 09
@@ -98,21 +98,21 @@ export default function LogIn() {
     router.push('/onboarding')
   }
 
-  const checkPryceDB = async () => {
-    const checkUser = await getFromPryce()
+  // const checkPryceDB = async () => {
+  //   const checkUser = await getFromPryce()
 
-    if (!checkUser)
-      return toast.show('Error', {
-        message: 'Something is wrong in the server',
-        native: false,
-      })
+  //   if (!checkUser)
+  //     return toast.show('Error', {
+  //       message: 'Something is wrong in the server',
+  //       native: false,
+  //     })
 
-    // console.log(checkUser)
-  }
+  //   // console.log(checkUser)
+  // }
 
-  useEffect(() => {
-    createTablePryce()
-  }, [])
+  // useEffect(() => {
+  //   createTablePryce()
+  // }, [])
 
   return (
     <View
@@ -123,7 +123,7 @@ export default function LogIn() {
         height: '100%',
       }}
     >
-      <SafeAreaView>
+      <SafeAreaView style={{ width, paddingHorizontal: 20 }}>
         <ToastViewport
           style={{
             width: '100%',
@@ -161,14 +161,26 @@ export default function LogIn() {
           >
             Login to Your Account
           </Text>
-          <LoginForm
+          <Button
+            style={{
+              width: '100%',
+              borderRadius: 50,
+              color: 'black',
+            }}
+            onPress={() => router.push('/(drawer)/shop')}
+            // onPress={() => router.push('/(tabs)/shop/')}
+            // icon={loginResponse.isPending ? () => <Spinner /> : undefined}
+          >
+            Test button
+          </Button>
+          {/* <LoginForm
             loginResponse={loginResponse}
             handleNumberChange={handleNumberChange}
             loginHandler={loginHandler}
-            checkPryceDB={checkPryceDB}
+            // checkPryceDB={checkPryceDB}
             invalidNumber={invalidNumber}
             phoneNumber={phoneNumber}
-          />
+          /> */}
         </YStack>
       </SafeAreaView>
       {/* <SafeAreaView style={{ display: 'flex' }}>
