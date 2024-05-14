@@ -4,7 +4,7 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native'
-import React, { useEffect, useMemo } from 'react'
+import React from 'react'
 import Animated, {
   AnimatedRef,
   SharedValue,
@@ -26,7 +26,6 @@ type Props = {
 }
 
 const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
-  // const [isGetStarted, setIsGetStarted] = useMMKVObject<any>('getStarted')
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width: SCREEN_WIDTH } = useWindowDimensions()
 

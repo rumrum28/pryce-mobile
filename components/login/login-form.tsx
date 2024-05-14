@@ -1,6 +1,5 @@
 import { Button, Form, Input, XStack, View, Text, Spinner } from 'tamagui'
-
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { AntDesign, Feather } from '@expo/vector-icons'
 import { TouchableOpacity } from 'react-native'
 import { colorTokens } from '@tamagui/themes'
@@ -10,6 +9,7 @@ import { useRouter } from 'expo-router'
 import { queryClient } from '~/hooks/queryClient'
 import { login } from '~/server/api'
 import { useToastController } from '@tamagui/toast'
+import usePryceStore from '~/hooks/pryceStore'
 
 type MyComponentProps = {
   handleNumberChange: (n: string) => void
@@ -23,8 +23,9 @@ export default function LoginForm({
   invalidNumber,
 }: MyComponentProps) {
   const [value, setValue] = useState<string>('')
-  const [passwordIsVisible, setPasswordIsVisible] =
-    React.useState<boolean>(false)
+  const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
+  const [type, setType] = useState<'password' | 'otp'>('password')
+  const setToken = usePryceStore((state) => state.setToken)
   const toast = useToastController()
   const router = useRouter()
 
@@ -53,6 +54,7 @@ export default function LoginForm({
     const userData: UserInputs = {
       phone_number: phoneNumber.replace(/\s+/g, ''),
       value: value,
+      type: type,
     }
 
     loginResponse.mutate(userData)

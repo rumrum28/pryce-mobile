@@ -1,6 +1,7 @@
 export type UserInputs = {
   phone_number: string
   value: string
+  type: 'otp' | 'password'
 }
 
 type ProfileAtributes = {

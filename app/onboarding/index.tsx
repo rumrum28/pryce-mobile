@@ -4,7 +4,6 @@ import Animated, {
   useAnimatedScrollHandler,
   useAnimatedRef,
 } from 'react-native-reanimated'
-
 import { data, OnboardingData } from '~/data/data'
 import RenderOnboardingItem from '~/components/onboarding/render-onboarding'
 import Pagination from '~/components/onboarding/pagination'
