@@ -131,12 +131,11 @@ export default function LogIn() {
           >
             Test button
           </Button>
-          {/* <LoginForm
-            loginResponse={loginResponse}
+          <LoginForm
             handleNumberChange={handleNumberChange}
             invalidNumber={invalidNumber}
             phoneNumber={phoneNumber}
-          /> */}
+          />
         </YStack>
       </SafeAreaView>
       {/* <SafeAreaView style={{ display: 'flex' }}>

@@ -20,7 +20,7 @@ export const login = async (userData: UserInputs) => {
     cache: 'no-store',
   })
   const data: UseStorage = await response.json()
-
+  console.log(data)
   return data
 }
 

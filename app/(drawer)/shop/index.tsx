@@ -2,7 +2,7 @@ import { SafeAreaView, ScrollView, Text } from 'react-native'
 import React from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
-import Carousel from '~/components/shop/carousel'
+// import Carousel from '~/components/shop/carousel'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
 
@@ -15,7 +15,7 @@ export default function Page() {
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        <Carousel />
+        {/* <Carousel /> */}
         <Text
           style={{
             paddingHorizontal: 10,
