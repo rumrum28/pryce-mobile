@@ -1,16 +1,87 @@
 import { SafeAreaView } from 'react-native'
-import { Form, Input, Main, Text } from 'tamagui'
+import { Button, Form, Input, Main, Text } from 'tamagui'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
 import { useState } from 'react'
+import { useToastController } from '@tamagui/toast'
+import { useMutation } from '@tanstack/react-query'
+import { queryClient } from '~/hooks/queryClient'
+import { getOtp, login } from '~/server/api'
+import { Container } from '~/tamagui.config'
+import { UserInputs } from '~/types/apiresults'
+import usePryceStore from '~/hooks/pryceStore'
+import { router } from 'expo-router'
 
 export default function OtpLogin() {
-  const [number, setPhoneNumber] = useState('')
+  const setToken = usePryceStore((set) => set.setToken)
+  const [phoneNumber, setPhoneNumber] = useState('')
   const [otpNumber, setOtpNumber] = useState('')
+  const [isOtp, setIsOtp] = useState<boolean>(false)
+  const toast = useToastController()
+  const [type, setType] = useState<'password' | 'otp'>('otp')
 
-  const checkOtpHandler = async () => {}
+  const getOtpResponse = useMutation({
+    mutationFn: getOtp,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['otp'],
+      })
 
-  const sendOtpHandler = async () => {}
+      if (data) {
+        toast.show('Success', {
+          message: data.loginResponse?.message,
+          native: false,
+        })
+        setToken(data.loginResponse?.access_token)
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number',
+          native: false,
+        })
+      }
+    },
+  })
+
+  const loginResponse = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['login'],
+      })
+
+      if (data) {
+        toast.show('Succesfully Login', {
+          message: 'Welcome to PRYCEGAS!',
+          native: false,
+        })
+        router.push('/(drawer)/shop')
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number or password',
+          native: false,
+        })
+      }
+    },
+  })
+
+  const checkOtpHandler = async () => {
+    const userData: UserInputs = {
+      phone_number: phoneNumber.replace(/\s+/g, ''),
+      value: otpNumber,
+      type: type,
+    }
+
+    loginResponse.mutate(userData)
+  }
+
+  const sendOtpHandler = async () => {
+    const send = {
+      phone_number: phoneNumber.replace(/\s+/g, ''),
+    }
+
+    getOtpResponse.mutate(send)
+    setIsOtp(true)
+  }
 
   return (
     <Main
@@ -20,30 +91,51 @@ export default function OtpLogin() {
         justifyContent: 'center',
       }}
     >
-      <SafeAreaView style={{ width: 300 }}>
-        <Form onSubmit={checkOtpHandler}>
-          <Text>Enter Number</Text>
-          <Input
-            flex={1}
-            keyboardType="numeric"
-            value={number}
-            onChangeText={(e) => setPhoneNumber(e)}
-            numberOfLines={4}
-            maxLength={40}
-            style={{ padding: 10 }}
-          />
-        </Form>
+      <SafeAreaView style={{ width: 300, gap: 20 }}>
+        {getOtpResponse.isSuccess && (
+          <Container>
+            <Text>OTP has been sent to your mobile number.</Text>
+          </Container>
+        )}
 
-        <Form onSubmit={checkOtpHandler}>
-          <Text>Enter OTP</Text>
-          <OtpInput
-            numberOfDigits={6}
-            focusColor="orangered"
-            focusStickBlinkingDuration={500}
-            onTextChange={(text) => console.log(text)}
-            onFilled={(text) => console.log(`OTP is ${text}`)}
-          />
-        </Form>
+        {!isOtp && (
+          <Form onSubmit={sendOtpHandler}>
+            <Text>Enter Number</Text>
+            <Input
+              keyboardType="numeric"
+              value={phoneNumber}
+              onChangeText={(e) => setPhoneNumber(e)}
+              numberOfLines={4}
+              maxLength={40}
+              style={{ padding: 10, height: 46 }}
+            />
+
+            <Form.Trigger asChild>
+              <Button>Submit</Button>
+            </Form.Trigger>
+          </Form>
+        )}
+
+        {isOtp && (
+          <>
+            <Button onPress={() => setIsOtp(false)}>retry</Button>
+
+            <Form onSubmit={checkOtpHandler}>
+              <Text>Enter OTP</Text>
+              <OtpInput
+                numberOfDigits={6}
+                focusColor="orangered"
+                focusStickBlinkingDuration={500}
+                // onTextChange={(text) => console.log(text)}
+                onFilled={(text) => setOtpNumber(text)}
+              />
+
+              <Form.Trigger asChild>
+                <Button>Submit</Button>
+              </Form.Trigger>
+            </Form>
+          </>
+        )}
       </SafeAreaView>
     </Main>
   )

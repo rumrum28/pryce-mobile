@@ -3,6 +3,7 @@ import { ImageBackground, Pressable, TouchableOpacity } from 'react-native'
 import { Text, View } from 'tamagui'
 import LogIn from '~/components/login/login'
 import OtpLogin from '~/components/login/otp'
+import { ToastViewport } from '@tamagui/toast'
 
 export default function Page() {
   const [loginType, setLoginType] = useState<'otp' | 'password' | null>(null)
@@ -13,6 +14,15 @@ export default function Page() {
 
   return (
     <View style={{ flex: 1 }}>
+      <ToastViewport
+        style={{
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: 20,
+        }}
+      />
+
       {!loginType && (
         <View
           style={{

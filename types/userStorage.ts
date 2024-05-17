@@ -94,17 +94,10 @@ export type MultipleRecords = {
   Number_of_Refills_50__c: Number
 }
 
-export type UseStorage = {
+export type LoginResponse = {
   success: boolean
   message: string
-  email: string
-  accessToken: string
-  password: boolean
-  users: {
-    totalSize: number
-    done: boolean
-    records: MultipleRecords[]
-  }
+  access_token: string
 }
 
 export type UseUser = {
@@ -112,3 +105,22 @@ export type UseUser = {
   done: boolean
   records: MultipleRecords[]
 }
+
+export type Profile = {
+  attributes: {
+    type: string
+    url: string
+  }
+  Id: string
+  Name: string
+  FirstName: string | null
+  MiddleName: string | null
+  LastName: string | null
+  Account_Number__c: string
+  Mobile_Number__c: string
+  Prycegas_Club_Member__c: boolean
+  Bought_PGC_Membership__c: boolean
+  Pryce_Region__c: string
+}
+
+export type ProfileProps = Profile[]

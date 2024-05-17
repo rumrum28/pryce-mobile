@@ -1,3 +1,6 @@
 npx expo prebuild
 npx expo run:android
 npx expo run:ios
+
+adb pair host:port
+adb connect host:port

@@ -10,20 +10,18 @@ import { queryClient } from '~/hooks/queryClient'
 import { login } from '~/server/api'
 import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
+import { z } from 'zod'
 
-type MyComponentProps = {
-  handleNumberChange: (n: string) => void
-  phoneNumber: string
-  invalidNumber: boolean
-}
+// tell zod to only accept number that start with 09
+const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
+  message: 'Invalid phone number',
+})
 
-export default function LoginForm({
-  handleNumberChange,
-  phoneNumber,
-  invalidNumber,
-}: MyComponentProps) {
-  const [value, setValue] = useState<string>('')
+export default function LoginForm() {
+  const [phoneNumber, setPhoneNumber] = useState<string>('')
+  const [otpInput, setOtpInput] = useState<string>('')
   const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
+  const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const [type, setType] = useState<'password' | 'otp'>('password')
   const setToken = usePryceStore((state) => state.setToken)
   const toast = useToastController()
@@ -53,11 +51,39 @@ export default function LoginForm({
   const loginHandler = async () => {
     const userData: UserInputs = {
       phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: value,
+      value: otpInput,
       type: type,
     }
 
     loginResponse.mutate(userData)
+  }
+
+  const formatPhoneNumber = (input: string) => {
+    const numbers = input.replace(/\D/g, '')
+    const match = numbers.match(/^(\d{0,4})(\d{0,3})(\d{0,4})$/)
+
+    if (match) {
+      return `${match[1]}${match[2] ? ' ' + match[2] : ''}${match[3] ? ' ' + match[3] : ''}`
+    }
+
+    return numbers
+  }
+
+  const handleNumberChange = (n: string) => {
+    let result = false
+
+    if (n[0] === '0' && n[1] === '9') {
+      result = mobileOrDigitSchema.safeParse(n).success
+    } else {
+      result = mobileOrDigitSchema.safeParse(n).success
+    }
+
+    setInvalidNumber(!result)
+    const formatted = formatPhoneNumber(n)
+
+    if (formatted.replace(/\s+/g, '').length > 11) return null
+
+    setPhoneNumber(formatted)
   }
 
   return (
@@ -95,8 +121,8 @@ export default function LoginForm({
             }}
             placeholder="Password"
             secureTextEntry={!passwordIsVisible}
-            value={value}
-            onChangeText={(e) => setValue(e)}
+            value={otpInput}
+            onChangeText={(e) => setOtpInput(e)}
           />
 
           <AntDesign

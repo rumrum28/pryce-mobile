@@ -4,6 +4,10 @@ export type UserInputs = {
   type: 'otp' | 'password'
 }
 
+export type OTPInputs = {
+  phone_number: string
+}
+
 type ProfileAtributes = {
   type: string
   url: string
