@@ -8,6 +8,11 @@ export type OTPInputs = {
   phone_number: string
 }
 
+export type OTPResponse = {
+  success: string
+  message: string
+}
+
 type ProfileAtributes = {
   type: string
   url: string

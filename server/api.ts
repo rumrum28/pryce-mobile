@@ -1,4 +1,9 @@
-import { OTPInputs, ProfileResponse, UserInputs } from '~/types/apiresults'
+import {
+  OTPInputs,
+  OTPResponse,
+  ProfileResponse,
+  UserInputs,
+} from '~/types/apiresults'
 import { env } from '~/types/env'
 import { LoginResponse, ProfileProps } from '~/types/userStorage'
 
@@ -12,20 +17,6 @@ import { LoginResponse, ProfileProps } from '~/types/userStorage'
 
 export const login = async (userData: UserInputs) => {
   const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify(userData),
-    cache: 'no-store',
-  })
-  const data: LoginResponse = await response.json()
-  console.log(data)
-  return data
-}
-
-export const getOtp = async (userData: OTPInputs) => {
-  const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/get-otp`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -49,32 +40,27 @@ export const getOtp = async (userData: OTPInputs) => {
     )
     const profileResponse: ProfileProps = await fetchProfile.json()
 
-    const firstTrueMember = profileResponse.find(
-      (item) => item.Prycegas_Club_Member__c === true
-    )
-
-    if (firstTrueMember) {
-      const fetchFirstTrueMember = await fetch(
-        `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`,
-        {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${loginResponse.access_token}`,
-          },
-          body: JSON.stringify({
-            account_number: firstTrueMember.Account_Number__c,
-          }),
-          cache: 'no-store',
-        }
-      )
-      const changeAddressResponse: ProfileProps =
-        await fetchFirstTrueMember.json()
-      return { loginResponse, profileResponse, changeAddressResponse }
+    if (profileResponse.length > 0) {
+      return { loginResponse, profileResponse }
+    } else {
+      console.log('error on /api/user/profile')
     }
-
-    return { loginResponse, profileResponse }
+  } else {
+    console.log('error on /login/api')
   }
+}
+
+export const getOtp = async (userData: OTPInputs) => {
+  const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/get-otp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+    cache: 'no-store',
+  })
+  const OTPResponse: OTPResponse = await response.json()
+  return OTPResponse
 }
 
 export const profile = async (token: string) => {
@@ -92,6 +78,25 @@ export const profile = async (token: string) => {
   const data: ProfileProps = await response.json()
   console.log(data)
   return data
+}
+
+export const changeAddress = async (token: string, accountNumber: string) => {
+  const changeAddress = await fetch(
+    `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/change-address`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({
+        account_number: accountNumber,
+      }),
+      cache: 'no-store',
+    }
+  )
+  const changeAddressResponse: ProfileProps = await changeAddress.json()
+  return changeAddressResponse
 }
 
 // export const getSearchResults = async (

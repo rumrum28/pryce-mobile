@@ -14,6 +14,9 @@ import { router } from 'expo-router'
 
 const OnboardingScreen = () => {
   const getStarted = usePryceStore((state) => state.getStarted)
+  const email = usePryceStore((state) => state.email)
+  const token = usePryceStore((state) => state.token)
+  const users = usePryceStore((state) => state.users)
   const flatListRef = useAnimatedRef<FlatList<OnboardingData>>()
   const x = useSharedValue(0)
   const flatListIndex = useSharedValue(0)
@@ -37,6 +40,10 @@ const OnboardingScreen = () => {
   useEffect(() => {
     if (!getStarted) {
       router.push('/onboarding/login')
+    }
+
+    if (email && token && users.length > 0) {
+      router.push('/(drawer)/shop')
     }
   }, [getStarted])
 

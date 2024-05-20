@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react'
 import { router } from 'expo-router'
 import { View, Image, YStack, Text, Button } from 'tamagui'
 import {
+  Pressable,
   SafeAreaView,
   TouchableOpacity,
   useWindowDimensions,
@@ -15,7 +16,11 @@ import { CurrentToast } from '~/components/toast'
 import LoginForm from './login-form'
 import usePryceStore from '~/hooks/pryceStore'
 
-export default function LogIn() {
+export default function LogIn({
+  setLoginType,
+}: {
+  setLoginType: (t: 'otp' | 'password' | null) => void
+}) {
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width, height } = useWindowDimensions()
   const [value, setValue] = useState<string>('')
@@ -86,6 +91,16 @@ export default function LogIn() {
           >
             Test button
           </Button>
+          <Button
+            style={{
+              width: '100%',
+              borderRadius: 50,
+            }}
+            onPress={() => setLoginType(null)}
+          >
+            <Text>back</Text>
+          </Button>
+
           <LoginForm />
         </YStack>
       </SafeAreaView>

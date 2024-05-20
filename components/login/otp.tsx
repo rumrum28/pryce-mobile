@@ -1,4 +1,4 @@
-import { SafeAreaView } from 'react-native'
+import { Pressable, SafeAreaView } from 'react-native'
 import { Button, Form, Input, Main, Text } from 'tamagui'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
@@ -12,7 +12,11 @@ import { UserInputs } from '~/types/apiresults'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
 
-export default function OtpLogin() {
+export default function OtpLogin({
+  setLoginType,
+}: {
+  setLoginType: (t: 'otp' | 'password' | null) => void
+}) {
   const setToken = usePryceStore((set) => set.setToken)
   const [phoneNumber, setPhoneNumber] = useState('')
   const [otpNumber, setOtpNumber] = useState('')
@@ -29,10 +33,9 @@ export default function OtpLogin() {
 
       if (data) {
         toast.show('Success', {
-          message: data.loginResponse?.message,
+          message: data.message,
           native: false,
         })
-        setToken(data.loginResponse?.access_token)
       } else {
         toast.show('Error', {
           message: 'Invalid phone number',
@@ -48,16 +51,17 @@ export default function OtpLogin() {
       queryClient.invalidateQueries({
         queryKey: ['login'],
       })
+      router.push('/(drawer)/shop')
 
       if (data) {
-        toast.show('Succesfully Login', {
-          message: 'Welcome to PRYCEGAS!',
+        toast.show('Success', {
+          message: data.loginResponse?.message,
           native: false,
         })
-        router.push('/(drawer)/shop')
+        setToken(data.loginResponse?.access_token)
       } else {
         toast.show('Error', {
-          message: 'Invalid phone number or password',
+          message: 'Invalid phone number',
           native: false,
         })
       }
@@ -97,6 +101,16 @@ export default function OtpLogin() {
             <Text>OTP has been sent to your mobile number.</Text>
           </Container>
         )}
+
+        <Button
+          style={{
+            width: '100%',
+            borderRadius: 50,
+          }}
+          onPress={() => setLoginType(null)}
+        >
+          <Text>back</Text>
+        </Button>
 
         {!isOtp && (
           <Form onSubmit={sendOtpHandler}>

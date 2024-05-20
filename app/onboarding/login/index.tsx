@@ -86,23 +86,8 @@ export default function Page() {
         </View>
       )}
 
-      {loginType === 'password' && (
-        <>
-          <Pressable onPress={() => setLoginType(null)}>
-            <Text>back</Text>
-          </Pressable>
-          <LogIn />
-        </>
-      )}
-
-      {loginType === 'otp' && (
-        <>
-          <Pressable onPress={() => setLoginType(null)}>
-            <Text>back</Text>
-          </Pressable>
-          <OtpLogin />
-        </>
-      )}
+      {loginType === 'password' && <LogIn setLoginType={setLoginType} />}
+      {loginType === 'otp' && <OtpLogin setLoginType={setLoginType} />}
     </View>
   )
 }

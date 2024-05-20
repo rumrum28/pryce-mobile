@@ -2,18 +2,19 @@ import { create } from 'zustand'
 import { ProfileResponseSingle } from '~/types/apiresults'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { pryceStorage } from '~/server/mmkv'
+import { ProfileProps } from '~/types/userStorage'
 
 type PryceState = {
   getStarted: boolean
   email: string
   token: string
   selectedUser: number
-  users: Array<ProfileResponseSingle>
+  users: ProfileProps
   setGetStarted: (getStarted: boolean) => void
   setEmail: (email: string) => void
   setToken: (token: string) => void
   setSelectedUser: (selectedUser: number) => void
-  setUsers: (userRecords: ProfileResponseSingle[]) => void
+  setUsers: (userRecords: ProfileProps) => void
 }
 
 const usePryceStore = create<PryceState>()(
@@ -40,7 +41,7 @@ const usePryceStore = create<PryceState>()(
       setSelectedUser: (selectedUser: number) => {
         set(() => ({ selectedUser: selectedUser }))
       },
-      setUsers: (userRecords: ProfileResponseSingle[]) => {
+      setUsers: (userRecords: ProfileProps) => {
         set(() => ({
           users: userRecords,
         }))
