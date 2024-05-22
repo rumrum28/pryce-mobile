@@ -13,7 +13,7 @@ type PryceState = {
   setGetStarted: (getStarted: boolean) => void
   setEmail: (email: string) => void
   setToken: (token: string) => void
-  setSelectedUser: (selectedUser: string) => void
+  setSelectedUser: (selectedUser: string | null) => void
   setUsers: (userRecords: ProfileProps) => void
 }
 
@@ -38,7 +38,7 @@ const usePryceStore = create<PryceState>()(
           token: token,
         }))
       },
-      setSelectedUser: (selectedUser: string) => {
+      setSelectedUser: (selectedUser: string | null) => {
         set(() => ({ selectedUser: selectedUser }))
       },
       setUsers: (userRecords: ProfileProps) => {

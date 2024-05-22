@@ -74,7 +74,7 @@ export const SelectAddressModal = ({
 
   return (
     <>
-      <Button onPress={() => setOpen(true)}>force show</Button>
+      <Button onPress={() => setOpen(true)}>change Address</Button>
       <Sheet
         forceRemoveScrollEnabled={open}
         modal={true}

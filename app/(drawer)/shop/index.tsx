@@ -10,14 +10,18 @@ import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import { SelectAddressModal } from '~/components/selectAddress'
 import usePryceStore from '~/hooks/pryceStore'
-import { Spinner, YStack } from 'tamagui'
+import { Button, Spinner, YStack } from 'tamagui'
+import { router } from 'expo-router'
 
 export default function Page() {
   const toast = useToastController()
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
   const token = usePryceStore((state) => state.token)
+  const setToken = usePryceStore((state) => state.setToken)
   const users = usePryceStore((state) => state.users)
+  const setUsers = usePryceStore((state) => state.setUsers)
+  const setEmail = usePryceStore((state) => state.setEmail)
 
   const fetchProducts = useMutation({
     mutationFn: changeAddressOnLoad,
@@ -67,6 +71,18 @@ export default function Page() {
         contentContainerStyle={{ paddingBottom: 80 }}
       >
         {/* <Button onPress={() => setSelectedUser(null)}>offSlected</Button> */}
+        <Button
+          onPress={() => {
+            setSelectedUser(null)
+            setToken('')
+            setUsers([])
+            setEmail('')
+            router.push('/onboarding/login')
+          }}
+        >
+          logout
+        </Button>
+
         {selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
 
         <Text
