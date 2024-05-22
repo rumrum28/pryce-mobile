@@ -18,6 +18,7 @@ export default function OtpLogin({
   setLoginType: (t: 'otp' | 'password' | null) => void
 }) {
   const setToken = usePryceStore((set) => set.setToken)
+  const setUsers = usePryceStore((set) => set.setUsers)
   const [phoneNumber, setPhoneNumber] = useState('')
   const [otpNumber, setOtpNumber] = useState('')
   const [isOtp, setIsOtp] = useState<boolean>(false)
@@ -51,7 +52,6 @@ export default function OtpLogin({
       queryClient.invalidateQueries({
         queryKey: ['login'],
       })
-      router.push('/(drawer)/shop')
 
       if (data) {
         toast.show('Success', {
@@ -59,6 +59,8 @@ export default function OtpLogin({
           native: false,
         })
         setToken(data.loginResponse?.access_token)
+        setUsers(data.profileResponse)
+        router.push('/(drawer)/shop')
       } else {
         toast.show('Error', {
           message: 'Invalid phone number',

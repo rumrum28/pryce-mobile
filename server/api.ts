@@ -1,11 +1,6 @@
-import {
-  OTPInputs,
-  OTPResponse,
-  ProfileResponse,
-  UserInputs,
-} from '~/types/apiresults'
+import { OTPInputs, OTPResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
-import { LoginResponse, ProfileProps } from '~/types/userStorage'
+import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
 // const [favorites, setFavorites] = useMMKVObject<Favorites[]>('favorites'); // get all favorites
@@ -30,7 +25,7 @@ export const login = async (userData: UserInputs) => {
     const fetchProfile = await fetch(
       `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`,
       {
-        method: 'POST',
+        method: 'GET',
         headers: {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${loginResponse.access_token}`,
@@ -80,17 +75,59 @@ export const profile = async (token: string) => {
   return data
 }
 
-export const changeAddress = async (token: string, accountNumber: string) => {
+export const changeAddressOnLoad = async (data: {
+  token: string
+  accountNumber: string
+}) => {
   const changeAddress = await fetch(
     `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/change-address`,
     {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
+        Authorization: `Bearer ${data.token}`,
       },
       body: JSON.stringify({
-        account_number: accountNumber,
+        account_number: data.accountNumber,
+      }),
+      cache: 'no-store',
+    }
+  )
+  const changeAddressResponse: Profile = await changeAddress.json()
+
+  if (changeAddressResponse) {
+    const getAllProducts = await fetch(
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/products?ref=${changeAddressResponse?.ref}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store',
+      }
+    )
+    const getAllProductsResponse: ProfileProps = await getAllProducts.json()
+
+    return getAllProductsResponse
+  } else {
+    console.log('error on /api/user/change-address')
+  }
+}
+
+export const changeAddress = async (data: {
+  token: string
+  accountNumber: string
+}) => {
+  const changeAddress = await fetch(
+    `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/change-address`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${data.token}`,
+      },
+      body: JSON.stringify({
+        account_number: data.accountNumber,
       }),
       cache: 'no-store',
     }

@@ -42,10 +42,10 @@ const OnboardingScreen = () => {
       router.push('/onboarding/login')
     }
 
-    if (email && token && users.length > 0) {
+    if (token && users.length > 0) {
       router.push('/(drawer)/shop')
     }
-  }, [getStarted])
+  }, [getStarted, email, token, users])
 
   return (
     <View style={styles.container}>

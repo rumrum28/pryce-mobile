@@ -42,6 +42,7 @@
     "react-dom": "18.2.0",
     "react-native": "0.74.1",
     "react-native-bouncy-checkbox": "^4.0.0",
+    "react-native-cyberpunk-button": "^1.0.1",
     "react-native-element-dropdown": "^2.12.0",
     "react-native-gesture-handler": "~2.16.1",
     "react-native-mmkv": "^2.12.2",

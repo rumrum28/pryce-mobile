@@ -1,39 +1,54 @@
 import { SafeAreaView, ScrollView, Text } from 'react-native'
-import React from 'react'
+import React, { useEffect } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
 import { ToastViewport, useToastController } from '@tamagui/toast'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
 import { useMutation } from '@tanstack/react-query'
-import { profile } from '~/server/api'
+import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
-import { router } from 'expo-router'
+import { SelectAddressModal } from '~/components/selectAddress'
+import usePryceStore from '~/hooks/pryceStore'
+import { Spinner, YStack } from 'tamagui'
 
 export default function Page() {
   const toast = useToastController()
+  const selectedUser = usePryceStore((state) => state.selectedUser)
+  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const token = usePryceStore((state) => state.token)
+  const users = usePryceStore((state) => state.users)
 
-  const getProfile = useMutation({
-    mutationFn: profile,
+  const fetchProducts = useMutation({
+    mutationFn: changeAddressOnLoad,
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['profile'],
+        queryKey: ['changeAddress'],
       })
 
-      if (data) {
-        const firstTrueMember = data.find(
-          (item) => item.Prycegas_Club_Member__c === true
-        )
-        console.log(firstTrueMember)
-        // router.push('/(drawer)/shop')
-      } else {
-        toast.show('Error', {
-          message: 'Something is wrong in profile fetch',
-          native: false,
-        })
-      }
+      console.log(data)
     },
   })
+
+  useEffect(() => {
+    if (selectedUser) {
+      console.log(selectedUser)
+      const userData: { token: string; accountNumber: string } = {
+        token: token,
+        accountNumber: selectedUser,
+      }
+
+      fetchProducts.mutate(userData)
+    }
+  }, [selectedUser])
+
+  if (fetchProducts.isPending) {
+    return (
+      <YStack padding="$3" gap="$4" alignItems="center" marginTop={20}>
+        <Spinner size="large" color="$orange10" />
+      </YStack>
+    )
+  }
 
   return (
     <SafeAreaView
@@ -51,7 +66,9 @@ export default function Page() {
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {/* <Carousel /> */}
+        {/* <Button onPress={() => setSelectedUser(null)}>offSlected</Button> */}
+        {selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
+
         <Text
           style={{
             paddingHorizontal: 10,

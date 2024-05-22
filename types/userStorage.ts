@@ -120,7 +120,12 @@ export type Profile = {
   Mobile_Number__c: string
   Prycegas_Club_Member__c: boolean
   Bought_PGC_Membership__c: boolean
+  Primary_Street__c: string
+  Primary_Barangay__c: string
+  Primary_City2__c: string
+  Primary_State_Province__c: string
   Pryce_Region__c: string
+  ref?: string
 }
 
 export type ProfileProps = Profile[]
