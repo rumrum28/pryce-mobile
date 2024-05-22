@@ -1,6 +1,6 @@
-import { LoginResponse, ProfileResponse, UserInputs } from '~/types/apiresults'
+import { OTPInputs, OTPResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
-// import { insertToPryce } from './SQLite'
+import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
 // const [favorites, setFavorites] = useMMKVObject<Favorites[]>('favorites'); // get all favorites
@@ -19,29 +19,121 @@ export const login = async (userData: UserInputs) => {
     body: JSON.stringify(userData),
     cache: 'no-store',
   })
-  const data: LoginResponse = await response.json()
+  const loginResponse: LoginResponse = await response.json()
 
+  if (loginResponse.success) {
+    const fetchProfile = await fetch(
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${loginResponse.access_token}`,
+        },
+        cache: 'no-store',
+      }
+    )
+    const profileResponse: ProfileProps = await fetchProfile.json()
+
+    if (profileResponse.length > 0) {
+      return { loginResponse, profileResponse }
+    } else {
+      console.log('error on /api/user/profile')
+    }
+  } else {
+    console.log('error on /login/api')
+  }
+}
+
+export const getOtp = async (userData: OTPInputs) => {
+  const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/get-otp`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify(userData),
+    cache: 'no-store',
+  })
+  const OTPResponse: OTPResponse = await response.json()
+  return OTPResponse
+}
+
+export const profile = async (token: string) => {
+  const response = await fetch(
+    `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      cache: 'no-store',
+    }
+  )
+  const data: ProfileProps = await response.json()
+  console.log(data)
   return data
 }
 
-export const profile = async () => {
-  try {
-    const requestOptions = {
-      method: 'GET',
+export const changeAddressOnLoad = async (data: {
+  token: string
+  accountNumber: string
+}) => {
+  const changeAddress = await fetch(
+    `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/change-address`,
+    {
+      method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        Authorization: `Bearer ${localStorage.getItem('token')}`,
+        Authorization: `Bearer ${data.token}`,
       },
+      body: JSON.stringify({
+        account_number: data.accountNumber,
+      }),
+      cache: 'no-store',
     }
+  )
+  const changeAddressResponse: Profile = await changeAddress.json()
 
-    const response = await fetch(
-      `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`
+  if (changeAddressResponse) {
+    const getAllProducts = await fetch(
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/products?ref=${changeAddressResponse?.ref}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        cache: 'no-store',
+      }
     )
-    const data: ProfileResponse = await response.json()
-    return data
-  } catch (error) {
-    console.log(error)
+    const getAllProductsResponse: ProfileProps = await getAllProducts.json()
+
+    return getAllProductsResponse
+  } else {
+    console.log('error on /api/user/change-address')
   }
+}
+
+export const changeAddress = async (data: {
+  token: string
+  accountNumber: string
+}) => {
+  const changeAddress = await fetch(
+    `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/change-address`,
+    {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${data.token}`,
+      },
+      body: JSON.stringify({
+        account_number: data.accountNumber,
+      }),
+      cache: 'no-store',
+    }
+  )
+  const changeAddressResponse: ProfileProps = await changeAddress.json()
+  return changeAddressResponse
 }
 
 // export const getSearchResults = async (

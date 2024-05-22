@@ -1,35 +1,22 @@
-import {
-  StyleSheet,
-  View,
-  FlatList,
-  ViewToken,
-  ActivityIndicator,
-} from 'react-native'
+import { StyleSheet, View, FlatList, ViewToken, StatusBar } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
   useAnimatedRef,
 } from 'react-native-reanimated'
-import { OnboardingData, data } from '~/data/data'
-import { useEffect, useState } from 'react'
-import { loadDatabase } from '~/hooks/SQLite'
-import { Text } from 'tamagui'
+import { data, OnboardingData } from '~/data/data'
 import RenderOnboardingItem from '~/components/onboarding/render-onboarding'
 import Pagination from '~/components/onboarding/pagination'
 import CustomButton from '~/components/onboarding/custom-button'
-import { PryceSettings } from '~/types/user'
+import { useEffect } from 'react'
+import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
-import pryceStore from '~/hooks/pryceStore'
 
 const OnboardingScreen = () => {
-  const { pryceSettings, testGetAllFromPryceSettingsTable } = pryceStore(
-    (state) => ({
-      pryceSettings: state.pryceSettings,
-      testGetAllFromPryceSettingsTable: state.testGetAllFromPryceSettingsTable,
-    })
-  )
-  const [dbLoaded, setDbLoaded] = useState<boolean>(false)
-
+  const getStarted = usePryceStore((state) => state.getStarted)
+  const email = usePryceStore((state) => state.email)
+  const token = usePryceStore((state) => state.token)
+  const users = usePryceStore((state) => state.users)
   const flatListRef = useAnimatedRef<FlatList<OnboardingData>>()
   const x = useSharedValue(0)
   const flatListIndex = useSharedValue(0)
@@ -50,39 +37,15 @@ const OnboardingScreen = () => {
     },
   })
 
-  const getFromPryce = async () => {
-    testGetAllFromPryceSettingsTable()
-  }
-
   useEffect(() => {
-    if (
-      Array.isArray(pryceSettings) &&
-      pryceSettings.length > 0 &&
-      pryceSettings[0].value === 'false'
-    ) {
+    if (!getStarted) {
       router.push('/onboarding/login')
     }
-  }, [pryceSettings])
 
-  useEffect(() => {
-    loadDatabase()
-      .then(() => {
-        setDbLoaded(true)
-        getFromPryce()
-      })
-      .catch((error) => {
-        console.log(error)
-      })
-  }, [])
-
-  if (!dbLoaded) {
-    return (
-      <View style={{ flex: 1 }}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading Database...</Text>
-      </View>
-    )
-  }
+    if (token && users.length > 0) {
+      router.push('/(drawer)/shop')
+    }
+  }, [getStarted, email, token, users])
 
   return (
     <View style={styles.container}>

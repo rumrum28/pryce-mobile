@@ -4,6 +4,7 @@ import {
   TouchableWithoutFeedback,
   useWindowDimensions,
 } from 'react-native'
+import React from 'react'
 import Animated, {
   AnimatedRef,
   SharedValue,
@@ -15,7 +16,7 @@ import Animated, {
 import { OnboardingData } from '../../data/data'
 import { router } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
-import pryceStore from '~/hooks/pryceStore'
+import usePryceStore from '~/hooks/pryceStore'
 
 type Props = {
   dataLength: number
@@ -25,9 +26,7 @@ type Props = {
 }
 
 const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
-  const { setPryceSettings } = pryceStore((state) => ({
-    setPryceSettings: state.setPryceSettings,
-  }))
+  const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width: SCREEN_WIDTH } = useWindowDimensions()
 
   const buttonAnimationStyle = useAnimatedStyle(() => {
@@ -104,7 +103,7 @@ const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
     if (flatListIndex.value < dataLength - 1) {
       flatListRef.current?.scrollToIndex({ index: flatListIndex.value + 1 })
     } else {
-      setPryceSettings('getStarted', 'false')
+      setGetStarted(false)
       router.push('/onboarding/login')
     }
   }

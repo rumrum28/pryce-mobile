@@ -1,5 +1,5 @@
 import { colorTokens } from '@tamagui/themes'
-import { AddressProps } from '~/types/address'
+import { AntDesign, FontAwesome, MaterialIcons } from '@expo/vector-icons'
 
 export type OnboardingData = {
   id: string
@@ -8,6 +8,18 @@ export type OnboardingData = {
   backgroundColor: string
   title: string
   description: string
+}
+
+type Barangay = string
+
+export type AddressProps = {
+  id: string
+  city: string
+  province: string
+  pgi_region: string
+  status: string
+  code: string
+  barangays?: Barangay[]
 }
 
 export const data: OnboardingData[] = [
@@ -13290,4 +13302,45 @@ export const address: AddressProps[] = [
     status: 'included',
     code: '2005',
   },
+]
+
+export type IconProps = {
+  icon: keyof typeof MaterialIcons.glyphMap
+  size: number
+}
+
+export type ProfileProps = {
+  id: number
+  name: IconProps
+  href: string
+  title: string
+  subtitles?: string
+}
+
+export const profile: ProfileProps[] = [
+  {
+    id: 1,
+    name: { icon: 'account-circle', size: 24 },
+    href: '/',
+    title: 'Prycegas Club Membership',
+    subtitles: 'Subscribe now to enjoy discounted price.',
+  },
+  {
+    id: 2,
+    name: { icon: 'newspaper', size: 24 },
+    href: '/',
+    title: 'News',
+  },
+  {
+    id: 3,
+    name: { icon: 'help-center', size: 24 },
+    href: '/',
+    title: 'Help Center',
+  },
+  // {
+  //   id: 4,
+  //   name: { icon: 'exclamationcircleo', size: 24 },
+  //   href: '/',
+  //   title: 'About',
+  // },
 ]

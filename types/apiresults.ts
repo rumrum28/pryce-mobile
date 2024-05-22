@@ -1,6 +1,16 @@
 export type UserInputs = {
   phone_number: string
   value: string
+  type: 'otp' | 'password'
+}
+
+export type OTPInputs = {
+  phone_number: string
+}
+
+export type OTPResponse = {
+  success: string
+  message: string
 }
 
 type ProfileAtributes = {
