@@ -17,12 +17,12 @@ export default function ItemDetails() {
   const [totalPriceNumber, setTotalPriceNumber] = useState(0)
   const [items, setItems] = useState(0)
 
-  const item = getProductById(+id!)
+  const item = getProductById(+id!)!
 
   const { addProduct, reduceProduct } = useBasketStore()
 
   const addToCart = () => {
-    const selectedProduct = { ...item! }
+    const selectedProduct = { ...item }
     const unitPrice = selectedProduct.unit_price
     const numQuantity = quantity ?? 1
     addProduct(selectedProduct, numQuantity)
@@ -43,7 +43,7 @@ export default function ItemDetails() {
   const removeFromCart = () => {
     if (quantity > 1) {
       setQuantity(quantity - 1)
-      reduceProduct(item!)
+      reduceProduct(item)
     }
   }
 
@@ -138,7 +138,7 @@ export default function ItemDetails() {
             </View>
             <StyledButton
               style={{
-                width: 280,
+                flex: 1,
               }}
               onPress={addToCart}
             >

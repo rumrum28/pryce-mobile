@@ -8,7 +8,16 @@ export default function AllProducts() {
   return (
     <View style={{ flex: 1, padding: 15 }}>
       {allProducts.map((item, index) => (
-        <Link href={'/'} key={index} asChild>
+        <Link
+          href={{
+            pathname: '/(drawer)/shop/(modal)/item_details',
+            params: {
+              id: item.id,
+            },
+          }}
+          key={index}
+          asChild
+        >
           <TouchableOpacity>
             <View
               style={{

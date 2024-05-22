@@ -1,10 +1,16 @@
-import { View, Text } from 'react-native'
+import { View, Text, SafeAreaView, Platform, StatusBar } from 'react-native'
 import React from 'react'
 
 export default function Page() {
   return (
-    <View>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+      }}
+    >
       <Text>Page</Text>
-    </View>
+    </SafeAreaView>
   )
 }

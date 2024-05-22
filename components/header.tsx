@@ -1,4 +1,11 @@
-import { View, Text, SafeAreaView, TextInput } from 'react-native'
+import {
+  View,
+  Text,
+  SafeAreaView,
+  TextInput,
+  Platform,
+  StatusBar,
+} from 'react-native'
 import React, { useRef } from 'react'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
@@ -33,6 +40,8 @@ export default function Header() {
         style={{
           height: 60,
           backgroundColor: 'white',
+          // flex: 1,
+          // flexDirection: 'row',
         }}
       >
         <View
@@ -62,7 +71,7 @@ export default function Header() {
             />
             <TextInput
               style={{ padding: 10, color: colorTokens.light.gray.gray11 }}
-              placeholder="LPG, Accessories, Medical and Industrial Gases"
+              placeholder="Looking for LPG product?"
             />
           </View>
         </View>
@@ -75,7 +84,13 @@ export default function Header() {
   }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+        paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+      }}
+    >
       <BottomSheet ref={bottomSheetRef} />
       <View
         style={{
@@ -106,7 +121,7 @@ export default function Header() {
             </TouchableOpacity>
           </View>
           {/* Address */}
-          <View>
+          <View style={{ flex: 1, flexDirection: 'row', paddingHorizontal: 5 }}>
             {/* <Link href={'/(tabs)/shop/(modal)/address'} asChild> */}
             <TouchableOpacity onPress={openModal}>
               <Text

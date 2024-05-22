@@ -12,7 +12,7 @@ export default function Basket() {
   const { products, total, clearCart, reduceProduct } = useBasketStore()
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <View style={{ flex: 1, backgroundColor: 'white', paddingBottom: 150 }}>
       {total > 0 ? (
         <>
           <FlatList

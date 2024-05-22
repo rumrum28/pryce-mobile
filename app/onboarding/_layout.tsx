@@ -1,4 +1,7 @@
-import { Stack } from 'expo-router'
+import { Ionicons } from '@expo/vector-icons'
+import { colorTokens } from '@tamagui/themes'
+import { Stack, router } from 'expo-router'
+import { TouchableOpacity } from 'react-native'
 
 export const unstable_settings = {
   initialRouteName: 'index',
@@ -16,7 +19,12 @@ export default function _layout() {
       }}
     >
       <Stack.Screen name="index" options={{ headerShown: false }} />
-      <Stack.Screen name="login" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="login/index"
+        options={{
+          headerShown: false,
+        }}
+      />
     </Stack>
   )
 }

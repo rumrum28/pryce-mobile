@@ -1,10 +1,11 @@
-import { SafeAreaView, ScrollView, Text } from 'react-native'
+import { SafeAreaView, ScrollView, Text, TextInput, View } from 'react-native'
 import React from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
-import Carousel from '~/components/shop/carousel'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
+import Carousel from '~/components/shop/carousel'
+import { Feather } from '@expo/vector-icons'
 
 export default function Page() {
   return (

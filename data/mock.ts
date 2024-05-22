@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native'
+
 export const getProductById = (id: number) => {
   return allProducts.find((product) => product.id === id)
 }
@@ -345,27 +347,27 @@ export const categories = [
   },
 ]
 
-export type BannerProps = {
+export type CarouselType = {
   id: number
   name: string
-  uri: string
+  image: ImageSourcePropType
 }
 
-export const carousel: BannerProps[] = [
+export const carousel: CarouselType[] = [
   {
     id: 1,
     name: 'banner1',
-    uri: 'https://prycegas.com/_next/image?url=%2Fimages%2Fbanner3.webp&w=1920&q=75',
+    image: require('../assets/banner1.jpg'),
   },
   {
     id: 2,
     name: 'banner2',
-    uri: 'https://prycegas.com/_next/image?url=%2Fimages%2Fbanner1.webp&w=1920&q=75',
+    image: require('../assets/banner2.jpg'),
   },
   {
     id: 3,
     name: 'banner3',
-    uri: 'https://prycegas.com/_next/image?url=%2Fimages%2Fbanner2.webp&w=1920&q=75',
+    image: require('../assets/banner3.jpg'),
   },
 ]
 
