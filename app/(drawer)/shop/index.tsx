@@ -80,10 +80,10 @@ export default function Page() {
             router.push('/onboarding/login')
           }}
         >
-          logout
+          0 logout
         </Button>
 
-        {selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
+        {!selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
 
         <Text
           style={{
