@@ -1,26 +1,17 @@
-type ImagesProps = {
-  id: number
-  product_code: string
-  thumbnail: string
-  created_at: string
-  updated_at: string
+export type ProductSingle = {
+  attributes: {
+    type: string
+    url: string
+  }
+  Id: string
+  Name: string
+  Pricebook2Id: string
+  Product2Id: string
+  ProductCode: string
+  UnitPrice: number
+  RegularPrice: number
 }
-export type ProductProps = {
-  id: number
-  name: string
-  pricebook_id: string
-  pricebook_entry_id: string
-  product_id: string
-  product_code: string
-  unit_price: number
-  status: string
-  created_at: string
-  updated_at: string
-  product_images: ImagesProps
-  quantity?: number
-  discounted_price?: number
-}
-export type Products = ProductProps[]
+export type ProductsProps = ProductSingle[]
 
 export type FilterTypeProps = {
   type: string

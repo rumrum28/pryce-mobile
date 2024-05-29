@@ -29,8 +29,6 @@ export default function Page() {
       queryClient.invalidateQueries({
         queryKey: ['changeAddress'],
       })
-
-      console.log(data)
     },
   })
 
@@ -66,25 +64,25 @@ export default function Page() {
           marginTop: 20,
         }}
       />
+
+      <Button
+        onPress={() => {
+          setSelectedUser(null)
+          setToken('')
+          setUsers([])
+          setEmail('')
+          router.push('/onboarding/login')
+        }}
+      >
+        logout
+      </Button>
+
+      {selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
+
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {/* <Button onPress={() => setSelectedUser(null)}>offSlected</Button> */}
-        <Button
-          onPress={() => {
-            setSelectedUser(null)
-            setToken('')
-            setUsers([])
-            setEmail('')
-            router.push('/onboarding/login')
-          }}
-        >
-          0 logout
-        </Button>
-
-        {!selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
-
         <Text
           style={{
             paddingHorizontal: 10,
@@ -117,7 +115,8 @@ export default function Page() {
         >
           All products
         </Text>
-        <AllProducts />
+
+        <AllProducts products={fetchProducts.data} />
       </ScrollView>
     </SafeAreaView>
   )
