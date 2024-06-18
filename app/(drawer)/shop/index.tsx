@@ -33,8 +33,8 @@ export default function Page() {
   })
 
   useEffect(() => {
+    console.log(selectedUser)
     if (selectedUser) {
-      console.log(selectedUser)
       const userData: { token: string; accountNumber: string } = {
         token: token,
         accountNumber: selectedUser,
@@ -77,7 +77,7 @@ export default function Page() {
         logout
       </Button>
 
-      {selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
+      {token ? <SelectAddressModal modalTrigger={selectedUser} /> : null}
 
       <ScrollView
         nestedScrollEnabled={true}

@@ -9,8 +9,9 @@ import { config } from '~/tamagui.config'
 import { ToastProvider } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import { StatusBar } from 'react-native'
+import { Platform, StatusBar } from 'react-native'
 import type { StatusBarStyle } from 'react-native'
+import { View } from 'tamagui'
 
 const STYLES = ['default', 'dark-content', 'light-content'] as const
 const TRANSITIONS = ['fade', 'slide', 'none'] as const
@@ -46,10 +47,16 @@ export default function Layout() {
               <CurrentToast />
               <StatusBar
                 animated={true}
-                backgroundColor="#61dafb"
                 barStyle={statusBarStyle}
                 showHideTransition={statusBarTransition}
                 hidden={hidden}
+                backgroundColor="#61dafb"
+              />
+              <View
+                style={{
+                  paddingTop:
+                    Platform.OS === 'android' ? StatusBar.currentHeight : 0,
+                }}
               />
               <Slot />
             </ToastProvider>

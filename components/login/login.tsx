@@ -8,11 +8,6 @@ import {
   TouchableOpacity,
   useWindowDimensions,
 } from 'react-native'
-import { z } from 'zod'
-import { login } from '~/server/api'
-import { env } from '~/types/env'
-import { UserInputs } from '~/types/apiresults'
-import { CurrentToast } from '~/components/toast'
 import LoginForm from './login-form'
 import usePryceStore from '~/hooks/pryceStore'
 
@@ -23,18 +18,6 @@ export default function LogIn({
 }) {
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width, height } = useWindowDimensions()
-  const [value, setValue] = useState<string>('')
-  const [type, setType] = useState<'password' | 'otp'>('password')
-
-  const checkPryceDB = async () => {
-    // const checkUser = await getFromPryce()
-    // if (!checkUser)
-    //   return toast.show('Error', {
-    //     message: 'Something is wrong in the server',
-    //     native: false,
-    //   })
-    // console.log(checkUser)
-  }
 
   const backHandler = () => {
     setGetStarted(true)

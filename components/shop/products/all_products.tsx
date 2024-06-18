@@ -2,34 +2,16 @@ import { colorTokens } from '@tamagui/themes'
 import { Link } from 'expo-router'
 import { View, Text, Image } from 'react-native'
 import { ProductsProps } from '~/types/product'
+import { Products } from '~/utils/products'
 import { formatCurrency } from '~/utils/utils'
-
-const productCodesImages = [
-  { id: 'MEDREG', image: require('~/assets/png/products/MEDREG.png') },
-  { id: 'ACCPKB', image: require('~/assets/png/products/ACCPKB.png') },
-  { id: 'ACCPGS', image: require('~/assets/png/products/ACCPGS.png') },
-  { id: 'ACCHRCB', image: require('~/assets/png/products/ACCHRCB.png') },
-  { id: 'PGCM', image: require('~/assets/png/products/PGCM.png') },
-  { id: 'CYL11', image: require('~/assets/png/products/CYL11.png') },
-  { id: 'CYL22', image: require('~/assets/png/products/CYL22.png') },
-  { id: 'CYL50', image: require('~/assets/png/products/CYL50.png') },
-  { id: 'MO2TST', image: require('~/assets/png/products/MO2TST.png') },
-  { id: 'MO2TFT', image: require('~/assets/png/products/MO2TFT.png') },
-  { id: 'MO220C', image: require('~/assets/png/products/MO220C.png') },
-  { id: 'MO2105C', image: require('~/assets/png/products/MO2105C.png') },
-  { id: 'LPG11C', image: require('~/assets/png/products/LPG11C.png') },
-  { id: 'CYL2.7', image: require('~/assets/png/products/CYL2.7.png') },
-  { id: 'LPG2.7C', image: require('~/assets/png/products/LPG2.7C.png') },
-  { id: 'LPG2.7CCPK', image: require('~/assets/png/products/LPG2.7CCPK.png') },
-  { id: 'LPG22C', image: require('~/assets/png/products/LPG22C.png') },
-  { id: 'LPG50C', image: require('~/assets/png/products/LPG50C.png') },
-]
 
 export default function AllProducts({
   products,
 }: {
   products: ProductsProps | undefined
 }) {
+  console.log(products)
+
   return (
     <View style={{ flex: 1, padding: 15 }}>
       {products &&
@@ -54,10 +36,7 @@ export default function AllProducts({
             }}
           >
             <Image
-              source={
-                productCodesImages.find((p) => p.id === product.ProductCode)
-                  ?.image
-              }
+              source={Products.find((p) => p.id === product.ProductCode)?.image}
               style={{
                 height: 200,
                 width: 200,
