@@ -53,9 +53,7 @@ export default function Page() {
   }
 
   return (
-    <SafeAreaView
-      style={{ top: 90, backgroundColor: colorTokens.light.gray.gray2 }}
-    >
+    <SafeAreaView style={{ backgroundColor: colorTokens.light.gray.gray2 }}>
       <ToastViewport
         style={{
           width: '100%',
@@ -76,8 +74,6 @@ export default function Page() {
       >
         logout
       </Button>
-
-      {token ? <SelectAddressModal modalTrigger={selectedUser} /> : null}
 
       <ScrollView
         nestedScrollEnabled={true}

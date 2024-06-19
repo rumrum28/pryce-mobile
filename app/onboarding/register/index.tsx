@@ -1,4 +1,3 @@
-import { StatusBar } from 'expo-status-bar'
 import { AntDesign, Feather, Fontisto } from '@expo/vector-icons'
 import React, { useState } from 'react'
 import { colorTokens } from '@tamagui/themes'

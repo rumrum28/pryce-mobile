@@ -1,4 +1,4 @@
-import { StyleSheet, View, FlatList, ViewToken, StatusBar } from 'react-native'
+import { StyleSheet, View, FlatList, ViewToken } from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,

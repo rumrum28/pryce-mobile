@@ -15,6 +15,8 @@ import usePryceStore from '~/hooks/pryceStore'
 import { Profile } from '~/types/userStorage'
 import CyberButton from 'react-native-cyberpunk-button'
 import { Dimensions } from 'react-native'
+import { TouchableOpacity } from 'react-native-gesture-handler'
+import { colorTokens } from '@tamagui/themes'
 
 function PGCBadge({
   pgc,
@@ -74,7 +76,19 @@ export const SelectAddressModal = ({
 
   return (
     <>
-      <Button onPress={() => setOpen(true)}>change Address</Button>
+      <TouchableOpacity onPress={() => setOpen(true)}>
+        <Text
+          style={{
+            fontSize: 14,
+            color: colorTokens.light.gray.gray9,
+            fontWeight: 'bold',
+          }}
+          numberOfLines={1}
+        >
+          change Address
+        </Text>
+      </TouchableOpacity>
+
       <Sheet
         forceRemoveScrollEnabled={open}
         modal={true}
