@@ -1,6 +1,5 @@
-import { StatusBar } from 'expo-status-bar'
 import { AntDesign, Feather, Fontisto } from '@expo/vector-icons'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { colorTokens } from '@tamagui/themes'
 import { router } from 'expo-router'
 import {
@@ -19,12 +18,20 @@ import {
   Label,
 } from 'tamagui'
 import { SafeAreaView, TouchableOpacity } from 'react-native'
+import usePryceStore from '~/hooks/pryceStore'
 
 export default function Page() {
   const [focused, setFocused] = useState(false)
   const [focusedPassword, setFocusedPassword] = useState(false)
-  const [passwordIsVisible, setPasswordIsVisible] =
-    React.useState<boolean>(false)
+  const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
+  const token = usePryceStore((state) => state.token)
+  const users = usePryceStore((state) => state.users)
+
+  useEffect(() => {
+    if (token && users.length > 0) {
+      router.push('/(drawer)/shop')
+    }
+  }, [token, users])
 
   return (
     <Main

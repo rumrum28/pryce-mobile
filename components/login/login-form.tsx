@@ -19,11 +19,12 @@ const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
 
 export default function LoginForm() {
   const [phoneNumber, setPhoneNumber] = useState<string>('')
-  const [otpInput, setOtpInput] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
   const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const [type, setType] = useState<'password' | 'otp'>('password')
   const setToken = usePryceStore((state) => state.setToken)
+  const setUsers = usePryceStore((state) => state.setUsers)
   const toast = useToastController()
   const router = useRouter()
 
@@ -34,11 +35,14 @@ export default function LoginForm() {
         queryKey: ['login'],
       })
 
-      if (data) {
+      if (data && data.loginResponse?.success) {
         toast.show('Succesfully Login', {
           message: 'Welcome to PRYCEGAS!',
           native: false,
         })
+        setToken(data.loginResponse?.access_token)
+        setUsers(data.profileResponse)
+        router.push('/(drawer)/shop')
       } else {
         toast.show('Error', {
           message: 'Invalid phone number or password',
@@ -51,7 +55,7 @@ export default function LoginForm() {
   const loginHandler = async () => {
     const userData: UserInputs = {
       phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: otpInput,
+      value: password,
       type: type,
     }
 
@@ -121,8 +125,8 @@ export default function LoginForm() {
             }}
             placeholder="Password"
             secureTextEntry={!passwordIsVisible}
-            value={otpInput}
-            onChangeText={(e) => setOtpInput(e)}
+            value={password}
+            onChangeText={(e) => setPassword(e)}
           />
 
           <AntDesign

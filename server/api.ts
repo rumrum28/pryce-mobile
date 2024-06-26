@@ -1,5 +1,6 @@
 import { OTPInputs, OTPResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
+import { ProductsProps } from '~/types/product'
 import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
@@ -20,6 +21,8 @@ export const login = async (userData: UserInputs) => {
     cache: 'no-store',
   })
   const loginResponse: LoginResponse = await response.json()
+
+  console.log(loginResponse)
 
   if (loginResponse.success) {
     const fetchProfile = await fetch(
@@ -71,7 +74,6 @@ export const profile = async (token: string) => {
     }
   )
   const data: ProfileProps = await response.json()
-  console.log(data)
   return data
 }
 
@@ -106,7 +108,7 @@ export const changeAddressOnLoad = async (data: {
         cache: 'no-store',
       }
     )
-    const getAllProductsResponse: ProfileProps = await getAllProducts.json()
+    const getAllProductsResponse: ProductsProps = await getAllProducts.json()
 
     return getAllProductsResponse
   } else {

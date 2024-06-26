@@ -4,7 +4,6 @@ import {
   StyleSheet,
   Dimensions,
   TouchableOpacity,
-  Platform,
   FlatList,
   ListRenderItem,
   Image,
@@ -27,23 +26,12 @@ import StyledButton from '~/components/styled_button'
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
 
-let paddingTop
-
-if (Platform.OS === 'ios') {
-  paddingTop = 45
-} else {
-  paddingTop = 0
-}
-
 const Category = () => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const { items, total } = useBasketStore()
-
   const { id } = useLocalSearchParams()
-
   const item = getFilteredProductByCategory(+id!)
-
   const filteredCategory = allProducts.filter(
     (product) => product.category === item?.name
   )
@@ -279,6 +267,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop,
+    // paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 })

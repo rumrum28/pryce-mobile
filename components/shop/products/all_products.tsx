@@ -1,80 +1,77 @@
 import { colorTokens } from '@tamagui/themes'
 import { Link } from 'expo-router'
-import { View, Text, Image, TouchableOpacity } from 'react-native'
-import { allProducts } from '~/data/mock'
+import { View, Text, Image } from 'react-native'
+import { ProductsProps } from '~/types/product'
+import { Products } from '~/utils/products'
 import { formatCurrency } from '~/utils/utils'
 
-export default function AllProducts() {
+export default function AllProducts({
+  products,
+}: {
+  products: ProductsProps | undefined
+}) {
   return (
     <View style={{ flex: 1, padding: 15 }}>
-      {allProducts.map((item, index) => (
-        <Link
-          href={{
-            pathname: '/(drawer)/shop/(modal)/item_details',
-            params: {
-              id: item.id,
-            },
-          }}
-          key={index}
-          asChild
-        >
-          <TouchableOpacity>
-            <View
+      {products &&
+        products.length > 0 &&
+        products.map((product, index) => (
+          <Link
+            href={'/'}
+            key={index}
+            style={{
+              height: 300,
+              width: 'auto',
+              backgroundColor: 'white',
+              marginVertical: 10,
+              elevation: 2,
+              shadowColor: 'black',
+              shadowOffset: {
+                width: 0,
+                height: 4,
+              },
+              shadowOpacity: 0.06,
+              borderRadius: 4,
+            }}
+          >
+            <Image
+              source={Products.find((p) => p.id === product.ProductCode)?.image}
               style={{
-                height: 300,
-                width: '100%',
-                backgroundColor: 'white',
-                marginVertical: 10,
-                elevation: 2,
-                shadowColor: 'black',
-                shadowOffset: {
-                  width: 0,
-                  height: 4,
-                },
-                shadowOpacity: 0.06,
-                borderRadius: 4,
-              }}
-            >
-              <Image
-                source={item.img}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  flex: 5,
-                }}
-                resizeMode="stretch"
-              />
+                height: 200,
+                width: 200,
 
-              <View style={{ flex: 2, padding: 10 }}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    paddingVertical: 5,
-                  }}
-                >
-                  {item.name}
-                </Text>
-                <Text
-                  style={{
-                    color: colorTokens.light.gray.gray9,
-                  }}
-                >
-                  {item.category}
-                </Text>
-                <Text
-                  style={{
-                    color: colorTokens.light.gray.gray12,
-                    paddingVertical: 2,
-                  }}
-                >
-                  {formatCurrency(item.unit_price)}
-                </Text>
-              </View>
+                flex: 1,
+              }}
+              resizeMode="contain"
+            />
+
+            <View style={{ flex: 2, padding: 10 }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  paddingVertical: 5,
+                }}
+              >
+                {product.Name}
+              </Text>
+              <Text
+                style={{
+                  color: colorTokens.light.gray.gray9,
+                }}
+              >
+                test
+              </Text>
+              <Text
+                style={{
+                  color: colorTokens.light.gray.gray12,
+                  paddingVertical: 2,
+                }}
+              >
+                {formatCurrency(product.RegularPrice)}
+              </Text>
             </View>
-          </TouchableOpacity>
-        </Link>
-      ))}
+          </Link>
+        ))}
     </View>
   )
 }

@@ -4,13 +4,19 @@ import { Text, View } from 'tamagui'
 import LogIn from '~/components/login/login'
 import OtpLogin from '~/components/login/otp'
 import { ToastViewport } from '@tamagui/toast'
+import usePryceStore from '~/hooks/pryceStore'
+import { router } from 'expo-router'
 
 export default function Page() {
+  const token = usePryceStore((state) => state.token)
+  const users = usePryceStore((state) => state.users)
   const [loginType, setLoginType] = useState<'otp' | 'password' | null>(null)
 
   useEffect(() => {
-    console.log(loginType)
-  }, [loginType])
+    if (token && users.length > 0) {
+      router.push('/(drawer)/shop')
+    }
+  }, [token, users])
 
   return (
     <View style={{ flex: 1 }}>
@@ -47,7 +53,7 @@ export default function Page() {
             }}
           >
             <ImageBackground
-              source={require('~/assets/png/lock.png')}
+              source={require('~/assets/images/lock.png')}
               style={{
                 height: '95%',
                 width: '95%',
@@ -73,7 +79,7 @@ export default function Page() {
             }}
           >
             <ImageBackground
-              source={require('~/assets/png/sms.png')}
+              source={require('~/assets/images/sms.png')}
               style={{
                 height: '95%',
                 width: '95%',

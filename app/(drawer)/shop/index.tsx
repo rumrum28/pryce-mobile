@@ -21,6 +21,9 @@ export default function Page() {
   const token = usePryceStore((state) => state.token)
   const setToken = usePryceStore((state) => state.setToken)
   const users = usePryceStore((state) => state.users)
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
 
@@ -30,14 +33,11 @@ export default function Page() {
       queryClient.invalidateQueries({
         queryKey: ['changeAddress'],
       })
-
-      console.log(data)
     },
   })
 
   useEffect(() => {
     if (selectedUser) {
-      console.log(selectedUser)
       const userData: { token: string; accountNumber: string } = {
         token: token,
         accountNumber: selectedUser,
@@ -56,9 +56,7 @@ export default function Page() {
   }
 
   return (
-    <SafeAreaView
-      style={{ top: 90, backgroundColor: colorTokens.light.gray.gray2 }}
-    >
+    <SafeAreaView style={{ backgroundColor: colorTokens.light.gray.gray2 }}>
       <ToastViewport
         style={{
           width: '100%',
@@ -67,25 +65,24 @@ export default function Page() {
           marginTop: 20,
         }}
       />
+
+      <Button
+        onPress={() => {
+          setSelectedUser(null)
+          setToken('')
+          setUsers([])
+          setEmail('')
+          setChangeAddressTrigger(false)
+          router.push('/onboarding/login')
+        }}
+      >
+        logout
+      </Button>
+
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {/* <Button onPress={() => setSelectedUser(null)}>offSlected</Button> */}
-        <Button
-          onPress={() => {
-            setSelectedUser(null)
-            setToken('')
-            setUsers([])
-            setEmail('')
-            router.push('/onboarding/login')
-          }}
-        >
-          logout
-        </Button>
-
-        {selectedUser && <SelectAddressModal modalTrigger={selectedUser} />}
-
         <Text
           style={{
             paddingHorizontal: 10,
@@ -118,7 +115,8 @@ export default function Page() {
         >
           All products
         </Text>
-        <AllProducts />
+
+        <AllProducts products={fetchProducts.data} />
       </ScrollView>
     </SafeAreaView>
   )

@@ -1,15 +1,13 @@
 import { colorTokens } from '@tamagui/themes'
-import { Link, router } from 'expo-router'
+import { router } from 'expo-router'
 import {
   View,
   Text,
   ScrollView,
   Image,
-  TouchableOpacity,
   Pressable,
   FlatList,
   ListRenderItem,
-  VirtualizedList,
 } from 'react-native'
 import { filteredProducts } from '~/data/mock'
 

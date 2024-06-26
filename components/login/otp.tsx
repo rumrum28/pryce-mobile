@@ -37,6 +37,7 @@ export default function OtpLogin({
           message: data.message,
           native: false,
         })
+        setIsOtp(true)
       } else {
         toast.show('Error', {
           message: 'Invalid phone number',
@@ -53,7 +54,7 @@ export default function OtpLogin({
         queryKey: ['login'],
       })
 
-      if (data) {
+      if (data && data.loginResponse?.success) {
         toast.show('Success', {
           message: data.loginResponse?.message,
           native: false,
@@ -86,7 +87,6 @@ export default function OtpLogin({
     }
 
     getOtpResponse.mutate(send)
-    setIsOtp(true)
   }
 
   return (

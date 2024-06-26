@@ -1,6 +1,5 @@
-import { colorTokens } from '@tamagui/themes'
-import React, { RefObject, useEffect, useRef, useState } from 'react'
-import { StyleSheet, View, Text, Alert, StatusBar } from 'react-native'
+import { useEffect, useState } from 'react'
+import { StyleSheet, View, Text } from 'react-native'
 import { Dropdown } from 'react-native-element-dropdown'
 import StyledButton from '~/components/styled_button'
 import StyledInput from '~/components/styled_input'
