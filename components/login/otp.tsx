@@ -33,7 +33,6 @@ export default function OtpLogin({
       })
 
       if (data) {
-        console.log(data)
         toast.show('Success', {
           message: data.message,
           native: false,

@@ -10,8 +10,6 @@ export default function AllProducts({
 }: {
   products: ProductsProps | undefined
 }) {
-  console.log(products)
-
   return (
     <View style={{ flex: 1, padding: 15 }}>
       {products &&

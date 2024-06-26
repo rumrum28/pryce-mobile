@@ -1,5 +1,4 @@
 import { create } from 'zustand'
-import { ProfileResponseSingle } from '~/types/apiresults'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { pryceStorage } from '~/server/mmkv'
 import { ProfileProps } from '~/types/userStorage'
@@ -10,6 +9,8 @@ type PryceState = {
   token: string
   selectedUser: string | null
   users: ProfileProps
+  changeAddressTrigger: boolean
+  setChangeAddressTrigger: (e: boolean) => void
   setGetStarted: (getStarted: boolean) => void
   setEmail: (email: string) => void
   setToken: (token: string) => void
@@ -25,6 +26,12 @@ const usePryceStore = create<PryceState>()(
       token: '',
       selectedUser: null,
       users: [],
+      changeAddressTrigger: false,
+      setChangeAddressTrigger: (e: boolean) => {
+        set(() => ({
+          changeAddressTrigger: e,
+        }))
+      },
       setGetStarted: (value: boolean) => {
         set(() => ({
           getStarted: value,

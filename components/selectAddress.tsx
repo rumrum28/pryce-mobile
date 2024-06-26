@@ -1,22 +1,10 @@
 import { Sheet } from '@tamagui/sheet'
 import { useEffect, useState } from 'react'
-import {
-  Button,
-  H2,
-  Paragraph,
-  ScrollView,
-  Separator,
-  Text,
-  View,
-  XStack,
-  YGroup,
-} from 'tamagui'
+import { H2, Paragraph, ScrollView, Text, View, XStack, YGroup } from 'tamagui'
 import usePryceStore from '~/hooks/pryceStore'
 import { Profile } from '~/types/userStorage'
 import CyberButton from 'react-native-cyberpunk-button'
-import { Dimensions } from 'react-native'
-import { TouchableOpacity } from 'react-native-gesture-handler'
-import { colorTokens } from '@tamagui/themes'
+import { router } from 'expo-router'
 
 function PGCBadge({
   pgc,
@@ -52,48 +40,44 @@ function PGCBadge({
   )
 }
 
-export const SelectAddressModal = ({
-  modalTrigger,
-}: {
-  modalTrigger: string | null
-}) => {
+export const SelectAddressModal = () => {
   const [position, setPosition] = useState(0)
-  const [open, setOpen] = useState(false)
   const users = usePryceStore((state) => state.users)
+  const changeAddressTrigger = usePryceStore(
+    (state) => state.changeAddressTrigger
+  )
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
+  const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
-  const screenWidth = Dimensions.get('window').width
+  const token = usePryceStore((state) => state.token)
 
   const selectUserHandler = (user: Profile) => {
     setSelectedUser(user.Account_Number__c)
-    setOpen(false)
+    setChangeAddressTrigger(false)
   }
 
   useEffect(() => {
-    if (!modalTrigger || modalTrigger === null) {
-      setOpen(true)
+    if (!token) {
+      setChangeAddressTrigger(false)
     }
-  }, [modalTrigger, open])
+
+    console.log(token)
+    console.log(selectedUser)
+
+    if (token && !selectedUser) {
+      setChangeAddressTrigger(true)
+    }
+  }, [selectedUser, changeAddressTrigger])
 
   return (
     <>
-      <TouchableOpacity onPress={() => setOpen(true)}>
-        <Text
-          style={{
-            fontSize: 14,
-            color: colorTokens.light.gray.gray9,
-            fontWeight: 'bold',
-          }}
-          numberOfLines={1}
-        >
-          change Address
-        </Text>
-      </TouchableOpacity>
-
       <Sheet
-        forceRemoveScrollEnabled={open}
+        forceRemoveScrollEnabled={changeAddressTrigger}
         modal={true}
-        open={open}
-        onOpenChange={setOpen}
+        open={changeAddressTrigger}
+        onOpenChange={setChangeAddressTrigger}
         snapPoints={[85]}
         snapPointsMode="percent"
         dismissOnSnapToBottom
@@ -126,9 +110,11 @@ export const SelectAddressModal = ({
               <YGroup
                 alignSelf="center"
                 bordered
-                style={{
-                  width: screenWidth * 0.9,
-                }}
+                style={
+                  {
+                    // width: screenWidth * 0.9,
+                  }
+                }
                 size="$4"
                 gap="$2"
               >
@@ -138,23 +124,24 @@ export const SelectAddressModal = ({
                       key={user.Id}
                       onPress={() => selectUserHandler(user)}
                       backgroundColor={
-                        modalTrigger === user.Account_Number__c
+                        selectedUser === user.Account_Number__c
                           ? '#ff4500'
                           : 'white'
                       }
                       paddingVertical={10}
-                      paddingHorizontal={15}
-                      style={{}}
+                      paddingHorizontal={20}
+                      style={{
+                        padding: 10,
+                      }}
                     >
                       <YGroup.Item>
                         <Text
                           style={{
-                            width: '95%',
-                            marginVertical: 6,
+                            paddingBottom: 10,
                             fontWeight: '800',
                             fontSize: 18,
                             color:
-                              modalTrigger === user.Account_Number__c
+                              selectedUser === user.Account_Number__c
                                 ? 'white'
                                 : 'black',
                           }}
@@ -167,13 +154,13 @@ export const SelectAddressModal = ({
                           pgc={user?.Prycegas_Club_Member__c}
                           name={user?.Name}
                           color={
-                            modalTrigger === user.Account_Number__c
+                            selectedUser === user.Account_Number__c
                               ? '#d7d7d7'
                               : '#838383'
                           }
                         />
                       </YGroup.Item>
-                      <Separator paddingVertical={8} />
+                      <View paddingVertical={8} />
                     </View>
                   ))}
               </YGroup>

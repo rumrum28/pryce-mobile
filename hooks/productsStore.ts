@@ -70,7 +70,6 @@ const useCartStore = create<CartState>((set) => ({
         (p: Product) => p.productCode !== product.productCode
       )
 
-      console.log(hasProduct)
       return {
         cart: [...state.cart, { ...product, hasProduct }],
       }

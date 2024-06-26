@@ -20,6 +20,9 @@ export default function Page() {
   const token = usePryceStore((state) => state.token)
   const setToken = usePryceStore((state) => state.setToken)
   const users = usePryceStore((state) => state.users)
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
 
@@ -33,7 +36,6 @@ export default function Page() {
   })
 
   useEffect(() => {
-    console.log(selectedUser)
     if (selectedUser) {
       const userData: { token: string; accountNumber: string } = {
         token: token,
@@ -69,6 +71,7 @@ export default function Page() {
           setToken('')
           setUsers([])
           setEmail('')
+          setChangeAddressTrigger(false)
           router.push('/onboarding/login')
         }}
       >

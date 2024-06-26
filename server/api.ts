@@ -22,6 +22,8 @@ export const login = async (userData: UserInputs) => {
   })
   const loginResponse: LoginResponse = await response.json()
 
+  console.log(loginResponse)
+
   if (loginResponse.success) {
     const fetchProfile = await fetch(
       `${env.EXPO_PUBLIC_LOCAL_URL}/api/user/profile`,
@@ -72,7 +74,6 @@ export const profile = async (token: string) => {
     }
   )
   const data: ProfileProps = await response.json()
-  console.log(data)
   return data
 }
 

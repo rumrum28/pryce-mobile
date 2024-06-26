@@ -7,7 +7,7 @@ import {
   StatusBar,
   Dimensions,
 } from 'react-native'
-import React, { useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Feather, Ionicons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
@@ -23,16 +23,29 @@ const { width } = Dimensions.get('window')
 
 export default function Header() {
   const token = usePryceStore((state) => state.token)
+  const users = usePryceStore((state) => state.users)
   const selectedUser = usePryceStore((state) => state.selectedUser)
-
+  const [addressText, setAddressText] = useState<string>('Select Address')
   const navigation = useNavigation()
   const { items, total } = useBasketStore()
-
-  const bottomSheetRef = useRef<BottomSheetModal>(null)
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
+  const changeAddressTrigger = usePryceStore(
+    (state) => state.changeAddressTrigger
+  )
 
   const onToggle = () => {
     navigation.dispatch(DrawerActions.openDrawer)
   }
+
+  useEffect(() => {
+    const findUser = users.find((e) => e.Account_Number__c === selectedUser)
+    if (findUser)
+      setAddressText(
+        `${findUser.Primary_Street__c} ${findUser.Primary_Barangay__c} ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}`
+      )
+  }, [selectedUser])
 
   return (
     <SafeAreaView
@@ -66,7 +79,10 @@ export default function Header() {
           </TouchableOpacity>
         </View>
 
-        <View style={{ paddingHorizontal: 10, flex: 1 }}>
+        <TouchableOpacity
+          onPress={() => setChangeAddressTrigger(!changeAddressTrigger)}
+          style={{ paddingHorizontal: 10, flex: 1 }}
+        >
           <Text
             style={{
               fontSize: 18,
@@ -76,7 +92,16 @@ export default function Header() {
           >
             Home
           </Text>
-        </View>
+          <Text
+            style={{
+              fontSize: 14,
+              color: colorTokens.light.gray.gray9,
+              fontWeight: 'bold',
+            }}
+          >
+            {addressText}
+          </Text>
+        </TouchableOpacity>
 
         <View
           style={{
@@ -120,8 +145,6 @@ export default function Header() {
           </Link>
         </View>
       </View>
-
-      {token ? <SelectAddressModal modalTrigger={selectedUser} /> : null}
 
       <SearchBar />
     </SafeAreaView>
