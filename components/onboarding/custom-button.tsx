@@ -99,7 +99,7 @@ const CustomButton = ({ flatListRef, flatListIndex, dataLength, x }: Props) => {
     }
   })
 
-  const getStartedHandler = () => {
+  const getStartedHandler = async () => {
     if (flatListIndex.value < dataLength - 1) {
       flatListRef.current?.scrollToIndex({ index: flatListIndex.value + 1 })
     } else {
