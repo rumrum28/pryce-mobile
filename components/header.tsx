@@ -2,24 +2,19 @@ import {
   View,
   Text,
   SafeAreaView,
-  TextInput,
   Platform,
   StatusBar,
   Dimensions,
 } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
-import { Feather, Ionicons } from '@expo/vector-icons'
+import { useEffect, useState } from 'react'
+import { Feather } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { Link, useNavigation } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native'
 import useBasketStore from '~/utils/basketStore'
 import { SearchBar } from '~/components/search_bar'
-import { SelectAddressModal } from './selectAddress'
 import usePryceStore from '~/hooks/pryceStore'
-
-const { width } = Dimensions.get('window')
 
 export default function Header() {
   const token = usePryceStore((state) => state.token)

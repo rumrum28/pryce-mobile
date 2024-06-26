@@ -4,7 +4,6 @@ import { H2, Paragraph, ScrollView, Text, View, XStack, YGroup } from 'tamagui'
 import usePryceStore from '~/hooks/pryceStore'
 import { Profile } from '~/types/userStorage'
 import CyberButton from 'react-native-cyberpunk-button'
-import { router } from 'expo-router'
 
 function PGCBadge({
   pgc,
