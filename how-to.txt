@@ -4,3 +4,20 @@ npx expo run:ios
 
 adb pair host:port
 adb connect host:port
+
+ios folder info.plist
+<key>NSAppTransportSecurity</key>
+    <dict>
+      <key>NSAllowsArbitraryLoads</key>
+      <true/>
+      <key>NSAllowsLocalNetworking</key>
+      <true/>
+      <key>NSExceptionDomains</key>
+      <dict>
+        <key>api.orooxygen.com</key>
+        <dict>
+          <key>NSExceptionAllowsInsecureHTTPLoads</key>
+          <true />
+        </dict>
+      </dict>
+    </dict>
