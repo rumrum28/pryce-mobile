@@ -1,4 +1,12 @@
-import { Pressable, SafeAreaView } from 'react-native'
+import {
+  Image,
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Form, Input, Main, Text } from 'tamagui'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
@@ -11,6 +19,9 @@ import { Container } from '~/tamagui.config'
 import { UserInputs } from '~/types/apiresults'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
+import { colorTokens } from '@tamagui/themes'
+import { fonts } from '~/utils/fonts'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 
 export default function OtpLogin({
   setLoginType,
@@ -20,10 +31,12 @@ export default function OtpLogin({
   const setToken = usePryceStore((set) => set.setToken)
   const setUsers = usePryceStore((set) => set.setUsers)
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [otpNumber, setOtpNumber] = useState('')
+  const [otpNumber, setOtpNumber] = useState<string>('')
   const [isOtp, setIsOtp] = useState<boolean>(false)
   const toast = useToastController()
   const [type, setType] = useState<'password' | 'otp'>('otp')
+  const setGetStarted = usePryceStore((state) => state.setGetStarted)
+  const { width, height } = Dimensions.get('window')
 
   const getOtpResponse = useMutation({
     mutationFn: getOtp,
@@ -37,7 +50,6 @@ export default function OtpLogin({
           message: data.message,
           native: false,
         })
-        setIsOtp(true)
       } else {
         toast.show('Error', {
           message: 'Invalid phone number',
@@ -54,7 +66,7 @@ export default function OtpLogin({
         queryKey: ['login'],
       })
 
-      if (data && data.loginResponse?.success) {
+      if (data) {
         toast.show('Success', {
           message: data.loginResponse?.message,
           native: false,
@@ -82,77 +94,177 @@ export default function OtpLogin({
   }
 
   const sendOtpHandler = async () => {
-    const send = {
-      phone_number: phoneNumber.replace(/\s+/g, ''),
-    }
+    // const send = {
+    //   phone_number: phoneNumber.replace(/\s+/g, ''),
+    // }
 
-    getOtpResponse.mutate(send)
+    // getOtpResponse.mutate(send)
+    setIsOtp(true)
+    router.push('/onboarding/login/otp')
+  }
+
+  const backHandler = () => {
+    setGetStarted(true)
+    router.push('/onboarding/login')
   }
 
   return (
-    <Main
-      style={{
-        flex: 1,
-        alignItems: 'center',
-        justifyContent: 'center',
-      }}
-    >
-      <SafeAreaView style={{ width: 300, gap: 20 }}>
+    <View style={styles.container}>
+      <TouchableOpacity
+        style={styles.backButtonWrapper}
+        onPress={() => setLoginType(null)}
+      >
+        <Ionicons
+          name={'arrow-back-outline'}
+          color={colorTokens.light.orange.orange9}
+          size={25}
+        />
+      </TouchableOpacity>
+      <View style={styles.textContainer}>
+        <Text style={styles.headingText}>Verify your</Text>
+        <Text style={styles.headingText}>phone number</Text>
+        <Text style={styles.subTexT}>We will send you a verification code</Text>
+      </View>
+      <View>
         {getOtpResponse.isSuccess && (
           <Container>
             <Text>OTP has been sent to your mobile number.</Text>
           </Container>
         )}
-
-        <Button
-          style={{
-            width: '100%',
-            borderRadius: 50,
-          }}
-          onPress={() => setLoginType(null)}
-        >
-          <Text>back</Text>
-        </Button>
-
-        {!isOtp && (
-          <Form onSubmit={sendOtpHandler}>
-            <Text>Enter Number</Text>
-            <Input
-              keyboardType="numeric"
-              value={phoneNumber}
-              onChangeText={(e) => setPhoneNumber(e)}
-              numberOfLines={4}
-              maxLength={40}
-              style={{ padding: 10, height: 46 }}
-            />
-
-            <Form.Trigger asChild>
-              <Button>Submit</Button>
-            </Form.Trigger>
-          </Form>
-        )}
-
-        {isOtp && (
-          <>
-            <Button onPress={() => setIsOtp(false)}>retry</Button>
-
-            <Form onSubmit={checkOtpHandler}>
-              <Text>Enter OTP</Text>
-              <OtpInput
-                numberOfDigits={6}
-                focusColor="orangered"
-                focusStickBlinkingDuration={500}
-                // onTextChange={(text) => console.log(text)}
-                onFilled={(text) => setOtpNumber(text)}
+      </View>
+      {!isOtp && (
+        <Form onSubmit={sendOtpHandler}>
+          <View>
+            <Text>Enter mobile no.*</Text>
+          </View>
+          <View style={{ alignItems: 'center' }}>
+            <View style={[styles.inputContainer, { width: width - 32 }]}>
+              <View style={{ justifyContent: 'center', marginRight: 10 }}>
+                <AntDesign
+                  name={'mobile1'}
+                  size={24}
+                  color={colorTokens.light.orange.orange7}
+                />
+              </View>
+              <TextInput
+                style={styles.input}
+                placeholder="Enter your phone number"
+                placeholderTextColor={colorTokens.light.gray.gray12}
+                selectionColor={colorTokens.light.gray.gray12}
+                keyboardType="numeric"
+                value={phoneNumber}
+                onChangeText={(e) => setPhoneNumber(e)}
+                numberOfLines={4}
+                maxLength={11}
               />
-
+            </View>
+            <View style={{ marginTop: 20 }}>
               <Form.Trigger asChild>
-                <Button>Submit</Button>
+                <TouchableOpacity
+                  style={{
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor: colorTokens.light.orange.orange9,
+                    width: width - 32,
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontSize: 20,
+                      fontFamily: fonts.SemiBold,
+                      color: 'white',
+                    }}
+                  >
+                    VERIFY
+                  </Text>
+                </TouchableOpacity>
               </Form.Trigger>
-            </Form>
-          </>
-        )}
-      </SafeAreaView>
-    </Main>
+            </View>
+          </View>
+        </Form>
+      )}
+      <View style={styles.bottomContainer}>
+        <Text style={{ fontSize: 14, textAlign: 'center' }}>
+          By continuing you agree with the
+        </Text>
+        <Text
+          style={{
+            fontSize: 14,
+            textDecorationColor: colorTokens.light.gray.gray12,
+            textDecorationLine: 'underline',
+          }}
+        >
+          Terms and Conditions and Data Privacy.
+        </Text>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+
+    backgroundColor: 'white',
+    paddingHorizontal: 20,
+  },
+  backButtonWrapper: {
+    height: 40,
+    width: 40,
+    backgroundColor: colorTokens.light.gray.gray1,
+    borderRadius: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  textContainer: {
+    marginVertical: 20,
+  },
+  successContainer: {
+    marginVertical: 20,
+  },
+  headingText: {
+    fontSize: 36,
+    color: colorTokens.light.gray.gray11,
+    fontFamily: fonts.SemiBold,
+  },
+  subTexT: {
+    fontSize: 16,
+    paddingVertical: 5,
+    color: colorTokens.light.gray.gray12,
+    fontFamily: fonts.Light,
+    marginTop: 10,
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    borderColor: colorTokens.light.gray.gray11,
+    borderBottomWidth: 0.4,
+    height: 58,
+    alignItems: 'center',
+    // marginVertical: 32,
+  },
+
+  input: {
+    flex: 1,
+    marginVertical: 10,
+    height: 40,
+    fontSize: 14,
+    color: colorTokens.light.gray.gray12,
+    fontFamily: fonts.Regular,
+  },
+  verifyBtn: {
+    paddingVertical: 10,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: colorTokens.light.orange.orange9,
+  },
+  bottomContainer: {
+    position: 'absolute',
+    bottom: 0,
+    right: 16,
+    left: 16,
+    alignItems: 'center',
+  },
+})

@@ -8,6 +8,7 @@ import {
   FlatList,
   ListRenderItem,
   Image,
+  StatusBar,
 } from 'react-native'
 import Animated, {
   interpolate,
@@ -26,14 +27,6 @@ import StyledButton from '~/components/styled_button'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
-
-let paddingTop
-
-if (Platform.OS === 'ios') {
-  paddingTop = 45
-} else {
-  paddingTop = 0
-}
 
 const Details = () => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
@@ -129,6 +122,7 @@ const Details = () => {
       <Stack.Screen
         options={{
           headerTitle: '',
+
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -148,7 +142,12 @@ const Details = () => {
           headerTransparent: true,
           headerBackground: () => (
             <Animated.View style={[styles.header, headerAnimatedStyle]}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                }}
+              >
                 {item?.name}
               </Text>
             </Animated.View>
@@ -160,7 +159,9 @@ const Details = () => {
           source={item?.img}
           style={[styles.image, imageAnimatedStyle]}
         />
-        <View style={{ height: 200, backgroundColor: 'white' }}>
+        <View
+          style={{ flex: 1, flexDirection: 'column', backgroundColor: 'white' }}
+        >
           <Text
             style={{
               fontSize: 20,
@@ -189,7 +190,6 @@ const Details = () => {
             <View
               style={{
                 marginHorizontal: 16,
-
                 height: 1,
                 backgroundColor: colorTokens.light.gray.gray4,
               }}
@@ -279,6 +279,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingTop,
+    paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 })

@@ -1,11 +1,14 @@
 import React, { useEffect, useState } from 'react'
-import { ImageBackground, Pressable, TouchableOpacity } from 'react-native'
+import { Image, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native'
 import { Text, View } from 'tamagui'
 import LogIn from '~/components/login/login'
 import OtpLogin from '~/components/login/otp'
 import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
+import { colorTokens } from '@tamagui/themes'
+
+type LoginType = 'otp' | 'password'
 
 export default function Page() {
   const token = usePryceStore((state) => state.token)
@@ -18,8 +21,16 @@ export default function Page() {
     }
   }, [token, users])
 
+  // const handleLoginNavigation = (type: LoginType) => {
+  //   router.push({
+  //     pathname: type === 'password' ? '/login-password' : '/login-otp',
+  //     params: { loginType: type },
+  //   })
+  // }
+
   return (
-    <View style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+      <StatusBar hidden />
       <ToastViewport
         style={{
           width: '100%',
@@ -33,67 +44,94 @@ export default function Page() {
         <View
           style={{
             alignItems: 'center',
-            justifyContent: 'center',
             flex: 1,
+            paddingHorizontal: 20,
             gap: 20,
           }}
         >
-          <TouchableOpacity
-            onPress={() => setLoginType('password')}
+          <Image
+            source={require('~/assets/lady.png')}
             style={{
-              height: 200,
-              width: 200,
-              backgroundColor: 'white',
-              padding: 20,
-              borderRadius: 20,
-              shadowColor: 'black',
-              shadowOpacity: 0.5,
-              alignItems: 'center',
-              justifyContent: 'center',
+              marginVertical: 20,
+              height: 250,
+              width: '100%',
+            }}
+            resizeMode="contain"
+          />
+
+          <Text
+            style={{
+              fontSize: 40,
+              fontWeight: 'semibold',
+              paddingHorizontal: 20,
+              textAlign: 'center',
+              color: colorTokens.light.orange.orange9,
             }}
           >
-            <ImageBackground
-              source={require('~/assets/images/lock.png')}
-              style={{
-                height: '95%',
-                width: '95%',
-              }}
-            ></ImageBackground>
-            <Text style={{ textAlign: 'center', paddingTop: 10 }}>
-              Login via password
-            </Text>
-          </TouchableOpacity>
+            Let&apos;s you in
+          </Text>
 
           <TouchableOpacity
-            onPress={() => setLoginType('otp')}
+            onPress={() =>
+              router.push({
+                pathname: '/onboarding/login/password',
+                params: { loginType: 'password' },
+              })
+            }
             style={{
-              height: 200,
-              width: 200,
-              backgroundColor: 'white',
-              padding: 20,
-              borderRadius: 20,
-              shadowColor: 'black',
-              shadowOpacity: 0.5,
+              backgroundColor: colorTokens.light.orange.orange9,
+              paddingVertical: 13,
+              borderRadius: 50,
+              width: '100%',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <ImageBackground
-              source={require('~/assets/images/sms.png')}
-              style={{
-                height: '95%',
-                width: '95%',
-              }}
-            ></ImageBackground>
-            <Text style={{ textAlign: 'center', paddingTop: 10 }}>
-              Login via OTP
-            </Text>
+            <Text style={{ color: 'white' }}>Sign in with Password</Text>
           </TouchableOpacity>
+          <Text style={{ color: 'black' }}>or</Text>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: '/onboarding/login/otp',
+                params: { loginType: 'otp' },
+              })
+            }
+            style={{
+              borderWidth: 1,
+              borderColor: colorTokens.light.gray.gray6,
+              paddingVertical: 13,
+              borderRadius: 50,
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: 'black' }}>Sign in with OTP</Text>
+          </TouchableOpacity>
+          <View
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+            }}
+          >
+            <Text style={{ fontSize: 14, color: colorTokens.light.gray.gray8 }}>
+              Dont have an account?{' '}
+            </Text>
+            <TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: colorTokens.light.orange.orange9,
+                  fontWeight: '500',
+                }}
+              >
+                Sign up
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
       )}
-
-      {loginType === 'password' && <LogIn setLoginType={setLoginType} />}
-      {loginType === 'otp' && <OtpLogin setLoginType={setLoginType} />}
-    </View>
+    </SafeAreaView>
   )
 }

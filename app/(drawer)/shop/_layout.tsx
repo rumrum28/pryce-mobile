@@ -19,7 +19,7 @@ export default function _layout() {
         options={{
           header: () => <Header />,
           headerShown: true,
-          headerTitle: '',
+          headerTitle: 'Header',
           headerStyle: {
             backgroundColor: colorTokens.light.orange.orange9,
           },
@@ -28,10 +28,7 @@ export default function _layout() {
 
       <Stack.Screen name="category/category" options={{ headerShown: true }} />
       <Stack.Screen name="details/details" options={{ headerShown: true }} />
-      <Stack.Screen
-        name="products/[products]"
-        options={{ headerShown: true, headerTitle: '' }}
-      />
+
       <Stack.Screen
         name="(modal)/address"
         options={{
