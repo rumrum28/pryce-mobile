@@ -25,6 +25,30 @@ export default function _layout() {
           headerShown: false,
         }}
       />
+      <Stack.Screen
+        name="login/otp/index"
+        options={{
+          headerShown: true,
+          headerTintColor: colorTokens.light.orange.orange9,
+          headerTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="login/otp/verify-otp/index"
+        options={{
+          headerShown: true,
+          headerTintColor: colorTokens.light.orange.orange9,
+          headerTitle: '',
+        }}
+      />
+      <Stack.Screen
+        name="login/password/index"
+        options={{
+          headerTintColor: colorTokens.light.orange.orange9,
+          headerTitle: '',
+          headerShown: true,
+        }}
+      />
     </Stack>
   )
 }

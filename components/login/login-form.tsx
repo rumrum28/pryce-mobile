@@ -1,7 +1,17 @@
 import { Button, Form, Input, XStack, View, Text, Spinner } from 'tamagui'
 import { useState } from 'react'
-import { AntDesign, Feather } from '@expo/vector-icons'
-import { TouchableOpacity } from 'react-native'
+import {
+  AntDesign,
+  Feather,
+  Ionicons,
+  SimpleLineIcons,
+} from '@expo/vector-icons'
+import {
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  ActivityIndicator,
+} from 'react-native'
 import { colorTokens } from '@tamagui/themes'
 import { useMutation } from '@tanstack/react-query'
 import { UserInputs } from '~/types/apiresults'
@@ -11,6 +21,7 @@ import { login } from '~/server/api'
 import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { z } from 'zod'
+import { fonts } from '~/utils/fonts'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -90,53 +101,49 @@ export default function LoginForm() {
     setPhoneNumber(formatted)
   }
 
+  const isPending =
+    invalidNumber ||
+    phoneNumber.replace(/\s+/g, '').length < 11 ||
+    loginResponse?.isPending
+
   return (
-    <View>
-      <Form gap="$3" onSubmit={loginHandler}>
-        <XStack alignItems="center" style={{ marginBottom: 10 }}>
-          <Input
-            style={{
-              flex: 1,
-              fontSize: 16,
-              position: 'relative',
-              paddingLeft: 40,
-              borderColor: invalidNumber ? colorTokens.light.red.red10 : '#eee',
-            }}
+    <View style={styles.formContainer}>
+      <Form onSubmit={loginHandler}>
+        <View
+          style={[
+            styles.inputContainer,
+            invalidNumber ? styles.textInvalidNum : styles.textValidNum,
+          ]}
+        >
+          <AntDesign
+            name={'mobile1'}
+            size={30}
+            color={colorTokens.light.orange.orange7}
+          />
+          <TextInput
+            style={styles.textInput}
             placeholder="09"
+            placeholderTextColor={colorTokens.light.orange.orange7}
             keyboardType="number-pad"
             value={phoneNumber}
             onChangeText={handleNumberChange}
           />
-
-          <AntDesign
-            name="mobile1"
-            size={24}
-            color="gray"
-            style={{ position: 'absolute', left: 10 }}
+        </View>
+        <View style={styles.inputContainer}>
+          <SimpleLineIcons
+            name={'lock'}
+            size={30}
+            color={colorTokens.light.orange.orange7}
           />
-        </XStack>
-        <XStack alignItems="center" style={{ marginBottom: 10 }}>
-          <Input
-            style={{
-              flex: 1,
-              fontSize: 16,
-              position: 'relative',
-              paddingLeft: 40,
-            }}
+          <TextInput
+            style={styles.textInput}
+            placeholderTextColor={colorTokens.light.orange.orange7}
             placeholder="Password"
             secureTextEntry={!passwordIsVisible}
             value={password}
             onChangeText={(e) => setPassword(e)}
           />
-
-          <AntDesign
-            name="lock"
-            size={24}
-            color="gray"
-            style={{ position: 'absolute', left: 10 }}
-          />
           <TouchableOpacity
-            style={{ position: 'absolute', right: 12 }}
             onPress={() => setPasswordIsVisible(!passwordIsVisible)}
           >
             <Feather
@@ -145,17 +152,9 @@ export default function LoginForm() {
               color="#7C808D"
             />
           </TouchableOpacity>
-        </XStack>
-        <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
-          <Text
-            style={{
-              color: colorTokens.light.orange.orange9,
-              fontSize: 14,
-              fontWeight: '500',
-            }}
-          >
-            Forgot password?
-          </Text>
+        </View>
+        <TouchableOpacity>
+          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
         </TouchableOpacity>
         <Form.Trigger
           asChild
@@ -165,99 +164,93 @@ export default function LoginForm() {
             loginResponse?.isPending
           }
         >
-          <Button
+          <TouchableOpacity
             style={{
-              backgroundColor:
-                invalidNumber ||
-                phoneNumber.replace(/\s+/g, '').length < 11 ||
-                loginResponse?.isPending
-                  ? '#ccc'
-                  : colorTokens.light.orange.orange9,
-              width: '100%',
-              borderRadius: 50,
+              borderRadius: 100,
               marginTop: 20,
-              color: 'white',
+              padding: 10,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: isPending
+                ? colorTokens.light.gray.gray9
+                : colorTokens.light.orange.orange9,
             }}
-            icon={loginResponse?.isPending ? () => <Spinner /> : undefined}
           >
-            Sign in
-          </Button>
+            {loginResponse?.isPending ? (
+              <ActivityIndicator size={32} />
+            ) : (
+              <Text style={styles.loginText}>Sign in</Text>
+            )}
+          </TouchableOpacity>
         </Form.Trigger>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginTop: 14,
-            marginBottom: 14,
-          }}
-        >
-          <View style={{ height: 1, backgroundColor: '#eee', flex: 1 }} />
-          <Text
-            style={{
-              color: '#7C808D',
-              marginRight: 10,
-              marginLeft: 10,
-              fontSize: 14,
-            }}
-          >
-            or continue with
-          </Text>
-          <View style={{ height: 1, backgroundColor: '#eee', flex: 1 }} />
+        <View style={styles.footerContainer}>
+          <Text style={styles.accountText}>Already have an account?</Text>
+          <TouchableOpacity>
+            <Text style={styles.signupText}>Sign in</Text>
+          </TouchableOpacity>
         </View>
-        <Button
-          style={{
-            borderRadius: 50,
-            backgroundColor: 'transparent',
-            borderColor: colorTokens.light.gray.gray6,
-          }}
-        >
-          OTP Sign in
-        </Button>
       </Form>
-      <View
-        style={{
-          flexDirection: 'row',
-          alignSelf: 'center',
-          marginTop: 15,
-        }}
-      >
-        <Text style={{ fontSize: 14, color: '#7C808D' }}>
-          Dont have an account yet?{' '}
-        </Text>
-        <TouchableOpacity onPress={() => {}}>
-          <Text
-            style={{
-              fontSize: 14,
-              color: colorTokens.light.orange.orange9,
-              fontWeight: '500',
-            }}
-          >
-            Sign up
-          </Text>
-        </TouchableOpacity>
-      </View>
-      <Button
-        style={{
-          width: '100%',
-          borderRadius: 50,
-
-          color: 'black',
-        }}
-        onPress={() => router.push('/(drawer)/shop')}
-        // onPress={() => router.push('/(tabs)/shop/')}
-        // icon={loginResponse.isPending ? () => <Spinner /> : undefined}
-      >
-        Test button
-      </Button>
-      {/* <StyledInput
-        icon="lock-open"
-        value={password}
-        label="Password"
-        onChangeText={setPassword}
-        placeholder="* * * * * * *"
-        style={{ marginBottom: 20 }}
-        isPassword={true}
-      /> */}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  formContainer: {
+    marginTop: 20,
+  },
+  inputContainer: {
+    borderWidth: 1,
+    borderRadius: 100,
+    paddingHorizontal: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: colorTokens.light.orange.orange9,
+    padding: 10,
+    marginVertical: 10,
+  },
+  textInvalidNum: {
+    borderColor: colorTokens.light.red.red9,
+    borderWidth: 2,
+  },
+  textValidNum: {
+    borderColor: colorTokens.light.orange.orange9,
+  },
+  textInput: {
+    flex: 1,
+    fontSize: 16,
+    paddingHorizontal: 10,
+    fontFamily: fonts.Light,
+  },
+  forgotPasswordText: {
+    textAlign: 'right',
+    color: colorTokens.light.orange.orange9,
+    fontFamily: fonts.SemiBold,
+    marginVertical: 10,
+    fontSize: 16,
+  },
+
+  loginText: {
+    color: 'white',
+    fontSize: 16,
+    fontFamily: fonts.SemiBold,
+    textAlign: 'center',
+    padding: 5,
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginVertical: 20,
+    gap: 5,
+  },
+  accountText: {
+    color: colorTokens.light.gray.gray9,
+    fontFamily: fonts.Regular,
+    fontSize: 16,
+  },
+  signupText: {
+    color: colorTokens.light.orange.orange9,
+    fontFamily: fonts.Bold,
+    fontSize: 16,
+  },
+})
