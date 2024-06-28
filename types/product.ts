@@ -17,3 +17,7 @@ export type FilterTypeProps = {
   type: string
   message: string
 } | null
+
+export type FavoriteProps = {
+  productCode: string
+}

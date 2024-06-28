@@ -9,7 +9,7 @@ export const ifPGCMemberDescription = {
   ],
 }
 
-export const Products = [
+export const ProductsDetail = [
   { id: 'NOIMAGE', image: ['/images/no-image.png'] },
   {
     id: 'MEDREG',

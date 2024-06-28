@@ -72,7 +72,7 @@ export default function _layout() {
         }}
       />
       <Stack.Screen
-        name="basket"
+        name="(modal)/basket"
         options={{
           presentation: 'fullScreenModal',
           headerTitle: 'Cart',

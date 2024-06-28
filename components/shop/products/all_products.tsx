@@ -2,7 +2,7 @@ import { colorTokens } from '@tamagui/themes'
 import { Link } from 'expo-router'
 import { View, Text, Image } from 'react-native'
 import { ProductsProps } from '~/types/product'
-import { Products } from '~/utils/products'
+import { ProductsDetail } from '~/utils/products'
 import { formatCurrency } from '~/utils/utils'
 
 export default function AllProducts({
@@ -34,7 +34,9 @@ export default function AllProducts({
             }}
           >
             <Image
-              source={Products.find((p) => p.id === product.ProductCode)?.image}
+              source={
+                ProductsDetail.find((p) => p.id === product.ProductCode)?.image
+              }
               style={{
                 height: 200,
                 width: 200,

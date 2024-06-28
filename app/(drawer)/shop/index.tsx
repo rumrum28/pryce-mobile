@@ -102,7 +102,7 @@ export default function Page() {
         >
           Top picks in your neighborhood
         </Text>
-        <Products />
+        <Products products={fetchProducts.data} />
         <Text
           style={{
             paddingHorizontal: 10,
