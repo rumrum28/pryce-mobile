@@ -62,13 +62,13 @@ export const SelectAddressModal = () => {
       setChangeAddressTrigger(false)
     }
 
-    console.log(token)
-    console.log(selectedUser)
+    // console.log(token)
+    // console.log(selectedUser)
 
     if (token && !selectedUser) {
       setChangeAddressTrigger(true)
     }
-  }, [selectedUser, changeAddressTrigger])
+  }, [selectedUser, changeAddressTrigger, token])
 
   return (
     <>

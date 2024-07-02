@@ -4,7 +4,7 @@ export default function _layout() {
   return (
     <Stack
       screenOptions={{
-        headerTitle: '',
+        title: '',
         headerShadowVisible: false,
         headerTransparent: true,
         headerTintColor: 'white',

@@ -10,6 +10,8 @@ type PryceState = {
   selectedUser: string | null
   users: ProfileProps
   changeAddressTrigger: boolean
+  addressRef: string
+  setAddressRef: (e: string) => void
   setChangeAddressTrigger: (e: boolean) => void
   setGetStarted: (getStarted: boolean) => void
   setEmail: (email: string) => void
@@ -27,6 +29,12 @@ const usePryceStore = create<PryceState>()(
       selectedUser: null,
       users: [],
       changeAddressTrigger: false,
+      addressRef: '',
+      setAddressRef: (e: string) => {
+        set(() => ({
+          addressRef: e,
+        }))
+      },
       setChangeAddressTrigger: (e: boolean) => {
         set(() => ({
           changeAddressTrigger: e,

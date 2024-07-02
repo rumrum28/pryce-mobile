@@ -116,7 +116,7 @@ const Category = () => {
     <View style={{ flex: 1, backgroundColor: 'white', paddingBottom: 30 }}>
       <Stack.Screen
         options={{
-          headerTitle: '',
+          title: '',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}

@@ -1,16 +1,20 @@
 import { View, Text, useWindowDimensions } from 'react-native'
 import React from 'react'
 import MainProfile from '~/components/profile/main-profile'
-import Details from '~/components/profile/details'
 import { ScrollView } from 'tamagui'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
+import ProductDetails from '~/app/(drawer)/shop/details/product_details'
 
 export default function Page() {
-  const { id } = useLocalSearchParams<{
-    id: string
+  const { productCode } = useLocalSearchParams<{
+    productCode: string
     subtitles: string
   }>()
+
   const { width } = useWindowDimensions()
+
+  if (!productCode) return router.push('shop')
+
   return (
     <View
       style={{
@@ -20,7 +24,7 @@ export default function Page() {
     >
       <ScrollView style={{ width: width * 1 }}>
         <MainProfile />
-        <Details id={id} />
+        <ProductDetails productCode={productCode} />
       </ScrollView>
     </View>
   )

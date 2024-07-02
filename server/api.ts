@@ -1,6 +1,6 @@
 import { OTPInputs, OTPResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
-import { ProductsProps } from '~/types/product'
+import { ProductSingle, ProductsProps } from '~/types/product'
 import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
@@ -99,8 +99,9 @@ export const changeAddressOnLoad = async (data: {
   const changeAddressResponse: Profile = await changeAddress.json()
 
   if (changeAddressResponse) {
+    const addressRef = changeAddressResponse?.ref
     const getAllProducts = await fetch(
-      `${env.EXPO_PUBLIC_LOCAL_URL}/api/products?ref=${changeAddressResponse?.ref}`,
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/products?ref=${addressRef}`,
       {
         method: 'GET',
         headers: {
@@ -109,9 +110,9 @@ export const changeAddressOnLoad = async (data: {
         cache: 'no-store',
       }
     )
-    const getAllProductsResponse: ProductsProps = await getAllProducts.json()
+    const productsResponse: ProductsProps = await getAllProducts.json()
 
-    return getAllProductsResponse
+    return { productsResponse, addressRef }
   } else {
     console.log('error on /api/user/change-address')
   }
@@ -137,6 +138,22 @@ export const changeAddress = async (data: {
   )
   const changeAddressResponse: ProfileProps = await changeAddress.json()
   return changeAddressResponse
+}
+
+export const fetchProductsQuery = async (addressRef: string) => {
+  const getProducts = await fetch(
+    `${env.EXPO_PUBLIC_LOCAL_URL}/api/products?ref=${addressRef}`,
+    {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cache: 'no-store',
+    }
+  )
+  const getProductResponse: ProductSingle[] = await getProducts.json()
+
+  return getProductResponse
 }
 
 // export const getSearchResults = async (

@@ -11,7 +11,7 @@ export default function _layout() {
   return (
     <Stack
       screenOptions={{
-        headerTitle: '',
+        title: '',
         headerShadowVisible: false,
         headerTransparent: true,
         headerTintColor: 'white',
@@ -30,7 +30,7 @@ export default function _layout() {
         options={{
           headerShown: true,
           headerTintColor: colorTokens.light.orange.orange9,
-          headerTitle: '',
+          title: '',
         }}
       />
       <Stack.Screen
@@ -38,14 +38,14 @@ export default function _layout() {
         options={{
           headerShown: true,
           headerTintColor: colorTokens.light.orange.orange9,
-          headerTitle: '',
+          title: '',
         }}
       />
       <Stack.Screen
         name="login/password/index"
         options={{
           headerTintColor: colorTokens.light.orange.orange9,
-          headerTitle: '',
+          title: '',
           headerShown: true,
         }}
       />

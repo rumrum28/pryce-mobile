@@ -10,14 +10,16 @@ import usePryceStore from '~/hooks/pryceStore'
 import { useMutation } from '@tanstack/react-query'
 import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
-import { Button, Spinner, YStack } from 'tamagui'
-import { SelectAddressModal } from '~/components/selectAddress'
+import { Button, Spinner, View, YStack } from 'tamagui'
 import { router } from 'expo-router'
+import useCartStore from '~/hooks/productsStore'
 
 export default function Page() {
   const toast = useToastController()
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const setAddressRef = usePryceStore((set) => set.setAddressRef)
+  const favorites = useCartStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
   const setToken = usePryceStore((state) => state.setToken)
   const users = usePryceStore((state) => state.users)
@@ -33,6 +35,10 @@ export default function Page() {
       queryClient.invalidateQueries({
         queryKey: ['changeAddress'],
       })
+
+      if (data?.addressRef) {
+        setAddressRef(data.addressRef)
+      }
     },
   })
 
@@ -66,34 +72,44 @@ export default function Page() {
         }}
       />
 
-      <Button
-        onPress={() => {
-          setSelectedUser(null)
-          setToken('')
-          setUsers([])
-          setEmail('')
-          setChangeAddressTrigger(false)
-          router.push('/onboarding/login')
-        }}
-      >
-        logout
-      </Button>
-
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        <Text
-          style={{
-            paddingHorizontal: 10,
-            fontWeight: 'bold',
-            marginTop: 16,
-            fontSize: 18,
-          }}
-        >
-          Your Favorite Products
-        </Text>
-        <Categories />
+        {fetchProducts.data && favorites.length > 0 ? (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}
+            >
+              <Text
+                style={{
+                  paddingHorizontal: 10,
+                  fontWeight: 'bold',
+                  marginTop: 16,
+                  fontSize: 18,
+                }}
+              >
+                Your Favorite Products
+              </Text>
+
+              <Button
+              // onPress={() =>
+              //   router.push('(drawer)/shop/details/product_details')
+              // }
+              >
+                See all
+              </Button>
+            </View>
+            <Categories
+              products={fetchProducts.data?.productsResponse}
+              favorites={favorites}
+            />
+          </>
+        ) : null}
+
         <Text
           style={{
             paddingHorizontal: 10,
@@ -104,7 +120,7 @@ export default function Page() {
         >
           Top picks in your neighborhood
         </Text>
-        <Products products={fetchProducts.data} />
+        <Products products={fetchProducts.data?.productsResponse} />
         <Text
           style={{
             paddingHorizontal: 10,
@@ -116,7 +132,7 @@ export default function Page() {
           All products
         </Text>
 
-        <AllProducts products={fetchProducts.data} />
+        <AllProducts products={fetchProducts.data?.productsResponse} />
       </ScrollView>
     </SafeAreaView>
   )

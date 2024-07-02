@@ -71,6 +71,7 @@ export default function OtpVerification() {
         })
         setToken(data.loginResponse?.access_token)
         setUsers(data.profileResponse)
+
         router.push('/(drawer)/shop')
       } else {
         toast.show('Error', {

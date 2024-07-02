@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { TouchableOpacity } from 'react-native'
 import React from 'react'
 import { Stack, router } from 'expo-router'
 import Header from '~/components/header'
@@ -17,9 +17,9 @@ export default function _layout() {
       <Stack.Screen
         name="index"
         options={{
+          title: 'Header',
           header: () => <Header />,
           headerShown: true,
-          headerTitle: 'Header',
           headerStyle: {
             backgroundColor: colorTokens.light.orange.orange9,
           },
@@ -27,13 +27,16 @@ export default function _layout() {
       />
 
       <Stack.Screen name="category/category" options={{ headerShown: true }} />
-      <Stack.Screen name="details/details" options={{ headerShown: true }} />
+      <Stack.Screen
+        name="details/product_details"
+        options={{ headerShown: true }}
+      />
 
       <Stack.Screen
         name="(modal)/address"
         options={{
           presentation: 'fullScreenModal',
-          headerTitle: 'Add New Address',
+          title: 'Add New Address',
           headerStyle: {
             backgroundColor: colorTokens.light.gray.gray3,
           },
@@ -52,7 +55,7 @@ export default function _layout() {
         name="(modal)/item_details"
         options={{
           presentation: 'modal',
-          headerTitle: '',
+          title: '',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -71,8 +74,8 @@ export default function _layout() {
       <Stack.Screen
         name="(modal)/basket"
         options={{
+          title: 'carts',
           presentation: 'fullScreenModal',
-          headerTitle: 'Cart',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -91,7 +94,7 @@ export default function _layout() {
         name="(modal)/checkoutItem"
         options={{
           presentation: 'fullScreenModal',
-          headerTitle: 'Checkout',
+          title: 'Checkout',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -110,7 +113,7 @@ export default function _layout() {
         name="(modal)/paymentMethod"
         options={{
           presentation: 'fullScreenModal',
-          headerTitle: 'Select a payment method',
+          title: 'Select a payment method',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}

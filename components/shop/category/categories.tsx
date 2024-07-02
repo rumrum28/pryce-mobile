@@ -1,15 +1,49 @@
 import { router } from 'expo-router'
+import { useEffect, useState } from 'react'
 import { View, Text, ScrollView, Image, Pressable } from 'react-native'
-import { categories } from '~/data/mock'
+import {
+  CombinedArrayProps,
+  FavoriteProps,
+  FavoritesList,
+  ProductSingle,
+  ProductsProps,
+} from '~/types/product'
+import { ProductsDetail } from '~/utils/products'
 
-export default function Categories() {
+export default function Categories({
+  favorites,
+  products,
+}: {
+  favorites: any
+  products: any
+}) {
+  const [items, setItems] = useState<CombinedArrayProps>([])
+
+  useEffect(() => {
+    const filteredProducts = products.filter((e: ProductSingle) =>
+      favorites.some((f: FavoritesList) => f.productCode === e.ProductCode)
+    )
+
+    console.log(filteredProducts)
+    console.log(ProductsDetail)
+
+    const combinedArray = filteredProducts.map((product: ProductSingle) => {
+      const match = ProductsDetail.find(
+        (info) => info.id === product.ProductCode
+      )
+      return match ? { ...product, ...match } : product
+    })
+
+    setItems(combinedArray)
+  }, [favorites, products])
+
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ padding: 15 }}
     >
-      {categories.map((category, index) => (
+      {items.map((category, index) => (
         <View
           key={index}
           style={{
@@ -32,13 +66,13 @@ export default function Categories() {
               router.push({
                 pathname: '/(drawer)/shop/category/category',
                 params: {
-                  id: category.id,
+                  id: category.ProductCode,
                 },
               })
             }
           >
             <Image
-              source={category.img}
+              source={category.image}
               style={{
                 height: '80%',
                 width: '100%',

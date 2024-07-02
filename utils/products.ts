@@ -10,7 +10,7 @@ export const ifPGCMemberDescription = {
 }
 
 export const ProductsDetail = [
-  { id: 'NOIMAGE', image: ['/images/no-image.png'] },
+  { id: 'NOIMAGE', image: require('~/assets/images/no-image.png') },
   {
     id: 'MEDREG',
     name: 'Medical Regulator',

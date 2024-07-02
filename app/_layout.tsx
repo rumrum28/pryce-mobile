@@ -9,7 +9,7 @@ import { config } from '~/tamagui.config'
 import { ToastProvider } from '@tamagui/toast'
 import { CurrentToast } from '~/components/toast'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import { SelectAddressModal } from '~/components/selectAddress'
+import { SelectAddressModal } from '~/components/select_address'
 
 export default function Layout() {
   const [loaded] = useFonts({
