@@ -27,10 +27,6 @@ export default function _layout() {
       />
 
       <Stack.Screen name="category/category" options={{ headerShown: true }} />
-      <Stack.Screen
-        name="details/product_details"
-        options={{ headerShown: true }}
-      />
 
       <Stack.Screen
         name="(modal)/address"

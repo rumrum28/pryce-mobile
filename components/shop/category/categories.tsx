@@ -24,9 +24,6 @@ export default function Categories({
       favorites.some((f: FavoritesList) => f.productCode === e.ProductCode)
     )
 
-    console.log(filteredProducts)
-    console.log(ProductsDetail)
-
     const combinedArray = filteredProducts.map((product: ProductSingle) => {
       const match = ProductsDetail.find(
         (info) => info.id === product.ProductCode
@@ -64,9 +61,9 @@ export default function Categories({
           <Pressable
             onPress={() =>
               router.push({
-                pathname: '/(drawer)/shop/category/category',
+                pathname: '/(drawer)/shop/details',
                 params: {
-                  id: category.ProductCode,
+                  productCode: category.ProductCode,
                 },
               })
             }

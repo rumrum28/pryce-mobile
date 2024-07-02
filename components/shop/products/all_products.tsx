@@ -1,10 +1,11 @@
 import { Ionicons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 import { useEffect } from 'react'
-import { View, Text, Image } from 'react-native'
+import { View, Text, Image, Pressable, TouchableOpacity } from 'react-native'
 import { Button } from 'tamagui'
 import useCartStore from '~/hooks/productsStore'
+import usePryceStore from '~/hooks/pryceStore'
 import { ProductSingle, ProductsProps } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 import { formatCurrency } from '~/utils/utils'
@@ -14,8 +15,8 @@ export default function AllProducts({
 }: {
   products: ProductsProps | undefined
 }) {
-  const favorites = useCartStore((set) => set.favorites)
-  const setFavorites = useCartStore((set) => set.setFavorites)
+  const favorites = usePryceStore((set) => set.favorites)
+  const setFavorites = usePryceStore((set) => set.setFavorites)
 
   const addToFavoritesHandler = async (f: ProductSingle) => {
     setFavorites(f.ProductCode)
@@ -25,6 +26,15 @@ export default function AllProducts({
     //remove after verifying
     // console.log(favorites)
   }, [favorites])
+
+  const productOnClickHandler = (product: ProductSingle) => {
+    router.push({
+      pathname: '/(drawer)/shop/details',
+      params: {
+        productCode: product.ProductCode,
+      },
+    })
+  }
 
   return (
     <View style={{ flex: 1, padding: 15 }}>
@@ -48,7 +58,10 @@ export default function AllProducts({
               borderRadius: 4,
             }}
           >
-            <Link href={'/'}>
+            <TouchableOpacity
+              style={{ flex: 1, width: '100%', height: '100%' }}
+              onPress={() => productOnClickHandler(product)}
+            >
               <Image
                 source={
                   ProductsDetail.find((p) => p.id === product.ProductCode)
@@ -62,20 +75,19 @@ export default function AllProducts({
                 }}
                 resizeMode="contain"
               />
-            </Link>
+            </TouchableOpacity>
 
             <View style={{ flex: 2, padding: 10 }}>
-              <Link href={'/'}>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    paddingVertical: 5,
-                  }}
-                >
-                  {product.Name}
-                </Text>
-              </Link>
+              <Text
+                onPress={() => productOnClickHandler(product)}
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  paddingVertical: 5,
+                }}
+              >
+                {product.Name}
+              </Text>
 
               <View
                 style={{

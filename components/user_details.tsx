@@ -28,7 +28,7 @@ import StyledButton from '~/components/styled_button'
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
 
-const ProductDetails = ({ productCode }: { productCode: string }) => {
+const UserDetails = ({ productCode }: { productCode: string }) => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const { items, total } = useBasketStore()
@@ -37,8 +37,6 @@ const ProductDetails = ({ productCode }: { productCode: string }) => {
   const filteredProducts = allProducts.filter(
     (product) => item?.name && product.name.includes(item.name)
   )
-
-  console.log(filteredProducts)
 
   const formattedPrice = formatCurrency(Number(total))
 
@@ -280,4 +278,4 @@ const styles = StyleSheet.create({
   },
 })
 
-export default ProductDetails
+export default UserDetails

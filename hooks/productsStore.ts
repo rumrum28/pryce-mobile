@@ -1,10 +1,4 @@
 import { create } from 'zustand'
-import {
-  FavoriteProps,
-  FavoritesList,
-  ProductSingle,
-  ProductsProps,
-} from '~/types/product'
 
 type Product = {
   productCode: string
@@ -13,39 +7,14 @@ type Product = {
 
 type CartState = {
   cart: Array<Product>
-  favorites: FavoriteProps | []
   addProduct: (product: Product) => void
   increaseQuantity: (product: Product) => void
   decreaseQuantity: (product: Product) => void
   removeProduct: (product: Product) => void
-  setFavorites: (fav: string) => void
 }
 
 const useCartStore = create<CartState>((set) => ({
   cart: [],
-  favorites: [],
-  setFavorites: (fav: string) =>
-    set((state) => {
-      const checkFavoriteIfExists = state.favorites.filter(
-        (favFind: FavoritesList) => favFind.productCode === fav
-      )
-
-      console.log(checkFavoriteIfExists)
-      console.log('check')
-
-      if (checkFavoriteIfExists.length > 0) {
-        // Optionally handle the case where the item already exists, for example, by removing it
-        return {
-          favorites: state.favorites.filter(
-            (favFind: FavoritesList) => favFind.productCode !== fav
-          ),
-        }
-      } else {
-        return {
-          favorites: [...state.favorites, { ...{ productCode: fav } }],
-        }
-      }
-    }),
   addProduct: (product: Product) =>
     set((state) => {
       const hasProduct = state.cart.find(

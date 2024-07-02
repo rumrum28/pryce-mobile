@@ -3,7 +3,7 @@ import React from 'react'
 import MainProfile from '~/components/profile/main-profile'
 import { ScrollView } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
-import ProductDetails from '~/app/(drawer)/shop/details/product_details'
+import UserDetails from '~/components/user_details'
 
 export default function Page() {
   const { productCode } = useLocalSearchParams<{
@@ -24,7 +24,7 @@ export default function Page() {
     >
       <ScrollView style={{ width: width * 1 }}>
         <MainProfile />
-        <ProductDetails productCode={productCode} />
+        <UserDetails productCode={productCode} />
       </ScrollView>
     </View>
   )

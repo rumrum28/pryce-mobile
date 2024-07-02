@@ -19,7 +19,7 @@ export default function Page() {
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
   const setAddressRef = usePryceStore((set) => set.setAddressRef)
-  const favorites = useCartStore((set) => set.favorites)
+  const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
   const setToken = usePryceStore((state) => state.setToken)
   const users = usePryceStore((state) => state.users)
@@ -95,11 +95,7 @@ export default function Page() {
                 Your Favorite Products
               </Text>
 
-              <Button
-              // onPress={() =>
-              //   router.push('(drawer)/shop/details/product_details')
-              // }
-              >
+              <Button onPress={() => router.push('(drawer)/favorites')}>
                 See all
               </Button>
             </View>

@@ -12,7 +12,6 @@ import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 // });
 
 export const login = async (userData: UserInputs) => {
-  console.log('test')
   const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
     method: 'POST',
     headers: {
@@ -22,8 +21,6 @@ export const login = async (userData: UserInputs) => {
     cache: 'no-store',
   })
   const loginResponse: LoginResponse = await response.json()
-
-  console.log(loginResponse)
 
   if (loginResponse.success) {
     const fetchProfile = await fetch(

@@ -1,9 +1,9 @@
 import React from 'react'
 import { Text, View } from 'tamagui'
-import useCartStore from '~/hooks/productsStore'
+import usePryceStore from '~/hooks/pryceStore'
 
 function FavoritesList() {
-  const favorites = useCartStore((set) => set.favorites)
+  const favorites = usePryceStore((set) => set.favorites)
 
   return (
     <View>
