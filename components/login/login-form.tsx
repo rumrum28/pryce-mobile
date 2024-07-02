@@ -196,7 +196,7 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   formContainer: {
-    marginTop: 20,
+    padding: 20,
   },
   inputContainer: {
     borderWidth: 1,

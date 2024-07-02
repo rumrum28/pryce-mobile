@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   View,
   Text,
+  StatusBar,
+  ActivityIndicator,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
 import { useState } from 'react'
@@ -23,18 +25,21 @@ import { colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
 import { Form } from 'tamagui'
 import { AntDesign } from '@expo/vector-icons'
+import { z } from 'zod'
 
 export default function OtpVerification() {
-  const setToken = usePryceStore((set) => set.setToken)
-  const setUsers = usePryceStore((set) => set.setUsers)
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [otpNumber, setOtpNumber] = useState<string>('')
-  const [isOtp, setIsOtp] = useState<boolean>(false)
+  const [phoneNumber, setPhoneNumber] = useState<string>('')
   const toast = useToastController()
-  const [type, setType] = useState<'password' | 'otp'>('otp')
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
-  const { width, height } = Dimensions.get('window')
+  const { width } = Dimensions.get('window')
   const { loginType } = useLocalSearchParams()
+  const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
+
+  const mobileOrDigitSchema = z
+    .string()
+    .refine((data) => data.startsWith('09'), {
+      message: 'Invalid phone number',
+    })
 
   const getOtpResponse = useMutation({
     mutationFn: getOtp,
@@ -57,118 +62,110 @@ export default function OtpVerification() {
     },
   })
 
-  const loginResponse = useMutation({
-    mutationFn: login,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['login'],
-      })
-
-      if (data) {
-        toast.show('Success', {
-          message: data.loginResponse?.message,
-          native: false,
-        })
-        setToken(data.loginResponse?.access_token)
-        setUsers(data.profileResponse)
-        router.push('/(drawer)/shop')
-      } else {
-        toast.show('Error', {
-          message: 'Invalid phone number',
-          native: false,
-        })
-      }
-    },
-  })
-
-  const checkOtpHandler = async () => {
-    const userData: UserInputs = {
-      phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: otpNumber,
-      type: type,
-    }
-
-    loginResponse.mutate(userData)
-  }
-
   const sendOtpHandler = async () => {
     // const send = {
     //   phone_number: phoneNumber.replace(/\s+/g, ''),
     // }
-
     // getOtpResponse.mutate(send)
-    setIsOtp(true)
-    router.push('/onboarding/login/otp/verify-otp')
+    router.push({
+      pathname: '/onboarding/login/otp/verify-otp',
+      params: { phoneNumber: phoneNumber, loginType: loginType },
+    })
   }
 
+  const formatPhoneNumber = (input: string) => {
+    const numbers = input.replace(/\D/g, '')
+    const match = numbers.match(/^(\d{0,4})(\d{0,3})(\d{0,4})$/)
+
+    if (match) {
+      return `${match[1]}${match[2] ? ' ' + match[2] : ''}${match[3] ? ' ' + match[3] : ''}`
+    }
+
+    return numbers
+  }
+
+  const handleNumberChange = (n: string) => {
+    let result = false
+    if (n[0] === '0' && n[1] === '9') {
+      result = mobileOrDigitSchema.safeParse(n).success
+    } else {
+      result = mobileOrDigitSchema.safeParse(n).success
+    }
+    setInvalidNumber(!result)
+    const formatted = formatPhoneNumber(n)
+    if (formatted.replace(/\s+/g, '').length > 11) return null
+    setPhoneNumber(formatted)
+  }
+
+  const isPending = invalidNumber || phoneNumber.replace(/\s+/g, '').length < 11
+
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.area}>
       <View style={styles.textContainer}>
         <Text style={styles.headingText}>Verify your</Text>
         <Text style={styles.headingText}>phone number</Text>
         <Text style={styles.subText}>We will send you a verification code</Text>
       </View>
-      <View>
-        {getOtpResponse.isSuccess && (
-          <Container>
-            <Text>OTP has been sent to your mobile number.</Text>
-          </Container>
-        )}
-      </View>
-      {!isOtp && (
-        <Form onSubmit={sendOtpHandler}>
-          <View>
-            <Text>Enter mobile no.*</Text>
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <View style={[styles.inputContainer, { width: width - 32 }]}>
-              <View style={{ justifyContent: 'center', marginRight: 10 }}>
-                <AntDesign
-                  name={'mobile1'}
-                  size={24}
-                  color={colorTokens.light.orange.orange7}
-                />
-              </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your phone number"
-                placeholderTextColor={colorTokens.light.gray.gray12}
-                selectionColor={colorTokens.light.gray.gray12}
-                keyboardType="numeric"
-                value={phoneNumber}
-                onChangeText={(e) => setPhoneNumber(e)}
-                numberOfLines={4}
-                maxLength={11}
+
+      <Form onSubmit={sendOtpHandler}>
+        <View style={{ paddingHorizontal: 20 }}>
+          <Text>Enter mobile no.*</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View
+            style={[
+              styles.inputContainer,
+              { width: width - 32 },
+              invalidNumber ? styles.textInvalidNum : styles.textValidNum,
+            ]}
+          >
+            <View style={{ justifyContent: 'center', marginRight: 10 }}>
+              <AntDesign
+                name={'mobile1'}
+                size={24}
+                color={colorTokens.light.orange.orange7}
               />
             </View>
-            <View style={{ marginTop: 20 }}>
-              <Form.Trigger asChild>
-                <TouchableOpacity
-                  style={{
-                    paddingVertical: 10,
-                    borderRadius: 12,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    width: width - 32,
-                  }}
-                >
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontFamily: fonts.SemiBold,
-                      color: 'white',
-                    }}
-                  >
-                    VERIFY
-                  </Text>
-                </TouchableOpacity>
-              </Form.Trigger>
-            </View>
+            <TextInput
+              style={styles.input}
+              placeholder="09"
+              placeholderTextColor={colorTokens.light.orange.orange7}
+              keyboardType="number-pad"
+              value={phoneNumber}
+              onChangeText={handleNumberChange}
+            />
           </View>
-        </Form>
-      )}
-      <View style={styles.bottomContainer}>
+          <View style={{ marginTop: 20 }}>
+            <Form.Trigger
+              asChild
+              disabled={
+                invalidNumber || phoneNumber.replace(/\s+/g, '').length < 11
+              }
+            >
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  width: width - 32,
+                  backgroundColor: isPending
+                    ? colorTokens.light.gray.gray9
+                    : colorTokens.light.orange.orange9,
+                }}
+              >
+                {getOtpResponse?.isPending ? (
+                  <ActivityIndicator size={32} />
+                ) : (
+                  <Text style={styles.otpBtn}>Get OTP</Text>
+                )}
+              </TouchableOpacity>
+            </Form.Trigger>
+          </View>
+        </View>
+      </Form>
+
+      <SafeAreaView style={styles.bottomContainer}>
         <Text style={{ fontSize: 14, textAlign: 'center' }}>
           By continuing you agree with the
         </Text>
@@ -181,19 +178,19 @@ export default function OtpVerification() {
         >
           Terms and Conditions and Data Privacy.
         </Text>
-      </View>
+      </SafeAreaView>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  area: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
   },
   textContainer: {
-    marginVertical: 50,
+    marginVertical: 30,
+    padding: 20,
   },
   headingText: {
     fontSize: 36,
@@ -209,13 +206,19 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    borderColor: colorTokens.light.gray.gray11,
+
     borderBottomWidth: 0.4,
     height: 58,
     alignItems: 'center',
-    // marginVertical: 32,
   },
+  textInvalidNum: {
+    borderColor: colorTokens.light.red.red9,
 
+    borderBottomWidth: 0.8,
+  },
+  textValidNum: {
+    borderColor: colorTokens.light.gray.gray11,
+  },
   input: {
     flex: 1,
     marginVertical: 10,
@@ -224,12 +227,10 @@ const styles = StyleSheet.create({
     color: colorTokens.light.gray.gray12,
     fontFamily: fonts.Regular,
   },
-  verifyBtn: {
-    paddingVertical: 10,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colorTokens.light.orange.orange9,
+  otpBtn: {
+    fontSize: 20,
+    fontFamily: fonts.SemiBold,
+    color: 'white',
   },
   bottomContainer: {
     position: 'absolute',

@@ -29,7 +29,7 @@ export default function Page() {
   // }
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
       <StatusBar hidden />
       <ToastViewport
         style={{
@@ -132,6 +132,6 @@ export default function Page() {
           </View>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   )
 }

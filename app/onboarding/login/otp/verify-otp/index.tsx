@@ -8,54 +8,53 @@ import {
   Text,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useToastController } from '@tamagui/toast'
 import { useMutation } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { getOtp, login } from '~/server/api'
-import { Container } from '~/tamagui.config'
 import { UserInputs } from '~/types/apiresults'
 import usePryceStore from '~/hooks/pryceStore'
 import { router, useLocalSearchParams } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
 import { Form } from 'tamagui'
-import { AntDesign } from '@expo/vector-icons'
+import OtpInput from '~/components/login/otp-input'
 
 export default function VerifyOtp() {
   const setToken = usePryceStore((set) => set.setToken)
   const setUsers = usePryceStore((set) => set.setUsers)
-  const [phoneNumber, setPhoneNumber] = useState('')
-  const [otpNumber, setOtpNumber] = useState<string>('')
-  const [isOtp, setIsOtp] = useState<boolean>(false)
+  const [otpNumber, setOtpNumber] = useState<string[]>(Array(6).fill(''))
   const toast = useToastController()
-  const [type, setType] = useState<'password' | 'otp'>('otp')
+  const [minutes, setMinutes] = useState(5)
+  const [seconds, setSeconds] = useState(1)
+  const [isDisabled, setIsDisabled] = useState(true)
+
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
-  const { width, height } = Dimensions.get('window')
-  const { loginType } = useLocalSearchParams()
+  const { width } = Dimensions.get('window')
 
-  const getOtpResponse = useMutation({
-    mutationFn: getOtp,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['otp'],
-      })
+  const { phoneNumber, loginType } = useLocalSearchParams()
 
-      if (data) {
-        toast.show('Success', {
-          message: data.message,
-          native: false,
-        })
-      } else {
-        toast.show('Error', {
-          message: 'Invalid phone number',
-          native: false,
-        })
+  useEffect(() => {
+    const myInterval = setInterval(() => {
+      if (seconds > 0) {
+        setSeconds(seconds - 1)
       }
-    },
-  })
+      if (seconds === 0) {
+        if (minutes === 0) {
+          clearInterval(myInterval)
+          setIsDisabled(false)
+        } else {
+          setMinutes(minutes - 1)
+          setSeconds(59)
+        }
+      }
+    }, 1000)
+    return () => {
+      clearInterval(myInterval)
+    }
+  }, [seconds, minutes])
 
   const loginResponse = useMutation({
     mutationFn: login,
@@ -82,23 +81,50 @@ export default function VerifyOtp() {
   })
 
   const checkOtpHandler = async () => {
+    if (loginType !== 'otp' && loginType !== 'password') {
+      throw new Error('Invalid login type')
+    }
     const userData: UserInputs = {
-      phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: otpNumber,
-      type: type,
+      phone_number:
+        typeof phoneNumber === 'string' ? phoneNumber.replace(/\s+/g, '') : '',
+      value: otpNumber.join(''),
+      type: loginType,
     }
 
     loginResponse.mutate(userData)
   }
 
-  const sendOtpHandler = async () => {
-    // const send = {
-    //   phone_number: phoneNumber.replace(/\s+/g, ''),
-    // }
+  const handleOtpChange = (newValue: string[]) => {
+    setOtpNumber(newValue)
+  }
 
-    // getOtpResponse.mutate(send)
-    setIsOtp(true)
-    router.push('/onboarding/login/otp/verify-otp')
+  const getOtpResponse = useMutation({
+    mutationFn: getOtp,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['otp'],
+      })
+
+      if (data) {
+        toast.show('Success', {
+          message: data.message,
+          native: false,
+        })
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number',
+          native: false,
+        })
+      }
+    },
+  })
+
+  const sendOtpHandler = async () => {
+    const send = {
+      phone_number:
+        typeof phoneNumber === 'string' ? phoneNumber.replace(/\s+/g, '') : '',
+    }
+    getOtpResponse.mutate(send)
   }
 
   return (
@@ -107,83 +133,68 @@ export default function VerifyOtp() {
         <Text style={styles.headingText}>OTP Verification</Text>
         <Text style={styles.subText}>
           We have sent SMS with code to{' '}
-          <Text style={styles.subTextNumber}>09123627891</Text> Please write the
-          code below and hit log in button
+          <Text style={styles.subTextNumber}>{phoneNumber}</Text> Please write
+          the code below and hit log in button.
         </Text>
       </View>
-      {/* <View>
-        {getOtpResponse.isSuccess && (
-          <Container>
-            <Text>OTP has been sent to your mobile number.</Text>
-          </Container>
+      <View style={styles.timerContainer}>
+        {minutes === 0 && seconds === 0 ? null : (
+          <Text style={{ color: colorTokens.light.orange.orange9 }}>
+            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+          </Text>
         )}
-      </View> */}
-      {!isOtp && (
-        <Form onSubmit={sendOtpHandler}>
-          <View>
-            <Text>Enter mobile no.*</Text>
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <View style={[styles.inputContainer, { width: width - 32 }]}>
-              <View style={{ justifyContent: 'center', marginRight: 10 }}>
-                <AntDesign
-                  name={'mobile1'}
-                  size={24}
-                  color={colorTokens.light.orange.orange7}
-                />
-              </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your phone number"
-                placeholderTextColor={colorTokens.light.gray.gray12}
-                selectionColor={colorTokens.light.gray.gray12}
-                keyboardType="numeric"
-                value={phoneNumber}
-                onChangeText={(e) => setPhoneNumber(e)}
-                numberOfLines={4}
-                maxLength={11}
-              />
-            </View>
-            <View style={{ marginTop: 20 }}>
-              <Form.Trigger asChild>
-                <TouchableOpacity
+      </View>
+      <View style={{ alignItems: 'center' }}>
+        <View style={[styles.inputContainer, { width: width }]}>
+          <OtpInput
+            value={otpNumber}
+            disabled={false}
+            onChange={handleOtpChange}
+          />
+        </View>
+        <View style={styles.textBtnContainer}>
+          <Text style={{ fontSize: 14, fontWeight: '300' }}>
+            Don&apos;t receive the code?
+          </Text>
+          <TouchableOpacity disabled={isDisabled} onPress={sendOtpHandler}>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: '500',
+                color: colorTokens.light.orange.orange9,
+              }}
+            >
+              {' '}
+              Resend Code
+            </Text>
+          </TouchableOpacity>
+        </View>
+        <Form onSubmit={checkOtpHandler}>
+          <View style={{ marginTop: 50 }}>
+            <Form.Trigger asChild>
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 10,
+                  borderRadius: 12,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: colorTokens.light.orange.orange9,
+                  width: width - 32,
+                }}
+              >
+                <Text
                   style={{
-                    paddingVertical: 10,
-                    borderRadius: 12,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    width: width - 32,
+                    fontSize: 20,
+                    fontFamily: fonts.SemiBold,
+                    color: 'white',
                   }}
                 >
-                  <Text
-                    style={{
-                      fontSize: 20,
-                      fontFamily: fonts.SemiBold,
-                      color: 'white',
-                    }}
-                  >
-                    VERIFY
-                  </Text>
-                </TouchableOpacity>
-              </Form.Trigger>
-            </View>
+                  Submit
+                </Text>
+              </TouchableOpacity>
+            </Form.Trigger>
           </View>
         </Form>
-      )}
-      <View style={styles.bottomContainer}>
-        <Text style={{ fontSize: 14, textAlign: 'center' }}>
-          By continuing you agree with the
-        </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            textDecorationColor: colorTokens.light.gray.gray12,
-            textDecorationLine: 'underline',
-          }}
-        >
-          Terms and Conditions and Data Privacy.
-        </Text>
       </View>
     </SafeAreaView>
   )
@@ -193,15 +204,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
   },
   textContainer: {
-    marginVertical: 50,
+    marginVertical: 30,
+    padding: 20,
   },
   headingText: {
     fontSize: 36,
     color: colorTokens.light.gray.gray11,
-    // fontFamily: fonts.SemiBold,
     fontWeight: '500',
   },
   subText: {
@@ -216,15 +226,21 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: colorTokens.light.gray.gray11,
   },
+  timerContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
   inputContainer: {
     flexDirection: 'row',
-    borderColor: colorTokens.light.gray.gray11,
-    borderBottomWidth: 0.4,
+
     height: 58,
     alignItems: 'center',
-    // marginVertical: 32,
+    marginVertical: 22,
   },
-
+  textBtnContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
   input: {
     flex: 1,
     marginVertical: 10,
@@ -239,12 +255,5 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: colorTokens.light.orange.orange9,
-  },
-  bottomContainer: {
-    position: 'absolute',
-    bottom: 0,
-    right: 16,
-    left: 16,
-    alignItems: 'center',
   },
 })

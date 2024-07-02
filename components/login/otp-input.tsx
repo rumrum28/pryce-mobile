@@ -1,26 +1,22 @@
+import React, { useRef } from 'react'
 import {
   View,
-  Text,
-  StyleSheet,
   TextInput,
+  StyleSheet,
   NativeSyntheticEvent,
   TextInputKeyPressEventData,
 } from 'react-native'
-import React, { useRef } from 'react'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { colorTokens } from '@tamagui/themes'
 
 type Nullable<T> = T | null
 
-export default function OtpInput({
-  value,
-  disabled,
-  onChange,
-}: {
+interface OtpInputProps {
   value: string[]
   disabled: boolean
   onChange: (value: string[]) => void
-}) {
+}
+
+export default function OtpInput({ value, disabled, onChange }: OtpInputProps) {
   const length = 6
   const inputRefs = useRef<Array<Nullable<TextInput>>>([])
 
@@ -85,11 +81,12 @@ export default function OtpInput({
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+
     backgroundColor: 'white',
     padding: 20,
     justifyContent: 'space-between',
     flexDirection: 'row',
-    paddingTop: 50,
+    // paddingTop: 30,
   },
   input: {
     fontSize: 24,
