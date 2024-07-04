@@ -2,7 +2,6 @@ import { SafeAreaView, ScrollView, Text } from 'react-native'
 import React, { useEffect } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
-import Carousel from '~/components/shop/carousel'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
 import { ToastViewport, useToastController } from '@tamagui/toast'
@@ -12,7 +11,7 @@ import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import { Button, Spinner, View, YStack } from 'tamagui'
 import { router } from 'expo-router'
-import useCartStore from '~/hooks/productsStore'
+import ProductGroup from '../productGroup'
 
 export default function Page() {
   const toast = useToastController()
@@ -117,6 +116,20 @@ export default function Page() {
           Top picks in your neighborhood
         </Text>
         <Products products={fetchProducts.data?.productsResponse} />
+
+        <Text
+          style={{
+            paddingHorizontal: 10,
+            fontWeight: 'bold',
+            marginTop: 16,
+            fontSize: 18,
+          }}
+        >
+          Product Groups
+        </Text>
+
+        <ProductGroup products={fetchProducts.data?.productsResponse} />
+
         <Text
           style={{
             paddingHorizontal: 10,

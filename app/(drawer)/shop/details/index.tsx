@@ -25,6 +25,7 @@ import { fetchProductsQuery } from '~/server/api'
 import { Spinner, YStack } from 'tamagui'
 import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
+import PGCM from '~/components/pgcm'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
@@ -231,6 +232,10 @@ const Details = () => {
             />
           )}
         /> */}
+
+          {items?.ProductCode === 'PGCM' || items?.ProductCode === 'PGCMV' ? (
+            <PGCM />
+          ) : null}
         </Animated.ScrollView>
 
         {items && (
@@ -277,7 +282,7 @@ const Details = () => {
                         backgroundColor: 'white',
                       }}
                     >
-                      {items.Name}
+                      {items.ProductCode}
                     </Text>
                     <Text
                       style={{

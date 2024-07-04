@@ -1,3 +1,5 @@
+import { ProductDisplayProps } from '~/types/product'
+
 export const ifPGCMemberDescription = {
   member: [
     'PRYCEGAS CLUB MEMBERSHIP IS ACTIVE',
@@ -147,5 +149,57 @@ export const ProductsDetail = [
     name: 'Prycegas Burner',
     description: ['Burner only'],
     image: require('~/assets/images/products/ACCPKB.png'),
+  },
+]
+
+export const productDisplay: ProductDisplayProps[] = [
+  {
+    id: 1,
+    productCode: ['PGCM'],
+    image: require('~/assets/images/products/PGCM.png'),
+    name: 'Membership',
+  },
+  {
+    id: 2,
+    productCode: ['LPG11C', 'CYL11', 'ACCPGS', 'ACCHRCB'],
+    image: require('~/assets/images/products/LPG11C.png'),
+    name: '11KG',
+  },
+  {
+    id: 3,
+    productCode: [
+      'CYL2.7',
+      'LPG2.7CCPK',
+      'LPG2.7C',
+      'ACCPKB',
+      'ACCPGS',
+      'ACCHRCB',
+    ],
+    image: require('~/assets/images/products/LPG2.7CCPK.png'),
+    name: '2.7KG',
+  },
+  {
+    id: 4,
+    productCode: ['CYL22', 'LPG22C', 'ACCPGS', 'ACCHRCB'],
+    image: require('~/assets/images/products/CYL22.png'),
+    name: '22KG',
+  },
+  {
+    id: 5,
+    productCode: ['LPG50C', 'CYL50', 'ACCPGS', 'ACCHRCB'],
+    image: require('~/assets/images/products/CYL50.png'),
+    name: '50KG',
+  },
+  {
+    id: 6,
+    productCode: ['MO220C', 'MO2TFT', 'MEDREG'],
+    image: require('~/assets/images/products/MO220C.png'),
+    name: 'Medical Oxygen 20lbs',
+  },
+  {
+    id: 7,
+    productCode: ['MO2105C', 'MO2TST', 'MEDREG'],
+    image: require('~/assets/images/products/MO2105C.png'),
+    name: 'Medical Oxygen 20lbs',
   },
 ]

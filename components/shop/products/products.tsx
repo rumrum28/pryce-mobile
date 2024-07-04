@@ -9,7 +9,6 @@ import {
   Pressable,
   FlatList,
 } from 'react-native'
-import { filteredProducts } from '~/data/mock'
 import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 import { topPickProducts } from '~/utils/topPickProducts'

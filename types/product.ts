@@ -1,3 +1,5 @@
+import { ImageSourcePropType } from 'react-native'
+
 export type ProductSingle = {
   attributes: {
     type: string
@@ -48,3 +50,10 @@ export type CombinedArray = {
 }
 
 export type CombinedArrayProps = CombinedArray[]
+
+export type ProductDisplayProps = {
+  id: number
+  productCode: string[]
+  image: any
+  name: string
+}
