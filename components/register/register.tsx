@@ -10,16 +10,75 @@ import {
 } from 'react-native'
 import React, { useRef, useState } from 'react'
 import Dropdown from './dropdown'
+import { island } from '../../utils/island'
 import { Feather, Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Form } from 'tamagui'
+import DropdownComponent from './dropdown'
+import { address, AddressProps } from '~/data/data'
+
+type OptionItem = {
+  value: string
+  label: string
+}
 
 export default function Register() {
+  const [firstName, setFirstName] = useState<string>('')
+  const [lastName, setLastName] = useState<string>('')
+  const [password, setPassword] = useState<string>('')
+  const [email, setEmail] = useState<string>('')
+  const [number, setNumber] = useState<string>('')
+  const [street, setStreet] = useState<string>('')
   const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
+  const [province, setProvince] = useState<string | null>(null)
+  const [cityArray, setCityArray] = useState<OptionItem[]>([])
+  const [region, setRegion] = useState<string | null>(null)
+  const [barangayArray, setBarangayArray] = useState<OptionItem[]>([])
+  const [barangay, setBarangay] = useState<string | null>(null)
+  const [city, setCity] = useState('')
+
+  const uniqueProvinces = Array.from(
+    new Set(address.map((item) => item.province))
+  )
+    .sort()
+    .map((province) => ({ value: province, label: province }))
+
+  const onChangeProvinceHandler = (value: string) => {
+    setProvince(value)
+
+    const filteredCity = address.filter((city) => city.province === value)
+    const formattedCityArray = filteredCity.map((city) => ({
+      value: city.city,
+      label: city.city,
+    }))
+
+    setCityArray(formattedCityArray)
+    setRegion(filteredCity[0].pgi_region)
+    setBarangayArray([])
+    setBarangay('')
+  }
+  const onChangeCityHandler = (value: string) => {
+    setCity(value)
+
+    const selectedCity = island
+      .flatMap((province) => province.municipalities)
+      .find((city) => city.city === value)
+
+    if (selectedCity && selectedCity.barangay) {
+      const formattedBarangay = selectedCity.barangay.map((barangay) => ({
+        value: barangay,
+        label: barangay,
+      }))
+
+      setBarangayArray(formattedBarangay)
+    } else {
+      setBarangayArray([])
+    }
+  }
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+      <ScrollView showsVerticalScrollIndicator={false}>
         <Form onSubmit={() => {}}>
           <View style={styles.inputContainer}>
             <View style={{ justifyContent: 'center', marginRight: 10 }}>
@@ -106,17 +165,15 @@ export default function Register() {
               keyboardType="number-pad"
             />
           </View>
-          <Dropdown
-          // containerTop={containerTop}
-          // data={formattedCountries}
-          // onChange={console.log}
-          // placeholder="Select country"
+          <DropdownComponent
+            data={uniqueProvinces}
+            onChange={onChangeProvinceHandler}
+            placeholder="Select a province"
           />
-          <Dropdown
-          // containerTop={containerTop}
-          // data={formattedCountries}
-          // onChange={console.log}
-          // placeholder="Select country"
+          <DropdownComponent
+            data={cityArray}
+            onChange={onChangeCityHandler}
+            placeholder="Select a city"
           />
           <View style={styles.inputContainer}>
             <View style={{ justifyContent: 'center', marginRight: 10 }}>
@@ -133,22 +190,33 @@ export default function Register() {
               keyboardType="default"
             />
           </View>
-          <View style={styles.inputContainer}>
-            <View style={{ justifyContent: 'center', marginRight: 10 }}>
-              <MaterialCommunityIcons
-                name={'map-marker-outline'}
-                size={24}
-                color={colorTokens.light.gray.gray8}
+          {barangayArray.length > 0 ? (
+            <>
+              <DropdownComponent
+                data={cityArray}
+                onChange={onChangeCityHandler}
+                placeholder="Select a city"
               />
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Barangay"
-              placeholderTextColor={colorTokens.light.gray.gray8}
-              keyboardType="default"
-            />
-          </View>
-
+            </>
+          ) : (
+            <>
+              <View style={styles.inputContainer}>
+                <View style={{ justifyContent: 'center', marginRight: 10 }}>
+                  <MaterialCommunityIcons
+                    name={'map-marker-outline'}
+                    size={24}
+                    color={colorTokens.light.gray.gray8}
+                  />
+                </View>
+                <TextInput
+                  style={styles.input}
+                  placeholder="Barangay"
+                  placeholderTextColor={colorTokens.light.gray.gray8}
+                  keyboardType="default"
+                />
+              </View>
+            </>
+          )}
           <Form.Trigger asChild>
             <TouchableOpacity
               style={{
@@ -172,10 +240,9 @@ export default function Register() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
     paddingHorizontal: 20,
     gap: 10,
+    width: '100%',
   },
   inputContainer: {
     flexDirection: 'row',
@@ -187,7 +254,6 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    // marginVertical: 10,
     height: 40,
     fontSize: 14,
     color: colorTokens.light.gray.gray12,

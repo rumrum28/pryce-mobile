@@ -1,16 +1,8 @@
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  StyleSheet,
-  FlatList,
-  Modal,
-  TouchableWithoutFeedback,
-  Platform,
-} from 'react-native'
-import React, { useCallback, useRef, useState } from 'react'
-import { AntDesign, Entypo, MaterialCommunityIcons } from '@expo/vector-icons'
+import React, { useState } from 'react'
+import { StyleSheet } from 'react-native'
+import { Dropdown } from 'react-native-element-dropdown'
 import { colorTokens } from '@tamagui/themes'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 
 type OptionItem = {
   value: string
@@ -18,147 +10,78 @@ type OptionItem = {
 }
 
 interface DropDownProps {
-  // data: OptionItem[]
-  // onChange: (item: OptionItem) => void
-  // placeholder: string
-  containerTop: number
+  data: OptionItem[]
+  placeholder: string
+  onChange: (value: string) => void
 }
 
-export default function Dropdown() {
-  const [expanded, setExpanded] = useState(false)
-
-  const toggleExpanded = useCallback(() => setExpanded(!expanded), [expanded])
-
+export default function DropdownComponent({
+  data,
+  placeholder,
+  onChange,
+}: DropDownProps) {
   const [value, setValue] = useState('')
 
-  const buttonRef = useRef<View>(null)
-
-  const [top, setTop] = useState(0)
+  const handleChange = (item: OptionItem) => {
+    setValue(item.value)
+    onChange(item.value)
+  }
 
   return (
-    <View
-      ref={buttonRef}
-      onLayout={(event) => {
-        const layout = event.nativeEvent.layout
-        const topOffset = layout.y
-        const heightOfComponent = layout.height
-
-        const finalValue =
-          topOffset +
-          heightOfComponent +
-          (Platform.OS === 'android' ? -30 : 180)
-
-        console.log(finalValue)
-        setTop(finalValue)
-      }}
-      style={styles.container}
-    >
-      <TouchableOpacity
-        style={styles.button}
-        activeOpacity={0.8}
-        onPress={toggleExpanded}
-      >
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <MaterialCommunityIcons
-            name={'map-marker-outline'}
-            size={24}
-            color={colorTokens.light.gray.gray8}
-          />
-          <Text style={styles.text}>Select Province</Text>
-        </View>
-        <Entypo name={expanded ? 'chevron-thin-up' : 'chevron-thin-down'} />
-      </TouchableOpacity>
-      {expanded ? (
-        <Modal visible={expanded} transparent>
-          <TouchableWithoutFeedback onPress={() => setExpanded(false)}>
-            <View style={styles.backdrop}>
-              <View
-                style={[
-                  styles.options,
-                  {
-                    top,
-                  },
-                ]}
-              >
-                <FlatList
-                  keyExtractor={(item) => item.value}
-                  data={[
-                    { value: 'Caloocan', label: 'NCR' },
-                    { value: 'Malabon', label: 'NCR' },
-                  ]}
-                  renderItem={({ item }) => (
-                    <TouchableOpacity
-                      activeOpacity={0.8}
-                      style={styles.optionItem}
-                    >
-                      <Text>{item.label}</Text>
-                    </TouchableOpacity>
-                  )}
-                  ItemSeparatorComponent={() => (
-                    <View style={styles.separator} />
-                  )}
-                />
-              </View>
-            </View>
-          </TouchableWithoutFeedback>
-        </Modal>
-      ) : null}
-    </View>
+    <Dropdown
+      style={styles.dropdown}
+      backgroundColor={'rgba(0,0,0,0.2)'}
+      data={data}
+      value={value}
+      inverted={false}
+      labelField="label"
+      valueField="value"
+      placeholder={value || placeholder}
+      placeholderStyle={{ color: colorTokens.light.gray.gray8 }}
+      maxHeight={250}
+      onChange={handleChange}
+      renderLeftIcon={() => (
+        <MaterialCommunityIcons
+          name={'map-marker-outline'}
+          size={24}
+          color={colorTokens.light.gray.gray8}
+          style={styles.icon}
+        />
+      )}
+    />
   )
 }
-
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
+  dropdown: {
+    height: 50,
     borderBottomWidth: 0.5,
     borderBottomColor: colorTokens.light.orange.orange9,
     marginBottom: 20,
   },
-  backdrop: {
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flex: 1,
+  icon: {
+    marginRight: 10,
   },
-  optionItem: {
-    height: 40,
-    justifyContent: 'center',
-  },
-  separator: {
-    height: 4,
-  },
-  options: {
-    position: 'absolute',
-    // top: 53,
-    backgroundColor: 'gray',
-    width: '100%',
-    padding: 10,
-    borderRadius: 6,
-    maxHeight: 250,
-  },
-  text: {
-    fontSize: 15,
-    opacity: 0.8,
-    marginLeft: 10,
+  placeholderStyle: {
+    fontSize: 16,
     color: colorTokens.light.gray.gray8,
   },
-  button: {
-    height: 50,
-    justifyContent: 'space-between',
-    // backgroundColor: '#fff',
-    flexDirection: 'row',
-    width: '100%',
+  selectedTextStyle: {
+    fontSize: 16,
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  inputSearchStyle: {
+    height: 40,
+    fontSize: 16,
+  },
+  emptyContainer: {
+    padding: 16,
     alignItems: 'center',
-
-    // paddingHorizontal: 15,
-
-    borderRadius: 8,
+  },
+  footerContainer: {
+    padding: 16,
+    alignItems: 'center',
   },
 })
