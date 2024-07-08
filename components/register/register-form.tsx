@@ -11,6 +11,9 @@ import {
   TextInput,
   TouchableOpacity,
   ActivityIndicator,
+  Dimensions,
+  ScrollView,
+  StatusBar,
 } from 'react-native'
 import { colorTokens } from '@tamagui/themes'
 import { useMutation } from '@tanstack/react-query'
@@ -22,13 +25,15 @@ import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { z } from 'zod'
 import { fonts } from '~/utils/fonts'
+import Dropdown from './dropdown'
+import { address } from '~/data/data'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
   message: 'Invalid phone number',
 })
 
-export default function LoginForm() {
+export default function RegisterForm() {
   const [phoneNumber, setPhoneNumber] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
@@ -106,33 +111,58 @@ export default function LoginForm() {
     phoneNumber.replace(/\s+/g, '').length < 11 ||
     loginResponse?.isPending
 
+  const formattedCountries = address.map((c) => ({
+    province: c.province,
+    city: c.city,
+
+    // id: '1',
+    // city: 'Alburquerque',
+    // province: 'Bohol',
+    // pgi_region: 'CVO',
+    // status: 'included',
+    // code: '2003',
+  }))
+
   return (
     <View style={styles.formContainer}>
+      {/* <ScrollView> */}
       <Form onSubmit={loginHandler}>
-        <View
-          style={[
-            styles.inputContainer,
-            invalidNumber ? styles.textInvalidNum : styles.textValidNum,
-          ]}
-        >
-          <AntDesign
-            name={'mobile1'}
-            size={30}
-            color={colorTokens.light.orange.orange7}
-          />
+        <View style={styles.inputContainer}>
+          <View style={{ justifyContent: 'center', marginRight: 10 }}>
+            <Ionicons
+              name={'person'}
+              size={24}
+              color={colorTokens.light.orange.orange7}
+            />
+          </View>
           <TextInput
-            style={styles.textInput}
-            placeholder="09"
+            style={styles.input}
+            placeholder="Enter your first name"
             placeholderTextColor={colorTokens.light.orange.orange7}
-            keyboardType="number-pad"
-            value={phoneNumber}
+            keyboardType="default"
+            onChangeText={handleNumberChange}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={{ justifyContent: 'center', marginRight: 10 }}>
+            <Ionicons
+              name={'person'}
+              size={24}
+              color={colorTokens.light.orange.orange7}
+            />
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your last name"
+            placeholderTextColor={colorTokens.light.orange.orange7}
+            keyboardType="default"
             onChangeText={handleNumberChange}
           />
         </View>
         <View style={styles.inputContainer}>
           <SimpleLineIcons
             name={'lock'}
-            size={30}
+            size={24}
             color={colorTokens.light.orange.orange7}
           />
           <TextInput
@@ -153,9 +183,83 @@ export default function LoginForm() {
             />
           </TouchableOpacity>
         </View>
-        <TouchableOpacity>
-          <Text style={styles.forgotPasswordText}>Forgot Password?</Text>
-        </TouchableOpacity>
+        <View style={styles.inputContainer}>
+          <View style={{ justifyContent: 'center', marginRight: 10 }}>
+            <Ionicons
+              name={'mail'}
+              size={24}
+              color={colorTokens.light.orange.orange7}
+            />
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your email"
+            placeholderTextColor={colorTokens.light.orange.orange7}
+            keyboardType="email-address"
+            onChangeText={handleNumberChange}
+          />
+        </View>
+        <View
+          style={[
+            styles.inputContainer,
+            invalidNumber ? styles.textInvalidNum : styles.textValidNum,
+          ]}
+        >
+          <AntDesign
+            name={'mobile1'}
+            size={24}
+            color={colorTokens.light.orange.orange7}
+          />
+          <TextInput
+            style={styles.textInput}
+            placeholder="09"
+            placeholderTextColor={colorTokens.light.orange.orange7}
+            keyboardType="number-pad"
+            value={phoneNumber}
+            onChangeText={handleNumberChange}
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Dropdown
+          // data={formattedCountries}
+          // onChange={console.log}
+          // placeholder="Select country"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <Dropdown />
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={{ justifyContent: 'center', marginRight: 10 }}>
+            <Ionicons
+              name={'mail'}
+              size={24}
+              color={colorTokens.light.orange.orange7}
+            />
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your street"
+            placeholderTextColor={colorTokens.light.orange.orange7}
+            keyboardType="default"
+          />
+        </View>
+        <View style={styles.inputContainer}>
+          <View style={{ justifyContent: 'center', marginRight: 10 }}>
+            <Ionicons
+              name={'mail'}
+              size={24}
+              color={colorTokens.light.orange.orange7}
+            />
+          </View>
+          <TextInput
+            style={styles.input}
+            placeholder="Enter your barangay"
+            placeholderTextColor={colorTokens.light.orange.orange7}
+            keyboardType="default"
+          />
+        </View>
+
         <Form.Trigger
           asChild
           disabled={
@@ -179,41 +283,47 @@ export default function LoginForm() {
             {loginResponse?.isPending ? (
               <ActivityIndicator size={32} />
             ) : (
-              <Text style={styles.loginText}>Sign in</Text>
+              <Text style={styles.loginText}>SIGN UP</Text>
             )}
           </TouchableOpacity>
         </Form.Trigger>
-        <View style={styles.footerContainer}>
-          <Text style={styles.accountText}>Already have an account?</Text>
-          <TouchableOpacity>
-            <Text style={styles.signupText}>Sign in</Text>
-          </TouchableOpacity>
-        </View>
       </Form>
+      {/* </ScrollView> */}
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   formContainer: {
-    padding: 20,
+    flex: 1,
+    backgroundColor: '#ddd',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 20,
+    gap: 10,
   },
   inputContainer: {
-    borderWidth: 1,
-    borderRadius: 100,
-    paddingHorizontal: 20,
     flexDirection: 'row',
+    borderBottomWidth: 0.4,
+    height: 58,
     alignItems: 'center',
-    borderColor: colorTokens.light.orange.orange9,
-    padding: 10,
-    marginVertical: 10,
+    marginBottom: 5,
   },
   textInvalidNum: {
     borderColor: colorTokens.light.red.red9,
-    borderWidth: 2,
+
+    borderBottomWidth: 0.8,
   },
   textValidNum: {
-    borderColor: colorTokens.light.orange.orange9,
+    borderColor: colorTokens.light.gray.gray11,
+  },
+  input: {
+    flex: 1,
+    marginVertical: 10,
+    height: 40,
+    fontSize: 14,
+    color: colorTokens.light.gray.gray12,
+    fontFamily: fonts.Regular,
   },
   textInput: {
     flex: 1,
@@ -228,29 +338,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     fontSize: 16,
   },
-
   loginText: {
     color: 'white',
     fontSize: 16,
     fontWeight: 'light',
     textAlign: 'center',
     padding: 5,
-  },
-  footerContainer: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginVertical: 20,
-    gap: 5,
-  },
-  accountText: {
-    color: colorTokens.light.gray.gray9,
-    fontWeight: 'regular',
-    fontSize: 16,
-  },
-  signupText: {
-    color: colorTokens.light.orange.orange9,
-    fontWeight: 'bold',
-    fontSize: 16,
   },
 })

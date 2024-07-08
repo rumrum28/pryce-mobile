@@ -21,14 +21,15 @@ import { colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
 import { Form } from 'tamagui'
 import OtpInput from '~/components/login/otp-input'
+import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors'
 
 export default function VerifyOtp() {
   const setToken = usePryceStore((set) => set.setToken)
   const setUsers = usePryceStore((set) => set.setUsers)
   const [otpNumber, setOtpNumber] = useState<string[]>(Array(6).fill(''))
   const toast = useToastController()
-  const [minutes, setMinutes] = useState(5)
-  const [seconds, setSeconds] = useState(1)
+  const [minutes, setMinutes] = useState(1)
+  const [seconds, setSeconds] = useState(0)
   const [isDisabled, setIsDisabled] = useState(true)
 
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
@@ -120,11 +121,15 @@ export default function VerifyOtp() {
   })
 
   const sendOtpHandler = async () => {
-    const send = {
-      phone_number:
-        typeof phoneNumber === 'string' ? phoneNumber.replace(/\s+/g, '') : '',
-    }
-    getOtpResponse.mutate(send)
+    // const send = {
+    //   phone_number:
+    //     typeof phoneNumber === 'string' ? phoneNumber.replace(/\s+/g, '') : '',
+    // }
+    // getOtpResponse.mutate(send)
+
+    setMinutes(1) // Set this to the number of minutes you want
+    setSeconds(0) // Resetting seconds
+    setIsDisabled(true)
   }
 
   return (
@@ -137,14 +142,8 @@ export default function VerifyOtp() {
           the code below and hit log in button.
         </Text>
       </View>
-      <View style={styles.timerContainer}>
-        {minutes === 0 && seconds === 0 ? null : (
-          <Text style={{ color: colorTokens.light.orange.orange9 }}>
-            {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
-          </Text>
-        )}
-      </View>
-      <View style={{ alignItems: 'center' }}>
+      {/* <View style={styles.timerContainer}></View> */}
+      <View>
         <View style={[styles.inputContainer, { width: width }]}>
           <OtpInput
             value={otpNumber}
@@ -153,24 +152,37 @@ export default function VerifyOtp() {
           />
         </View>
         <View style={styles.textBtnContainer}>
-          <Text style={{ fontSize: 14, fontWeight: '300' }}>
+          <Text style={{ fontSize: 16, fontWeight: '300', marginRight: 3 }}>
             Don&apos;t receive the code?
           </Text>
-          <TouchableOpacity disabled={isDisabled} onPress={sendOtpHandler}>
+          <TouchableOpacity
+            disabled={isDisabled}
+            onPress={sendOtpHandler}
+            style={styles.newCodeContainer}
+          >
             <Text
-              style={{
-                fontSize: 14,
-                fontWeight: '500',
-                color: colorTokens.light.orange.orange9,
-              }}
+              style={[
+                styles.newCodeBtn,
+                isDisabled ? styles.newCodeDisabled : styles.newCodeEnabled,
+              ]}
             >
-              {' '}
-              Resend Code
+              Get new code
             </Text>
+            {minutes === 0 && seconds === 0 ? null : (
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: colorTokens.light.orange.orange9,
+                }}
+              >
+                in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
+              </Text>
+            )}
           </TouchableOpacity>
         </View>
         <Form onSubmit={checkOtpHandler}>
-          <View style={{ marginTop: 50 }}>
+          <View style={{ marginTop: 50, alignItems: 'center' }}>
             <Form.Trigger asChild>
               <TouchableOpacity
                 style={{
@@ -232,14 +244,32 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-
     height: 58,
     alignItems: 'center',
     marginVertical: 22,
   },
   textBtnContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    marginTop: 30,
+  },
+  newCodeContainer: {
     flexDirection: 'row',
     alignItems: 'center',
+    marginTop: 10,
+  },
+  newCodeBtn: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 3,
+    color: colorTokens.light.gray.gray9,
+  },
+  newCodeDisabled: {
+    opacity: 0.5,
+  },
+  newCodeEnabled: {
+    opacity: 1,
   },
   input: {
     flex: 1,

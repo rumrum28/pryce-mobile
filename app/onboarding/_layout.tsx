@@ -22,6 +22,13 @@ export default function _layout() {
       >
         <Stack.Screen name="index" options={{ headerShown: false }} />
         <Stack.Screen
+          name="register/index"
+          options={{
+            headerShown: true,
+            headerTintColor: colorTokens.light.orange.orange9,
+          }}
+        />
+        <Stack.Screen
           name="login/index"
           options={{
             headerShown: false,
@@ -45,7 +52,6 @@ export default function _layout() {
           name="login/password/index"
           options={{
             headerTintColor: colorTokens.light.orange.orange9,
-
             headerShown: true,
           }}
         />

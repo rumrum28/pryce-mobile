@@ -81,7 +81,6 @@ export default function OtpInput({ value, disabled, onChange }: OtpInputProps) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-
     backgroundColor: 'white',
     padding: 20,
     justifyContent: 'space-between',
