@@ -27,8 +27,14 @@ export default function AllProducts({
   }, [favorites])
 
   const productOnClickHandler = (product: ProductSingle) => {
+    // router.push({
+    //   pathname: '/(drawer)/shop/details',
+    //   params: {
+    //     productCode: product.ProductCode,
+    //   },
+    // })
     router.push({
-      pathname: '/(drawer)/shop/details',
+      pathname: '/(drawer)/shop/(modal)/item_details',
       params: {
         productCode: product.ProductCode,
       },

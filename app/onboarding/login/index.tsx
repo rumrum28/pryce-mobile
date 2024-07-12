@@ -109,6 +109,7 @@ export default function Page() {
           >
             <Text style={{ color: 'black' }}>Sign in with OTP</Text>
           </TouchableOpacity>
+
           <View
             style={{
               flexDirection: 'row',
@@ -118,7 +119,9 @@ export default function Page() {
             <Text style={{ fontSize: 14, color: colorTokens.light.gray.gray8 }}>
               Dont have an account?{' '}
             </Text>
-            <TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => router.push('/onboarding/register')}
+            >
               <Text
                 style={{
                   fontSize: 14,

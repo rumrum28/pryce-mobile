@@ -1,9 +1,13 @@
+import { colorTokens } from '@tamagui/themes'
 import { router } from 'expo-router'
-import { FlatList } from 'react-native'
-import { ScrollView } from 'tamagui'
-import { ProductGroupItems } from '~/components/product_group_items'
+import { FlatList, Pressable } from 'react-native'
+import { Image, ScrollView, Text, View } from 'tamagui'
 import usePryceStore from '~/hooks/pryceStore'
-import { ProductSingle, ProductsProps } from '~/types/product'
+import {
+  ProductDisplayProps,
+  ProductSingle,
+  ProductsProps,
+} from '~/types/product'
 import { productDisplay } from '~/utils/products'
 
 export default function ProductGroup({
@@ -11,27 +15,57 @@ export default function ProductGroup({
 }: {
   products: ProductsProps | undefined
 }) {
-  const favorites = usePryceStore((set) => set.favorites)
-  const setFavorites = usePryceStore((set) => set.setFavorites)
-
-  const addToFavoritesHandler = async (f: ProductSingle) => {
-    setFavorites(f.ProductCode)
-  }
-
-  const productOnClickHandler = (product: ProductSingle) => {
+  const productOnClickHandler = (i: number) => {
     router.push({
       pathname: '/(drawer)/shop/details',
       params: {
-        productCode: product.ProductCode,
+        idParam: i,
       },
     })
   }
+
+  const productGroupItems = ({ item }: { item: ProductDisplayProps }) => (
+    <Pressable onPress={() => productOnClickHandler(item.id)} key={item.id}>
+      <View
+        style={{
+          height: 230,
+          width: 300,
+          backgroundColor: 'white',
+          marginEnd: 10,
+          elevation: 2,
+          shadowColor: 'black',
+          shadowOffset: {
+            width: 0,
+            height: 4,
+          },
+          shadowOpacity: 0.06,
+          borderRadius: 4,
+        }}
+      >
+        <Image
+          source={item.image}
+          style={{ height: '100%', width: '100%', flex: 5 }}
+          objectFit="cover"
+        />
+
+        <View style={{ flex: 2, padding: 10 }}>
+          <Text
+            style={{
+              color: colorTokens.light.gray.gray9,
+            }}
+          >
+            {item.name}
+          </Text>
+        </View>
+      </View>
+    </Pressable>
+  )
 
   return (
     <ScrollView contentContainerStyle={{ padding: 15 }}>
       <FlatList
         data={productDisplay}
-        renderItem={ProductGroupItems}
+        renderItem={productGroupItems}
         horizontal={true}
         showsHorizontalScrollIndicator={false}
       />

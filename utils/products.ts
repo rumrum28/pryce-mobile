@@ -158,12 +158,15 @@ export const productDisplay: ProductDisplayProps[] = [
     productCode: ['PGCM'],
     image: require('~/assets/images/products/PGCM.png'),
     name: 'Membership',
+    description: 'PRYCEGAS club membership, lorem ipsum',
   },
   {
     id: 2,
     productCode: ['LPG11C', 'CYL11', 'ACCPGS', 'ACCHRCB'],
     image: require('~/assets/images/products/LPG11C.png'),
     name: '11KG',
+    description:
+      '11kg petroleum gas cylinder, often referred to as an LPG (liquefied petroleum gas) cylinder, is commonly used for residential and commercial cooking, heating, and other applications.',
   },
   {
     id: 3,
@@ -177,29 +180,39 @@ export const productDisplay: ProductDisplayProps[] = [
     ],
     image: require('~/assets/images/products/LPG2.7CCPK.png'),
     name: '2.7KG',
+    description:
+      'A 2.7kg LPG (liquefied petroleum gas) cylinder is a compact and portable energy source commonly used for small-scale applications. Suitable for single-burner gas stoves, making it a convenient option for small households or temporary setups.',
   },
   {
     id: 4,
     productCode: ['CYL22', 'LPG22C', 'ACCPGS', 'ACCHRCB'],
     image: require('~/assets/images/products/CYL22.png'),
     name: '22KG',
+    description:
+      'Commercial Cooking: Suitable for restaurants, catering businesses, and food trucks using multiple-burner stoves, ovens, and grills.',
   },
   {
     id: 5,
     productCode: ['LPG50C', 'CYL50', 'ACCPGS', 'ACCHRCB'],
     image: require('~/assets/images/products/CYL50.png'),
     name: '50KG',
+    description:
+      'Large-Scale Industrial Applications: Suitable for manufacturing processes, large-scale heating, and other industrial uses requiring significant energy output.',
   },
   {
     id: 6,
     productCode: ['MO220C', 'MO2TFT', 'MEDREG'],
     image: require('~/assets/images/products/MO220C.png'),
     name: 'Medical Oxygen 20lbs',
+    description:
+      'A 20lbs medical oxygen cylinder is a common source of oxygen therapy used in various medical settings. Used by patients with respiratory conditions such as COPD, asthma, or pneumonia who require supplemental oxygen at home.',
   },
   {
     id: 7,
     productCode: ['MO2105C', 'MO2TST', 'MEDREG'],
     image: require('~/assets/images/products/MO2105C.png'),
     name: 'Medical Oxygen 20lbs',
+    description:
+      'A 105lbs medical oxygen cylinder is a substantial source of oxygen therapy, primarily used in medical settings where a high volume of oxygen is required. Provides a reliable and large supply of oxygen for patients in intensive care units, during surgeries, and in emergency rooms.',
   },
 ]

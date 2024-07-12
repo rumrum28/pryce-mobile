@@ -32,7 +32,7 @@ export default function Page() {
     mutationFn: changeAddressOnLoad,
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['changeAddress'],
+        queryKey: ['fetchProductsOnLoad'],
       })
 
       if (data?.addressRef) {

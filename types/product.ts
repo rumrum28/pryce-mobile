@@ -43,10 +43,6 @@ export type CombinedArray = {
     type: string
     url: string
   }
-  description: string[]
-  id: string
-  image: number
-  name: string
 }
 
 export type CombinedArrayProps = CombinedArray[]
@@ -56,4 +52,5 @@ export type ProductDisplayProps = {
   productCode: string[]
   image: any
   name: string
+  description: string
 }

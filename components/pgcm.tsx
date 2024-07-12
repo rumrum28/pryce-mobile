@@ -1,5 +1,4 @@
-import React from 'react'
-import { H2, Text, View } from 'tamagui'
+import { Text, View } from 'tamagui'
 
 export default function PGCM() {
   return (
