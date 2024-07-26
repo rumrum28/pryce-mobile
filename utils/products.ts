@@ -162,7 +162,7 @@ export const productDisplay: ProductDisplayProps[] = [
   },
   {
     id: 2,
-    productCode: ['LPG11C', 'CYL11', 'ACCPGS', 'ACCHRCB'],
+    productCode: ['LPG11C', 'CYL11'], //'ACCPGS', 'ACCHRCB'
     image: require('~/assets/images/products/LPG11C.png'),
     name: '11KG',
     description:
@@ -170,14 +170,7 @@ export const productDisplay: ProductDisplayProps[] = [
   },
   {
     id: 3,
-    productCode: [
-      'CYL2.7',
-      'LPG2.7CCPK',
-      'LPG2.7C',
-      'ACCPKB',
-      'ACCPGS',
-      'ACCHRCB',
-    ],
+    productCode: ['CYL2.7', 'LPG2.7CCPK', 'LPG2.7C'], //'ACCPKB', 'ACCPGS', 'ACCHRCB',
     image: require('~/assets/images/products/LPG2.7CCPK.png'),
     name: '2.7KG',
     description:
@@ -185,7 +178,7 @@ export const productDisplay: ProductDisplayProps[] = [
   },
   {
     id: 4,
-    productCode: ['CYL22', 'LPG22C', 'ACCPGS', 'ACCHRCB'],
+    productCode: ['CYL22', 'LPG22C'], //'ACCPGS', 'ACCHRCB'
     image: require('~/assets/images/products/CYL22.png'),
     name: '22KG',
     description:
@@ -193,7 +186,7 @@ export const productDisplay: ProductDisplayProps[] = [
   },
   {
     id: 5,
-    productCode: ['LPG50C', 'CYL50', 'ACCPGS', 'ACCHRCB'],
+    productCode: ['LPG50C', 'CYL50'], //'ACCPGS', 'ACCHRCB'
     image: require('~/assets/images/products/CYL50.png'),
     name: '50KG',
     description:
@@ -201,7 +194,7 @@ export const productDisplay: ProductDisplayProps[] = [
   },
   {
     id: 6,
-    productCode: ['MO220C', 'MO2TFT', 'MEDREG'],
+    productCode: ['MO220C', 'MO2TFT'], //'MEDREG'
     image: require('~/assets/images/products/MO220C.png'),
     name: 'Medical Oxygen 20lbs',
     description:
@@ -209,10 +202,27 @@ export const productDisplay: ProductDisplayProps[] = [
   },
   {
     id: 7,
-    productCode: ['MO2105C', 'MO2TST', 'MEDREG'],
+    productCode: ['MO2105C', 'MO2TST'], //'MEDREG'
     image: require('~/assets/images/products/MO2105C.png'),
     name: 'Medical Oxygen 20lbs',
     description:
       'A 105lbs medical oxygen cylinder is a substantial source of oxygen therapy, primarily used in medical settings where a high volume of oxygen is required. Provides a reliable and large supply of oxygen for patients in intensive care units, during surgeries, and in emergency rooms.',
   },
+]
+
+export const exemptedOnProducts = ['ACCPKB', 'ACCPGS', 'ACCHRCB', 'MEDREG']
+export const productCodes = [
+  'LPG11C',
+  'CYL11',
+  'CYL2.7',
+  'LPG2.7CCPK',
+  'LPG2.7C',
+  'CYL22',
+  'LPG22C',
+  'LPG50C',
+  'CYL50',
+  'MO220C',
+  'MO2TFT',
+  'MO2105C',
+  'MO2TST',
 ]

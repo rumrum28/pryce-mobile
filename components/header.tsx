@@ -12,17 +12,17 @@ import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
 import { Link, useNavigation } from 'expo-router'
 import { DrawerActions } from '@react-navigation/native'
-import useBasketStore from '~/utils/basketStore'
 import { SearchBar } from '~/components/search_bar'
 import usePryceStore from '~/hooks/pryceStore'
+import useCartStore from '~/hooks/productsStore'
 
 export default function Header() {
   const token = usePryceStore((state) => state.token)
   const users = usePryceStore((state) => state.users)
+  const cart = useCartStore((state) => state.cart)
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const [addressText, setAddressText] = useState<string>('Select Address')
   const navigation = useNavigation()
-  const { items, total } = useBasketStore()
   const setChangeAddressTrigger = usePryceStore(
     (state) => state.setChangeAddressTrigger
   )
@@ -106,7 +106,7 @@ export default function Header() {
         >
           <Link href="/(drawer)/shop/(modal)/basket" asChild>
             <TouchableOpacity>
-              {items > 0 ? (
+              {cart.length > 0 ? (
                 <View
                   style={{
                     position: 'absolute',
@@ -127,7 +127,7 @@ export default function Header() {
                       fontWeight: 'bold',
                     }}
                   >
-                    {items}
+                    {cart.length}
                   </Text>
                 </View>
               ) : null}

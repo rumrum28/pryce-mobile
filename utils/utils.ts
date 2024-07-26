@@ -4,6 +4,6 @@ export const formatCurrency = (price: number) => {
     currency: 'PHP',
   }).format(price)
 
-  // Add a space after the PHP symbol
-  return formattedPrice.replace('₱', '₱ ')
+  // return formattedPrice.replace('₱', '₱ ')
+  return formattedPrice
 }

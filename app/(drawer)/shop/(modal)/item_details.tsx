@@ -1,17 +1,150 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, TouchableOpacity } from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { useLocalSearchParams } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Animated, { FadeIn, FadeInLeft } from 'react-native-reanimated'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
-import StyledButton from '~/components/styled_button'
 import { useMutation } from '@tanstack/react-query'
 import { fetchProductsQuery } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import usePryceStore from '~/hooks/pryceStore'
-import { Button, Spinner, YStack } from 'tamagui'
-import { ProductsDetail } from '~/utils/products'
+import { Button, Image, Spinner, Text, YStack } from 'tamagui'
+import { exemptedOnProducts, ProductsDetail } from '~/utils/products'
+import AddToCartButton from '~/components/add_to_cart_button'
+import { formatCurrency } from '~/utils/utils'
+import { ProductSingle } from '~/types/product'
+import useCartStore from '~/hooks/productsStore'
+import { useToastController } from '@tamagui/toast'
+
+const AddOnsProductsRender = ({
+  productCodeMap,
+  realTimeProductData,
+}: {
+  productCodeMap: string[]
+  realTimeProductData: ProductSingle[] | undefined
+}) => {
+  const cart = useCartStore((state) => state.cart)
+  const addProduct = useCartStore((state) => state.addProduct)
+  const removeProduct = useCartStore((state) => state.removeProduct)
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
+
+  const addOnAddQuantity = (e: string) => {
+    const addProductToCart = {
+      productCode: e,
+      quantity: 1,
+    }
+    addProduct(addProductToCart)
+  }
+
+  const addOnMinusQuantity = (e: string) => {
+    decreaseQuantity(e)
+  }
+
+  const removeProductFromCart = (e: string) => {
+    removeProduct(e)
+  }
+
+  useEffect(() => {
+    console.log(cart)
+  }, [cart])
+
+  return (
+    <>
+      {productCodeMap.map((e, index) => (
+        <View
+          key={index}
+          style={{
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+              maxWidth: '50%',
+            }}
+          >
+            <Image
+              source={{
+                uri: ProductsDetail.find((pd) => pd.id === e)?.image,
+                width: 60,
+                height: 60,
+              }}
+            />
+            <Text
+              style={{
+                fontSize: 12,
+              }}
+            >
+              {ProductsDetail.find((pd) => pd.id === e)?.name}
+            </Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <Text style={{ marginRight: 5, fontSize: 12 }}>
+              {realTimeProductData &&
+                formatCurrency(
+                  Number(
+                    realTimeProductData.find((fp) => fp.ProductCode === e)
+                      ?.RegularPrice
+                  )
+                )}
+            </Text>
+
+            {cart.length > 0 && (
+              <>
+                {cart.map((cf, i) => {
+                  if (cf.productCode === e) {
+                    if (cf.quantity === 1) {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => removeProductFromCart(e)}
+                          key={i}
+                        >
+                          <Ionicons
+                            name="remove"
+                            size={20}
+                            color={'orangered'}
+                          />
+                        </TouchableOpacity>
+                      )
+                    } else {
+                      return (
+                        <TouchableOpacity
+                          onPress={() => addOnMinusQuantity(e)}
+                          key={i}
+                        >
+                          <Ionicons
+                            name="remove"
+                            size={20}
+                            color={'orangered'}
+                          />
+                        </TouchableOpacity>
+                      )
+                    }
+                  }
+                })}
+              </>
+            )}
+
+            <TouchableOpacity onPress={() => addOnAddQuantity(e)}>
+              <Ionicons name="add" size={20} color={'orangered'} />
+            </TouchableOpacity>
+          </View>
+        </View>
+      ))}
+    </>
+  )
+}
 
 export default function ItemDetails() {
   const { productCode } = useLocalSearchParams()
@@ -19,6 +152,11 @@ export default function ItemDetails() {
   const addressRef = usePryceStore((set) => set.addressRef)
   const favorites = usePryceStore((set) => set.favorites)
   const setFavorites = usePryceStore((set) => set.setFavorites)
+  const addProduct = useCartStore((state) => state.addProduct)
+  const removeProduct = useCartStore((state) => state.removeProduct)
+  const clearCart = useCartStore((state) => state.clearCart)
+  const cart = useCartStore((state) => state.cart)
+  const toast = useToastController()
 
   const addToFavoritesHandler = async (f: string) => {
     setFavorites(f)
@@ -39,30 +177,30 @@ export default function ItemDetails() {
     }
   }, [addressRef])
 
-  const addToCart = () => {
-    // const selectedProduct = { ...data }
-    // const unitPrice = selectedProduct.unit_price
-    // const numQuantity = quantity ?? 1
-    // addProduct(selectedProduct, numQuantity)
-    // const priceToAdd = unitPrice * numQuantity
-    // setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
-    // setItems((prevItems) => prevItems + numQuantity)
-    // Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-    // router.back()
-  }
+  const addToCart = (e: string) => {
+    const addProductToCart = {
+      productCode: e,
+      quantity,
+    }
 
-  const formatCurrency = (value: number): string => {
-    const formattedValue = value.toFixed(2)
-    return formattedValue
-  }
-  // const formattedPrice = formatCurrency(Number(item?.unit_price))
-  // const totalPrice = quantity * parseFloat(formattedPrice)
+    if (e === 'PGCM' || e === 'PGCMV') {
+      clearCart()
+    }
 
-  const removeFromCart = () => {
-    // if (quantity > 1) {
-    //   setQuantity(quantity - 1)
-    //   reduceProduct(item)
-    // }
+    const checkForPGCMOrder = cart.some(
+      (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
+    )
+
+    if (checkForPGCMOrder) {
+      toast.show('PGCM Order Found!', {
+        message: 'You must clear your cart first before you can continue.',
+        native: false,
+      })
+    } else {
+      addProduct(addProductToCart)
+    }
+
+    router.back()
   }
 
   return (
@@ -126,6 +264,16 @@ export default function ItemDetails() {
             >
               {ProductsDetail.find((e) => e.id === productCode)?.description}
             </Animated.Text>
+
+            {productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
+              <>
+                <Text mt={10}>Add-ons</Text>
+                <AddOnsProductsRender
+                  productCodeMap={exemptedOnProducts}
+                  realTimeProductData={fetchProducts.data}
+                />
+              </>
+            )}
           </View>
 
           <View
@@ -157,7 +305,11 @@ export default function ItemDetails() {
                 style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}
               >
                 <TouchableOpacity
-                  onPress={removeFromCart}
+                  onPress={() =>
+                    quantity > 1
+                      ? setQuantity(quantity - 1)
+                      : removeProduct(String(productCode))
+                  }
                   style={{
                     backgroundColor: colorTokens.light.orange.orange9,
                     borderRadius: 20,
@@ -166,6 +318,7 @@ export default function ItemDetails() {
                 >
                   <AntDesign name="minus" size={24} color="white" />
                 </TouchableOpacity>
+
                 <Text
                   style={{
                     fontSize: 16,
@@ -176,6 +329,7 @@ export default function ItemDetails() {
                 >
                   {quantity}
                 </Text>
+
                 <TouchableOpacity
                   onPress={() => setQuantity(quantity + 1)}
                   style={{
@@ -187,23 +341,10 @@ export default function ItemDetails() {
                   <Ionicons name="add" size={24} color="white" />
                 </TouchableOpacity>
               </View>
-              <StyledButton
-                style={{
-                  flex: 1,
-                }}
-                onPress={addToCart}
-              >
-                <Text
-                  style={{
-                    color: 'white',
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                  }}
-                >
-                  Add for
-                  {/* {totalPrice} */}
-                </Text>
-              </StyledButton>
+
+              <AddToCartButton
+                addToCart={() => addToCart(String(productCode))}
+              />
             </View>
           </View>
         </View>

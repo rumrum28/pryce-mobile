@@ -106,13 +106,10 @@ const Details = () => {
     },
   })
 
-  const productOnClickHandler = (i: string) => {
-    console.log(i)
+  const productOnClickHandler = (productCode: string) => {
     router.push({
       pathname: '/(drawer)/shop/(modal)/item_details',
-      params: {
-        productCode: i,
-      },
+      params: { productCode },
     })
   }
 

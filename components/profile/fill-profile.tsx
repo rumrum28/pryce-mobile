@@ -267,26 +267,24 @@ export default function FillProfile(props: SelectProps) {
                       <Select.Group>
                         {useMemo(
                           () =>
-                            provinceArray.map((item, i) => {
-                              return (
-                                <Select.Item
-                                  index={i}
-                                  key={item.province}
-                                  value={item.province}
-                                >
-                                  <Select.ItemText style={{ color: 'gray' }}>
-                                    {item.province}
-                                  </Select.ItemText>
-                                  <Select.ItemIndicator marginLeft="auto">
-                                    <AntDesign
-                                      name="check"
-                                      size={24}
-                                      color="black"
-                                    />
-                                  </Select.ItemIndicator>
-                                </Select.Item>
-                              )
-                            }),
+                            provinceArray.map((item, i) => (
+                              <Select.Item
+                                index={i}
+                                key={item.province}
+                                value={item.province}
+                              >
+                                <Select.ItemText style={{ color: 'gray' }}>
+                                  {item.province}
+                                </Select.ItemText>
+                                <Select.ItemIndicator marginLeft="auto">
+                                  <AntDesign
+                                    name="check"
+                                    size={24}
+                                    color="black"
+                                  />
+                                </Select.ItemIndicator>
+                              </Select.Item>
+                            )),
                           [provinceArray]
                         )}
                       </Select.Group>

@@ -4,7 +4,7 @@ import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
-import { ToastViewport, useToastController } from '@tamagui/toast'
+import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { useMutation } from '@tanstack/react-query'
 import { changeAddressOnLoad } from '~/server/api'
@@ -14,19 +14,10 @@ import { router } from 'expo-router'
 import ProductGroup from '../productGroup'
 
 export default function Page() {
-  const toast = useToastController()
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
   const setAddressRef = usePryceStore((set) => set.setAddressRef)
   const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
-  const setToken = usePryceStore((state) => state.setToken)
-  const users = usePryceStore((state) => state.users)
-  const setChangeAddressTrigger = usePryceStore(
-    (state) => state.setChangeAddressTrigger
-  )
-  const setUsers = usePryceStore((state) => state.setUsers)
-  const setEmail = usePryceStore((state) => state.setEmail)
 
   const fetchProducts = useMutation({
     mutationFn: changeAddressOnLoad,
@@ -128,7 +119,7 @@ export default function Page() {
           Product Groups
         </Text>
 
-        <ProductGroup products={fetchProducts.data?.productsResponse} />
+        <ProductGroup />
 
         <Text
           style={{
