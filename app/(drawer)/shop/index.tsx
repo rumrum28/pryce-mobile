@@ -104,7 +104,7 @@ export default function Page() {
             fontSize: 18,
           }}
         >
-          Top picks in your neighborhood
+          Top picks in your neighborhood (no code yet)
         </Text>
         <Products products={fetchProducts.data?.productsResponse} />
 
