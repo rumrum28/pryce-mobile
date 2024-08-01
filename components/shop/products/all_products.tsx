@@ -24,8 +24,8 @@ export default function AllProducts({
 
   useEffect(() => {
     //remove after verifying
-    // console.log(favorites)
-  }, [favorites])
+    // console.log(products)
+  }, [products])
 
   const productOnClickHandler = (product: ProductSingle) => {
     router.push({
@@ -96,14 +96,38 @@ export default function AllProducts({
                       justifyContent: 'space-between',
                     }}
                   >
-                    <Text
-                      style={{
-                        color: colorTokens.light.gray.gray12,
-                        paddingVertical: 2,
-                      }}
-                    >
-                      {formatCurrency(product.RegularPrice)}
-                    </Text>
+                    <View>
+                      {product.UnitPrice < product.RegularPrice ? (
+                        <>
+                          <Text
+                            style={{
+                              color: colorTokens.light.gray.gray10,
+                              paddingVertical: 2,
+                              textDecorationLine: 'line-through',
+                            }}
+                          >
+                            {formatCurrency(product.RegularPrice)}
+                          </Text>
+                          <Text
+                            style={{
+                              color: colorTokens.light.orange.orange10,
+                              paddingVertical: 2,
+                            }}
+                          >
+                            {formatCurrency(product.UnitPrice)}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text
+                          style={{
+                            color: colorTokens.light.gray.gray12,
+                            paddingVertical: 2,
+                          }}
+                        >
+                          {formatCurrency(product.RegularPrice)}
+                        </Text>
+                      )}
+                    </View>
 
                     {favorites &&
                     favorites.find(

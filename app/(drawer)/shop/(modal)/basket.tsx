@@ -22,6 +22,7 @@ import { queryClient } from '~/hooks/queryClient'
 import { Image, Spinner, YStack } from 'tamagui'
 import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
+import NonePgcmCheckoutAlert from '~/components/none_pgcm_checkout_alert'
 
 export default function Basket() {
   const cart = useCartStore((state) => state.cart)
@@ -66,10 +67,9 @@ export default function Basket() {
   useEffect(() => {
     if (!fetchProducts.isPending && fetchProducts.data) {
       const subtotal = calculateSubtotal(cart, fetchProducts.data)
-      console.log(subtotal)
       setSubTotal(subtotal)
     }
-  }, [fetchProducts.isPending, fetchProducts.data])
+  }, [fetchProducts.isPending, fetchProducts.data, cart])
 
   return (
     <View style={{ flex: 1, backgroundColor: 'white', paddingBottom: 150 }}>
@@ -255,6 +255,8 @@ export default function Basket() {
                   </View>
                 }
               />
+              <NonePgcmCheckoutAlert />
+
               <View
                 style={{
                   position: 'absolute',

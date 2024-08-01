@@ -51,97 +51,132 @@ const AddOnsProductsRender = ({
 
   return (
     <>
-      {productCodeMap.map((e, index) => (
-        <View
-          key={index}
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
+      {productCodeMap.map((e, index) => {
+        const regularPrice = realTimeProductData
+          ? realTimeProductData.find((fp) => fp.ProductCode === e)?.RegularPrice
+          : 0
+        const unitPrice = realTimeProductData
+          ? realTimeProductData.find((fp) => fp.ProductCode === e)?.RegularPrice
+          : 0
+
+        return (
           <View
+            key={index}
             style={{
               flexDirection: 'row',
               justifyContent: 'space-between',
               alignItems: 'center',
-              maxWidth: '50%',
             }}
           >
-            <Image
-              source={{
-                uri: ProductsDetail.find((pd) => pd.id === e)?.image,
-                width: 60,
-                height: 60,
-              }}
-            />
-            <Text
+            <View
               style={{
-                fontSize: 12,
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                maxWidth: '50%',
               }}
             >
-              {ProductsDetail.find((pd) => pd.id === e)?.name}
-            </Text>
-          </View>
+              <Image
+                source={{
+                  uri: ProductsDetail.find((pd) => pd.id === e)?.image,
+                  width: 60,
+                  height: 60,
+                }}
+              />
+              <Text
+                style={{
+                  fontSize: 12,
+                }}
+              >
+                {ProductsDetail.find((pd) => pd.id === e)?.name}
+              </Text>
+            </View>
 
-          <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <Text style={{ marginRight: 5, fontSize: 12 }}>
-              {realTimeProductData &&
-                formatCurrency(
-                  Number(
-                    realTimeProductData.find((fp) => fp.ProductCode === e)
-                      ?.RegularPrice
-                  )
-                )}
-            </Text>
+            <View
+              style={{
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <Text style={{ marginRight: 5, fontSize: 12 }}>
+                {unitPrice &&
+                  regularPrice &&
+                  (unitPrice < regularPrice ? (
+                    <View>
+                      <Text
+                        style={{
+                          color: colorTokens.light.gray.gray10,
+                          paddingVertical: 2,
+                          textDecorationLine: 'line-through',
+                        }}
+                      >
+                        {formatCurrency(regularPrice)}
+                      </Text>
 
-            {cart.length > 0 && (
-              <>
-                {cart.map((cf, i) => {
-                  if (cf.productCode === e) {
-                    if (cf.quantity === 1) {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => removeProductFromCart(e)}
-                          key={i}
-                        >
-                          <Ionicons
-                            name="remove"
-                            size={20}
-                            color={'orangered'}
-                          />
-                        </TouchableOpacity>
-                      )
-                    } else {
-                      return (
-                        <TouchableOpacity
-                          onPress={() => addOnMinusQuantity(e)}
-                          key={i}
-                        >
-                          <Ionicons
-                            name="remove"
-                            size={20}
-                            color={'orangered'}
-                          />
-                        </TouchableOpacity>
-                      )
+                      <Text
+                        style={{
+                          color: colorTokens.light.orange.orange10,
+                          paddingVertical: 2,
+                        }}
+                      >
+                        {formatCurrency(unitPrice)}
+                      </Text>
+                    </View>
+                  ) : (
+                    <Text
+                      style={{
+                        color: colorTokens.light.gray.gray12,
+                        paddingVertical: 2,
+                      }}
+                    >
+                      {formatCurrency(regularPrice)}
+                    </Text>
+                  ))}
+              </Text>
+
+              {cart.length > 0 && (
+                <>
+                  {cart.map((cf, i) => {
+                    if (cf.productCode === e) {
+                      if (cf.quantity === 1) {
+                        return (
+                          <TouchableOpacity
+                            onPress={() => removeProductFromCart(e)}
+                            key={i}
+                          >
+                            <Ionicons
+                              name="remove"
+                              size={20}
+                              color={'orangered'}
+                            />
+                          </TouchableOpacity>
+                        )
+                      } else {
+                        return (
+                          <TouchableOpacity
+                            onPress={() => addOnMinusQuantity(e)}
+                            key={i}
+                          >
+                            <Ionicons
+                              name="remove"
+                              size={20}
+                              color={'orangered'}
+                            />
+                          </TouchableOpacity>
+                        )
+                      }
                     }
-                  }
-                })}
-              </>
-            )}
+                  })}
+                </>
+              )}
 
-            <TouchableOpacity onPress={() => addOnAddQuantity(e)}>
-              <Ionicons name="add" size={20} color={'orangered'} />
-            </TouchableOpacity>
+              <TouchableOpacity onPress={() => addOnAddQuantity(e)}>
+                <Ionicons name="add" size={20} color={'orangered'} />
+              </TouchableOpacity>
+            </View>
           </View>
-        </View>
-      ))}
+        )
+      })}
     </>
   )
 }

@@ -114,11 +114,7 @@ const Details = () => {
   }
 
   const displayGroups = ({ item, index }: { item: any; index: number }) => (
-    <TouchableOpacity
-      onPress={() => productOnClickHandler(item)}
-      // asChild
-      key={index}
-    >
+    <TouchableOpacity onPress={() => productOnClickHandler(item)} key={index}>
       {fetchProducts.isPending ? (
         <View>
           <Text>to be replace with skeleton</Text>
