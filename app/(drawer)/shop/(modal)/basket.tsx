@@ -6,8 +6,7 @@ import {
   ImageBackground,
   useWindowDimensions,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import useBasketStore from '~/utils/basketStore'
+import { useEffect, useState } from 'react'
 import { formatCurrency } from '~/utils/utils'
 import { colorTokens } from '@tamagui/themes'
 import { Link } from 'expo-router'
