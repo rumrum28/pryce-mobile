@@ -1,12 +1,19 @@
 import { router } from 'expo-router'
 import { useEffect, useState } from 'react'
-import { View, Text, ScrollView, Image, Pressable } from 'react-native'
 import {
-  CombinedArrayProps,
+  View,
+  Text,
+  ScrollView,
+  Image,
+  Pressable,
+  ImageBackground,
+} from 'react-native'
+import {
   FavoriteProps,
   FavoritesList,
   ProductSingle,
   ProductsProps,
+  ProductDisplayProps,
 } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 
@@ -17,7 +24,7 @@ export default function Categories({
   favorites: any
   products: any
 }) {
-  const [items, setItems] = useState<CombinedArrayProps>([])
+  const [items, setItems] = useState<ProductSingle[] | null>(null)
 
   useEffect(() => {
     const filteredProducts = products.filter((e: ProductSingle) =>
@@ -34,53 +41,78 @@ export default function Categories({
     setItems(combinedArray)
   }, [favorites, products])
 
+  const productOnClickHandler = (product: ProductSingle) => {
+    router.push({
+      pathname: '/(drawer)/shop/(modal)/item_details',
+      params: {
+        productCode: product.ProductCode,
+      },
+    })
+  }
+
   return (
     <ScrollView
       horizontal
       showsHorizontalScrollIndicator={false}
       contentContainerStyle={{ padding: 15 }}
     >
-      {items.map((category, index) => (
-        <View
-          key={index}
-          style={{
-            height: 100,
-            width: 150,
-            backgroundColor: 'white',
-            marginEnd: 10,
-            elevation: 2,
-            shadowColor: 'black',
-            shadowOffset: {
-              width: 0,
-              height: 4,
-            },
-            shadowOpacity: 0.06,
-            borderRadius: 4,
-          }}
-        >
+      {items &&
+        items.map((category, index) => (
           <Pressable
-            onPress={() =>
-              router.push({
-                pathname: '/(drawer)/shop/details',
-                params: {
-                  productCode: category.ProductCode,
-                },
-              })
-            }
+            key={index}
+            onPress={() => productOnClickHandler(category)}
+            style={{ paddingHorizontal: 16 }}
           >
-            <Image
-              source={category.image}
+            <View
               style={{
-                height: '80%',
-                width: '100%',
+                height: 100,
+                width: 150,
+                backgroundColor: 'white',
+                elevation: 2,
+                shadowColor: 'black',
+                shadowOffset: {
+                  width: 4,
+                  height: 8,
+                },
+                shadowOpacity: 0.06,
+                borderRadius: 20,
+                // padding: 20,
+                overflow: 'hidden',
               }}
-            />
-            <Text style={{ fontSize: 11, fontWeight: 'bold', padding: 3 }}>
-              {category.name}
-            </Text>
+            >
+              <ImageBackground
+                source={
+                  ProductsDetail.find((e) => e.id === category.ProductCode)
+                    ?.image
+                }
+                style={{
+                  height: '100%',
+                  width: 'auto',
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+              >
+                <Text
+                  style={{
+                    textAlign: 'center',
+                    fontSize: 11,
+                    fontWeight: 'bold',
+                    color: '#FF5F0A',
+                    borderWidth: 1,
+                    borderColor: '#FFD1A5',
+                    paddingHorizontal: 5,
+                    backgroundColor: '#FFF6EC',
+                  }}
+                >
+                  {
+                    ProductsDetail.find((e) => e.id === category.ProductCode)
+                      ?.name
+                  }
+                </Text>
+              </ImageBackground>
+            </View>
           </Pressable>
-        </View>
-      ))}
+        ))}
     </ScrollView>
   )
 }

@@ -17,30 +17,37 @@ export default function ProductGroup() {
 
   const productGroupItems = ({ item }: { item: ProductDisplayProps }) => {
     return (
-      <Pressable onPress={() => productOnClickHandler(item.id)} key={item.id}>
+      <Pressable
+        onPress={() => productOnClickHandler(item.id)}
+        key={item.id}
+        style={{
+          paddingVertical: 10,
+          paddingHorizontal: 16,
+        }}
+      >
         <View
           style={{
-            height: 230,
-            width: 300,
+            height: 200,
+            width: 200,
             backgroundColor: 'white',
-            marginEnd: 10,
             elevation: 2,
             shadowColor: 'black',
             shadowOffset: {
-              width: 0,
-              height: 4,
+              width: 4,
+              height: 8,
             },
             shadowOpacity: 0.06,
-            borderRadius: 4,
+            borderRadius: 20,
+            overflow: 'hidden',
           }}
         >
           <Image
             source={item.image}
-            style={{ height: '100%', width: '100%', flex: 5 }}
-            objectFit="cover"
+            style={{ height: '100%', width: '100%', flex: 1 }}
+            resizeMode="fit"
           />
 
-          <View style={{ flex: 2, padding: 10 }}>
+          {/* <View style={{ padding: 10 }}>
             <Text
               style={{
                 color: colorTokens.light.gray.gray9,
@@ -48,7 +55,7 @@ export default function ProductGroup() {
             >
               {item.name}
             </Text>
-          </View>
+          </View> */}
         </View>
       </Pressable>
     )
@@ -56,7 +63,7 @@ export default function ProductGroup() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 15 }}>
+    <ScrollView contentContainerStyle={{ paddingHorizontal: 15 }}>
       <FlatList
         data={productDisplay}
         renderItem={productGroupItems}

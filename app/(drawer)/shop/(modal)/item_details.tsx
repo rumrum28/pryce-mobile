@@ -64,16 +64,14 @@ const AddOnsProductsRender = ({
             key={index}
             style={{
               flexDirection: 'row',
-              justifyContent: 'space-between',
               alignItems: 'center',
             }}
           >
             <View
               style={{
                 flexDirection: 'row',
-                justifyContent: 'space-between',
                 alignItems: 'center',
-                maxWidth: '50%',
+                flex: 1,
               }}
             >
               <Image
@@ -83,94 +81,133 @@ const AddOnsProductsRender = ({
                   height: 60,
                 }}
               />
-              <Text
-                style={{
-                  fontSize: 12,
-                }}
-              >
-                {ProductsDetail.find((pd) => pd.id === e)?.name}
-              </Text>
+
+              <View style={{ flex: 1 }}>
+                <Text
+                  style={{
+                    fontSize: 12,
+                    paddingRight: 5,
+                  }}
+                  numberOfLines={1}
+                >
+                  {ProductsDetail.find((pd) => pd.id === e)?.name}
+                </Text>
+
+                <View style={{ marginRight: 5 }}>
+                  {unitPrice && regularPrice ? (
+                    unitPrice < regularPrice ? (
+                      <View>
+                        <Text
+                          style={{
+                            color: colorTokens.light.gray.gray10,
+                            paddingVertical: 2,
+                            textDecorationLine: 'line-through',
+                          }}
+                        >
+                          {formatCurrency(regularPrice)}
+                        </Text>
+
+                        <Text
+                          style={{
+                            color: colorTokens.light.orange.orange10,
+                            paddingVertical: 2,
+                          }}
+                        >
+                          {formatCurrency(unitPrice)}
+                        </Text>
+                      </View>
+                    ) : (
+                      <Text
+                        style={{
+                          color: colorTokens.light.gray.gray12,
+                          paddingVertical: 2,
+                        }}
+                      >
+                        {formatCurrency(regularPrice)}
+                      </Text>
+                    )
+                  ) : null}
+                </View>
+              </View>
             </View>
 
             <View
               style={{
                 flexDirection: 'row',
                 alignItems: 'center',
+                backgroundColor: '#FFEAD3',
+                padding: 5,
+                borderRadius: 5,
               }}
             >
-              <Text style={{ marginRight: 5, fontSize: 12 }}>
-                {unitPrice &&
-                  regularPrice &&
-                  (unitPrice < regularPrice ? (
-                    <View>
-                      <Text
-                        style={{
-                          color: colorTokens.light.gray.gray10,
-                          paddingVertical: 2,
-                          textDecorationLine: 'line-through',
-                        }}
-                      >
-                        {formatCurrency(regularPrice)}
-                      </Text>
-
-                      <Text
-                        style={{
-                          color: colorTokens.light.orange.orange10,
-                          paddingVertical: 2,
-                        }}
-                      >
-                        {formatCurrency(unitPrice)}
-                      </Text>
-                    </View>
-                  ) : (
-                    <Text
-                      style={{
-                        color: colorTokens.light.gray.gray12,
-                        paddingVertical: 2,
-                      }}
-                    >
-                      {formatCurrency(regularPrice)}
-                    </Text>
-                  ))}
-              </Text>
-
-              {cart.length > 0 && (
+              {cart.length > 0 ? (
                 <>
                   {cart.map((cf, i) => {
                     if (cf.productCode === e) {
                       if (cf.quantity === 1) {
                         return (
-                          <TouchableOpacity
-                            onPress={() => removeProductFromCart(e)}
-                            key={i}
-                          >
-                            <Ionicons
-                              name="remove"
-                              size={20}
-                              color={'orangered'}
-                            />
-                          </TouchableOpacity>
+                          <React.Fragment key={i}>
+                            <TouchableOpacity
+                              onPress={() => removeProductFromCart(e)}
+                              style={{
+                                borderWidth: 1,
+                                borderColor: '#FF4500',
+                                borderRadius: 5,
+                              }}
+                            >
+                              <Ionicons
+                                name="remove"
+                                size={20}
+                                color={'orangered'}
+                              />
+                            </TouchableOpacity>
+
+                            <Text
+                              style={{ marginHorizontal: 10, color: '#460D04' }}
+                            >
+                              {cf.quantity}
+                            </Text>
+                          </React.Fragment>
                         )
                       } else {
                         return (
-                          <TouchableOpacity
-                            onPress={() => addOnMinusQuantity(e)}
-                            key={i}
-                          >
-                            <Ionicons
-                              name="remove"
-                              size={20}
-                              color={'orangered'}
-                            />
-                          </TouchableOpacity>
+                          <React.Fragment key={i}>
+                            <TouchableOpacity
+                              onPress={() => addOnMinusQuantity(e)}
+                              style={{
+                                borderWidth: 1,
+                                borderColor: '#FF4500',
+                                borderRadius: 5,
+                              }}
+                            >
+                              <Ionicons
+                                name="remove"
+                                size={20}
+                                color={'orangered'}
+                              />
+                            </TouchableOpacity>
+
+                            <Text
+                              style={{ marginHorizontal: 10, color: '#460D04' }}
+                            >
+                              {cf.quantity}
+                            </Text>
+                          </React.Fragment>
                         )
                       }
                     }
                   })}
                 </>
-              )}
+              ) : null}
 
-              <TouchableOpacity onPress={() => addOnAddQuantity(e)}>
+              <TouchableOpacity
+                onPress={() => addOnAddQuantity(e)}
+                style={{
+                  borderWidth: 1,
+                  borderColor: '#FF4500',
+                  borderRadius: 5,
+                }}
+              >
                 <Ionicons name="add" size={20} color={'orangered'} />
               </TouchableOpacity>
             </View>

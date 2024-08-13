@@ -38,6 +38,7 @@ const Details = () => {
   )
   const { width } = Dimensions.get('window')
   const IMG_HEIGHT = 300
+  const [descriptionLength, setDescriptionLength] = useState<boolean>(false)
 
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const token = usePryceStore((state) => state.token)
@@ -58,30 +59,6 @@ const Details = () => {
     }
   }, [addressRef])
 
-  // const fetchProducts = useMutation({
-  //   mutationFn: changeAddressOnLoad,
-  //   onSuccess: (data) => {
-  //     queryClient.invalidateQueries({
-  //       queryKey: ['fetchProductsOnLoad'],
-  //     })
-
-  //     if (data?.addressRef) {
-  //       setAddressRef(data.addressRef)
-  //     }
-  //   },
-  // })
-
-  // useEffect(() => {
-  //   if (selectedUser) {
-  //     const userData: { token: string; accountNumber: string } = {
-  //       token: token,
-  //       accountNumber: selectedUser,
-  //     }
-
-  //     fetchProducts.mutate(userData)
-  //   }
-  // }, [selectedUser])
-
   useEffect(() => {
     if (idParam) {
       const getSingleData = productDisplay.filter(
@@ -93,8 +70,9 @@ const Details = () => {
 
   const styles = StyleSheet.create({
     image: {
-      width,
+      width: 'auto',
       height: IMG_HEIGHT,
+      resizeMode: 'contain',
     },
     header: {
       backgroundColor: 'white',
@@ -244,7 +222,13 @@ const Details = () => {
             style={[styles.image, imageAnimatedStyle]}
           />
 
-          <View style={{ height: 200, backgroundColor: 'white' }}>
+          <View
+            style={{
+              marginBottom: 5,
+              paddingBottom: 10,
+              backgroundColor: 'white',
+            }}
+          >
             <Text
               style={{
                 fontSize: 20,
@@ -257,13 +241,29 @@ const Details = () => {
             <Text
               style={{
                 fontSize: 16,
-                margin: 16,
-                lineHeight: 22,
-                color: colorTokens.light.gray.gray9,
+                marginHorizontal: 16,
+                lineHeight: 26,
+                color: colorTokens.light.gray.gray11,
               }}
+              numberOfLines={descriptionLength ? 10 : 2}
             >
               {itemProducts?.description}
             </Text>
+
+            <TouchableOpacity
+              onPress={() => setDescriptionLength(!descriptionLength)}
+            >
+              <Text
+                style={{
+                  marginTop: 5,
+                  marginLeft: 16,
+                  textAlign: 'left',
+                  color: colorTokens.light.orange.orange9,
+                }}
+              >
+                {descriptionLength ? 'View less' : 'View more'}
+              </Text>
+            </TouchableOpacity>
           </View>
 
           {itemProducts && (

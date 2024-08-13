@@ -1,5 +1,16 @@
 import { ImageSourcePropType } from 'react-native'
 
+export type FilterTypeProps = {
+  type: string
+  message: string
+} | null
+
+export type FavoritesList = {
+  productCode: string
+}
+
+export type FavoriteProps = FavoritesList[]
+
 export type ProductSingle = {
   attributes: {
     type: string
@@ -19,33 +30,6 @@ type addressReference = {
 }
 
 export type ProductsProps = ProductSingle[]
-
-export type FilterTypeProps = {
-  type: string
-  message: string
-} | null
-
-export type FavoritesList = {
-  productCode: string
-}
-
-export type FavoriteProps = FavoritesList[]
-
-export type CombinedArray = {
-  Id: string
-  Name: string
-  Pricebook2Id: string
-  Product2Id: string
-  ProductCode: string
-  RegularPrice: number
-  UnitPrice: number
-  attributes: {
-    type: string
-    url: string
-  }
-}
-
-export type CombinedArrayProps = CombinedArray[]
 
 export type ProductDisplayProps = {
   id: number

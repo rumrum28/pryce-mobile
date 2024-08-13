@@ -163,7 +163,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 2,
     productCode: ['LPG11C', 'CYL11'], //'ACCPGS', 'ACCHRCB'
-    image: require('~/assets/images/products/LPG11C.png'),
+    image: require('~/assets/images/products-with-bg/11kg-bundle.jpg'),
     name: '11KG',
     description:
       '11kg petroleum gas cylinder, often referred to as an LPG (liquefied petroleum gas) cylinder, is commonly used for residential and commercial cooking, heating, and other applications.',
@@ -171,7 +171,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 3,
     productCode: ['CYL2.7', 'LPG2.7CCPK', 'LPG2.7C'], //'ACCPKB', 'ACCPGS', 'ACCHRCB',
-    image: require('~/assets/images/products/LPG2.7CCPK.png'),
+    image: require('~/assets/images/products-with-bg/2.7kg.jpg'),
     name: '2.7KG',
     description:
       'A 2.7kg LPG (liquefied petroleum gas) cylinder is a compact and portable energy source commonly used for small-scale applications. Suitable for single-burner gas stoves, making it a convenient option for small households or temporary setups.',
@@ -179,7 +179,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 4,
     productCode: ['CYL22', 'LPG22C'], //'ACCPGS', 'ACCHRCB'
-    image: require('~/assets/images/products/CYL22.png'),
+    image: require('~/assets/images/products-with-bg/22kg.jpg'),
     name: '22KG',
     description:
       'Commercial Cooking: Suitable for restaurants, catering businesses, and food trucks using multiple-burner stoves, ovens, and grills.',
@@ -187,7 +187,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 5,
     productCode: ['LPG50C', 'CYL50'], //'ACCPGS', 'ACCHRCB'
-    image: require('~/assets/images/products/CYL50.png'),
+    image: require('~/assets/images/products-with-bg/50kg.jpg'),
     name: '50KG',
     description:
       'Large-Scale Industrial Applications: Suitable for manufacturing processes, large-scale heating, and other industrial uses requiring significant energy output.',

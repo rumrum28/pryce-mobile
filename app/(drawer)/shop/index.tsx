@@ -1,4 +1,4 @@
-import { SafeAreaView, ScrollView, Text } from 'react-native'
+import { SafeAreaView, ScrollView, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
@@ -72,22 +72,25 @@ export default function Page() {
               style={{
                 flexDirection: 'row',
                 justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingTop: 10,
+                paddingHorizontal: 20,
               }}
             >
               <Text
                 style={{
-                  paddingHorizontal: 10,
                   fontWeight: 'bold',
-                  marginTop: 16,
                   fontSize: 18,
                 }}
               >
                 Your Favorite Products
               </Text>
 
-              <Button onPress={() => router.push('(drawer)/favorites')}>
-                See all
-              </Button>
+              <TouchableOpacity
+                onPress={() => router.push('(drawer)/favorites')}
+              >
+                <Text style={{ fontSize: 12 }}>See all</Text>
+              </TouchableOpacity>
             </View>
             <Categories
               products={fetchProducts.data?.productsResponse}
@@ -96,7 +99,7 @@ export default function Page() {
           </>
         ) : null}
 
-        <Text
+        {/* <Text
           style={{
             paddingHorizontal: 10,
             fontWeight: 'bold',
@@ -106,7 +109,7 @@ export default function Page() {
         >
           Top picks in your neighborhood (no code yet)
         </Text>
-        <Products products={fetchProducts.data?.productsResponse} />
+        <Products products={fetchProducts.data?.productsResponse} /> */}
 
         <Text
           style={{
@@ -116,7 +119,7 @@ export default function Page() {
             fontSize: 18,
           }}
         >
-          Product Groups
+          Hottest
         </Text>
 
         <ProductGroup />

@@ -37,7 +37,7 @@ export default function AllProducts({
   }
 
   return (
-    <View style={{ flex: 1, padding: 15 }}>
+    <View style={{ flex: 1, padding: 30, gap: 28 }}>
       {products &&
         products.length > 0 &&
         products.map((product, index) => (
@@ -47,22 +47,29 @@ export default function AllProducts({
             ) ? null : (
               <View
                 style={{
-                  height: 300,
-                  width: 'auto',
+                  height: 150,
+                  width: '100%',
                   backgroundColor: 'white',
-                  marginVertical: 10,
-                  elevation: 2,
-                  shadowColor: 'black',
-                  shadowOffset: {
-                    width: 0,
-                    height: 4,
-                  },
-                  shadowOpacity: 0.06,
-                  borderRadius: 4,
+                  elevation: 0.3,
+                  // shadowColor: 'black',
+                  // shadowOffset: {
+                  //   width: 0,
+                  //   height: 4,
+                  // },
+                  // shadowOpacity: 0.06,
+                  overflow: 'hidden',
+                  borderRadius: 28,
+                  flexDirection: 'row',
                 }}
               >
                 <TouchableOpacity
-                  style={{ flex: 1, width: '100%' }}
+                  style={{
+                    width: '35%',
+                    height: '100%',
+                    // backgroundColor: 'white',
+                    // elevation: 1,
+                    // borderRadius: 10,
+                  }}
                   onPress={() => productOnClickHandler(product)}
                 >
                   <Image
@@ -72,20 +79,31 @@ export default function AllProducts({
                     }
                     style={{
                       height: '100%',
-                      width: '100%',
+                      width: 'auto',
                     }}
                     resizeMode="contain"
                   />
                 </TouchableOpacity>
 
-                <View style={{ padding: 10 }}>
+                <View
+                  style={{
+                    paddingHorizontal: 20,
+                    paddingVertical: 16,
+                    flex: 1,
+                    backgroundColor: 'white',
+                    elevation: 1,
+                    borderRadius: 14,
+                  }}
+                >
                   <Text
                     onPress={() => productOnClickHandler(product)}
                     style={{
                       fontSize: 16,
                       fontWeight: 'bold',
                       paddingVertical: 5,
+                      flex: 1,
                     }}
+                    numberOfLines={1}
                   >
                     {product.Name}
                   </Text>
@@ -96,7 +114,7 @@ export default function AllProducts({
                       justifyContent: 'space-between',
                     }}
                   >
-                    <View>
+                    <View style={{}}>
                       {product.UnitPrice < product.RegularPrice ? (
                         <>
                           <Text
@@ -110,7 +128,7 @@ export default function AllProducts({
                           </Text>
                           <Text
                             style={{
-                              color: colorTokens.light.orange.orange10,
+                              color: '#FF4500',
                               paddingVertical: 2,
                             }}
                           >
@@ -120,7 +138,7 @@ export default function AllProducts({
                       ) : (
                         <Text
                           style={{
-                            color: colorTokens.light.gray.gray12,
+                            color: '#FF4500',
                             paddingVertical: 2,
                           }}
                         >
@@ -134,13 +152,13 @@ export default function AllProducts({
                       (fav) => fav.productCode === product.ProductCode
                     ) ? (
                       <Button onPress={() => addToFavoritesHandler(product)}>
-                        <Ionicons name="star" size={26} color="orangered" />
+                        <Ionicons name="star" size={20} color="orangered" />
                       </Button>
                     ) : (
                       <Button onPress={() => addToFavoritesHandler(product)}>
                         <Ionicons
                           name="star-outline"
-                          size={26}
+                          size={20}
                           color="orange"
                         />
                       </Button>

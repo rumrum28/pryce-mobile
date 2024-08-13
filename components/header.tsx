@@ -38,8 +38,10 @@ export default function Header() {
     const findUser = users.find((e) => e.Account_Number__c === selectedUser)
     if (findUser)
       setAddressText(
-        `${findUser.Primary_Street__c} ${findUser.Primary_Barangay__c} ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}`
+        `${findUser.Primary_Street__c} ${findUser.Primary_Barangay__c}`
       )
+
+    // ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}
   }, [selectedUser])
 
   return (

@@ -11,12 +11,13 @@ import { queryClient } from '~/hooks/queryClient'
 import { useEffect, useState } from 'react'
 import { useToastController } from '@tamagui/toast'
 import SwipeableRow from '~/components/swipeable_row'
-import { Image } from 'tamagui'
+import { Image, Label, XStack, YStack } from 'tamagui'
 import { formatCurrency } from '~/utils/utils'
 import NonePgcmCheckoutAlert from '~/components/none_pgcm_checkout_alert'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
+import { PaymentMethod } from '~/components/payment_method'
 
 export default function CheckoutItem() {
   const cart = useCartStore((state) => state.cart)
@@ -108,30 +109,22 @@ export default function CheckoutItem() {
           Capital Region, National Capital Region
         </Text>
       </View>
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          margin: 10,
-        }}
-      >
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>Payment Method</Text>
-      </View>
-      <View
-        style={{
-          padding: 10,
-          borderColor: colorTokens.light.gray.gray5,
-          borderWidth: 1,
-          borderRadius: 10,
-          marginBottom: 30,
-          margin: 10,
-        }}
-      >
-        <Text>
-          Online Payment is selected, you will be redirected to our payment
-          integrator.
-        </Text>
-      </View>
+
+      <YStack gap="$4" p={10}>
+        <XStack ai="center" gap="$4">
+          <Label
+            htmlFor="select-payment-method"
+            f={1}
+            miw={80}
+            fs={16}
+            fontWeight={'800'}
+          >
+            Payment Method
+          </Label>
+
+          <PaymentMethod id="select-payment-method" />
+        </XStack>
+      </YStack>
 
       {cart.length > 0 ? (
         <>
