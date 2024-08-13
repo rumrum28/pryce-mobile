@@ -117,7 +117,7 @@ export default function LoginForm() {
         >
           <AntDesign
             name={'mobile1'}
-            size={30}
+            size={24}
             color={colorTokens.light.orange.orange7}
           />
           <TextInput
@@ -132,7 +132,7 @@ export default function LoginForm() {
         <View style={styles.inputContainer}>
           <SimpleLineIcons
             name={'lock'}
-            size={30}
+            size={24}
             color={colorTokens.light.orange.orange7}
           />
           <TextInput
