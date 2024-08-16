@@ -20,6 +20,7 @@ export const login = async (userData: UserInputs) => {
     body: JSON.stringify(userData),
     cache: 'no-store',
   })
+
   const loginResponse: LoginResponse = await response.json()
 
   if (loginResponse.success) {

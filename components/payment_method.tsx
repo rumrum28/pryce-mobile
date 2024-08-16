@@ -1,56 +1,46 @@
-import { useMemo, useState } from 'react'
-import {
-  Adapt,
-  FontSizeTokens,
-  getFontSize,
-  Select,
-  SelectProps,
-  Sheet,
-  YStack,
-} from 'tamagui'
+import { Adapt, Select, SelectProps, Sheet, YStack } from 'tamagui'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
-export function PaymentMethod(props: SelectProps) {
-  const [val, setVal] = useState('Cash on delivery')
-
-  const items = [{ name: 'Cash on delivery' }, { name: 'Online payment' }]
-
+export function PaymentMethod({
+  paymentMethod,
+  setPaymentMethod,
+}: {
+  paymentMethod: string
+  setPaymentMethod: (pm: string) => void
+}) {
   return (
     <Select
-      value={val}
-      onValueChange={setVal}
+      value={paymentMethod}
+      onValueChange={setPaymentMethod}
       disablePreventBodyScroll
-      {...props}
     >
       <Select.Trigger width={220} iconAfter={ChevronDown}>
         <Select.Value placeholder="Something" />
       </Select.Trigger>
 
-      <Adapt when="sm" platform="touch">
-        <Sheet
-          native={!!props.native}
-          modal
-          dismissOnSnapToBottom
-          animationConfig={{
-            type: 'spring',
-            damping: 20,
-            mass: 1.2,
-            stiffness: 250,
-          }}
-        >
-          <Sheet.Frame>
-            <Sheet.ScrollView>
-              <Adapt.Contents />
-            </Sheet.ScrollView>
-          </Sheet.Frame>
-          <Sheet.Overlay
-            animation="lazy"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-        </Sheet>
-      </Adapt>
+      <Sheet
+        native={false}
+        modal
+        dismissOnSnapToBottom
+        animationConfig={{
+          type: 'spring',
+          damping: 20,
+          mass: 1.2,
+          stiffness: 250,
+        }}
+      >
+        <Sheet.Frame>
+          <Sheet.ScrollView>
+            <Adapt.Contents />
+          </Sheet.ScrollView>
+        </Sheet.Frame>
+        <Sheet.Overlay
+          animation="lazy"
+          enterStyle={{ opacity: 0 }}
+          exitStyle={{ opacity: 0 }}
+        />
+      </Sheet>
 
       <Select.Content zIndex={200000}>
         <Select.ScrollUpButton
@@ -83,37 +73,20 @@ export function PaymentMethod(props: SelectProps) {
           <Select.Group>
             <Select.Label>Payment Method</Select.Label>
 
-            <Select.Item index={1} value="cod">
+            <Select.Item index={1} value="cash-on-delivery">
               <Select.ItemText>Cash on delivery</Select.ItemText>
               <Select.ItemIndicator marginLeft="auto">
                 <Check size={16} />
               </Select.ItemIndicator>
             </Select.Item>
 
-            <Select.Item index={2} value="op">
+            <Select.Item index={2} value="online-payment">
               <Select.ItemText>Online payment</Select.ItemText>
               <Select.ItemIndicator marginLeft="auto">
                 <Check size={16} />
               </Select.ItemIndicator>
             </Select.Item>
           </Select.Group>
-          {/* Native gets an extra icon */}
-          {props.native && (
-            <YStack
-              position="absolute"
-              right={0}
-              top={0}
-              bottom={0}
-              alignItems="center"
-              justifyContent="center"
-              width={'$4'}
-              pointerEvents="none"
-            >
-              <ChevronDown
-                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
-              />
-            </YStack>
-          )}
         </Select.Viewport>
 
         <Select.ScrollDownButton

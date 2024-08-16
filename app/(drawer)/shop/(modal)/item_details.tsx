@@ -281,11 +281,9 @@ export default function ItemDetails() {
       edges={['bottom']}
     >
       {fetchProducts.isPending ? (
-        <>
-          <YStack padding="$3" gap="$4" alignItems="flex-end" marginTop={20}>
-            <Spinner size="large" color="$orange10" />
-          </YStack>
-        </>
+        <YStack padding="$3" gap="$4" alignItems="flex-end" marginTop={20}>
+          <Spinner size="large" color="$orange10" />
+        </YStack>
       ) : (
         <View style={{ flex: 1, backgroundColor: 'white' }}>
           <Animated.Image
