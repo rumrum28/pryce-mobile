@@ -195,7 +195,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 6,
     productCode: ['MO220C', 'MO2TFT'], //'MEDREG'
-    image: require('~/assets/images/products/MO220C.png'),
+    image: require('~/assets/images/products-with-bg/20lbs.jpg'),
     name: 'Medical Oxygen 20lbs',
     description:
       'A 20lbs medical oxygen cylinder is a common source of oxygen therapy used in various medical settings. Used by patients with respiratory conditions such as COPD, asthma, or pneumonia who require supplemental oxygen at home.',
@@ -203,8 +203,8 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 7,
     productCode: ['MO2105C', 'MO2TST'], //'MEDREG'
-    image: require('~/assets/images/products/MO2105C.png'),
-    name: 'Medical Oxygen 20lbs',
+    image: require('~/assets/images/products-with-bg/105lbs.jpg'),
+    name: 'Medical Oxygen 105lbs',
     description:
       'A 105lbs medical oxygen cylinder is a substantial source of oxygen therapy, primarily used in medical settings where a high volume of oxygen is required. Provides a reliable and large supply of oxygen for patients in intensive care units, during surgeries, and in emergency rooms.',
   },

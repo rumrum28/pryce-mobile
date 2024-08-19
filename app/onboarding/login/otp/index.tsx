@@ -10,7 +10,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useToastController } from '@tamagui/toast'
 import { useMutation } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
@@ -21,20 +21,18 @@ import usePryceStore from '~/hooks/pryceStore'
 import { router, useLocalSearchParams } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
-import { Form } from 'tamagui'
+import { Form, Spinner, YStack } from 'tamagui'
 import { AntDesign } from '@expo/vector-icons'
+import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
 
 export default function OtpVerification() {
-  const setToken = usePryceStore((set) => set.setToken)
-  const setUsers = usePryceStore((set) => set.setUsers)
   const [phoneNumber, setPhoneNumber] = useState('')
-  const [otpNumber, setOtpNumber] = useState<string>('')
-  const [isOtp, setIsOtp] = useState<boolean>(false)
   const toast = useToastController()
-  const [type, setType] = useState<'password' | 'otp'>('otp')
-  const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width, height } = Dimensions.get('window')
-  const { loginType } = useLocalSearchParams()
+  const [loading, isLoading] = useState<boolean>(false)
+  const [invalidNumber, setInvalidNumber] = useState<boolean>(true)
+  const [verifyCountDown, isVerifyCountDown] = useState<boolean>(false)
+  const [otpCountDown, setOTPCountDown] = useState<number>(300)
 
   const getOtpResponse = useMutation({
     mutationFn: getOtp,
@@ -57,50 +55,57 @@ export default function OtpVerification() {
     },
   })
 
-  const loginResponse = useMutation({
-    mutationFn: login,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['login'],
-      })
-
-      if (data) {
-        toast.show('Success', {
-          message: data.loginResponse?.message,
-          native: false,
-        })
-        setToken(data.loginResponse?.access_token)
-        setUsers(data.profileResponse)
-
-        router.push('/(drawer)/shop')
-      } else {
-        toast.show('Error', {
-          message: 'Invalid phone number',
-          native: false,
-        })
-      }
-    },
-  })
-
-  const checkOtpHandler = async () => {
-    const userData: UserInputs = {
+  const sendOtpHandler = async () => {
+    isLoading(true)
+    const send = {
       phone_number: phoneNumber.replace(/\s+/g, ''),
-      value: otpNumber,
-      type: type,
     }
 
-    loginResponse.mutate(userData)
+    getOtpResponse.mutate(send)
+    isVerifyCountDown(true)
+    router.push({
+      pathname: '/onboarding/login/otp/verify-otp',
+      params: {
+        id: phoneNumber.replace(/\s+/g, ''),
+      },
+    })
   }
 
-  const sendOtpHandler = async () => {
-    // const send = {
-    //   phone_number: phoneNumber.replace(/\s+/g, ''),
+  const handleNumberChange = (n: string) => {
+    let result = true
+
+    if (n[0] === '0' && n[1] === '9') {
+      if (n.length === 13) {
+        result = !mobileOrDigitSchema.safeParse(n).success
+      }
+    }
+    // else {
+    //   result = !mobileOrDigitSchema.safeParse(n).success
     // }
 
-    // getOtpResponse.mutate(send)
-    setIsOtp(true)
-    router.push('/onboarding/login/otp/verify-otp')
+    setInvalidNumber(result)
+    const formatted = formatPhoneNumber(n)
+
+    if (formatted.replace(/\s+/g, '').length > 11) return null
+
+    setPhoneNumber(formatted)
   }
+
+  useEffect(() => {
+    if (otpCountDown <= 0) {
+      isVerifyCountDown(false)
+      isLoading(false)
+      return
+    }
+
+    if (verifyCountDown) {
+      const timerId = setTimeout(() => {
+        setOTPCountDown(otpCountDown - 1)
+      }, 1000)
+
+      return () => clearTimeout(timerId)
+    }
+  }, [verifyCountDown, otpCountDown])
 
   return (
     <SafeAreaView style={styles.container}>
@@ -116,59 +121,115 @@ export default function OtpVerification() {
           </Container>
         )}
       </View>
-      {!isOtp && (
-        <Form onSubmit={sendOtpHandler}>
-          <View>
-            <Text>Enter mobile no.*</Text>
-          </View>
-          <View style={{ alignItems: 'center' }}>
-            <View style={[styles.inputContainer, { width: width - 32 }]}>
-              <View style={{ justifyContent: 'center', marginRight: 10 }}>
-                <AntDesign
-                  name={'mobile1'}
-                  size={24}
-                  color={colorTokens.light.orange.orange7}
-                />
-              </View>
-              <TextInput
-                style={styles.input}
-                placeholder="Enter your phone number"
-                placeholderTextColor={colorTokens.light.gray.gray12}
-                selectionColor={colorTokens.light.gray.gray12}
-                keyboardType="numeric"
-                value={phoneNumber}
-                onChangeText={(e) => setPhoneNumber(e)}
-                numberOfLines={4}
-                maxLength={11}
+
+      <Form onSubmit={sendOtpHandler}>
+        <View>
+          <Text>Enter mobile no.*</Text>
+        </View>
+        <View style={{ alignItems: 'center' }}>
+          <View style={[styles.inputContainer, { width: width - 32 }]}>
+            <View style={{ justifyContent: 'center', marginRight: 10 }}>
+              <AntDesign
+                name={'mobile1'}
+                size={24}
+                color={colorTokens.light.orange.orange7}
               />
             </View>
-            <View style={{ marginTop: 20 }}>
-              <Form.Trigger asChild>
+            <TextInput
+              style={styles.input}
+              placeholder="09"
+              placeholderTextColor={colorTokens.light.orange.orange7}
+              keyboardType="number-pad"
+              selectionColor={colorTokens.light.gray.gray12}
+              value={phoneNumber}
+              onChangeText={handleNumberChange}
+              numberOfLines={1}
+              maxLength={13}
+            />
+          </View>
+          <View style={{ marginTop: 20 }}>
+            {verifyCountDown ? (
+              <>
                 <TouchableOpacity
                   style={{
                     paddingVertical: 10,
                     borderRadius: 12,
                     alignItems: 'center',
                     justifyContent: 'center',
-                    backgroundColor: colorTokens.light.orange.orange9,
+                    backgroundColor: colorTokens.light.gray.gray9,
                     width: width - 32,
                   }}
+                  onPress={() =>
+                    router.push('/onboarding/login/otp/verify-otp')
+                  }
                 >
                   <Text
                     style={{
-                      fontSize: 20,
+                      fontSize: 16,
                       fontFamily: fonts.SemiBold,
                       color: 'white',
                     }}
                   >
-                    VERIFY
+                    Resend OTP in: {otpCountDown} secs
                   </Text>
                 </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() =>
+                    router.push('/onboarding/login/otp/verify-otp')
+                  }
+                >
+                  <Text
+                    style={{
+                      textAlign: 'center',
+                      paddingTop: 10,
+                      textDecorationLine: 'underline',
+                      textDecorationColor: colorTokens.dark.orange.orange8,
+                    }}
+                  >
+                    Back to OTP
+                  </Text>
+                </TouchableOpacity>
+              </>
+            ) : (
+              <Form.Trigger
+                asChild
+                disabled={loading || invalidNumber ? true : false}
+              >
+                <TouchableOpacity
+                  style={{
+                    paddingVertical: 10,
+                    borderRadius: 12,
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    backgroundColor:
+                      loading || invalidNumber
+                        ? colorTokens.light.gray.gray9
+                        : colorTokens.light.orange.orange9,
+                    width: width - 32,
+                  }}
+                >
+                  {loading ? (
+                    <YStack padding="$1" gap="$1" alignItems="center">
+                      <Spinner size="small" color="white" />
+                    </YStack>
+                  ) : (
+                    <Text
+                      style={{
+                        fontSize: 20,
+                        fontFamily: fonts.SemiBold,
+                        color: 'white',
+                      }}
+                    >
+                      VERIFY
+                    </Text>
+                  )}
+                </TouchableOpacity>
               </Form.Trigger>
-            </View>
+            )}
           </View>
-        </Form>
-      )}
+        </View>
+      </Form>
+
       <View style={styles.bottomContainer}>
         <Text style={{ fontSize: 14, textAlign: 'center' }}>
           By continuing you agree with the
@@ -238,5 +299,6 @@ const styles = StyleSheet.create({
     right: 16,
     left: 16,
     alignItems: 'center',
+    paddingBottom: 20,
   },
 })

@@ -20,6 +20,7 @@ export const login = async (userData: UserInputs) => {
     body: JSON.stringify(userData),
     cache: 'no-store',
   })
+
   const loginResponse: LoginResponse = await response.json()
 
   if (loginResponse.success) {
@@ -41,6 +42,8 @@ export const login = async (userData: UserInputs) => {
     } else {
       console.log('error on /api/user/profile')
     }
+  } else if (!loginResponse.success) {
+    return { loginResponse }
   } else {
     console.log('error on /login/api')
   }
