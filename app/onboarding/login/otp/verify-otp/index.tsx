@@ -50,6 +50,7 @@ export default function VerifyOtp() {
 
       if (data) {
         isLoading(false)
+        setInvalidNumber(false)
         toast.show('Success', {
           message: data.loginResponse?.message,
           native: false,
@@ -61,6 +62,7 @@ export default function VerifyOtp() {
         }
       } else {
         isLoading(false)
+        setInvalidNumber(false)
         toast.show('Error', {
           message: 'Invalid phone number',
           native: false,
@@ -78,6 +80,7 @@ export default function VerifyOtp() {
     }
 
     loginResponse.mutate(userData)
+    setInvalidNumber(true)
   }
 
   const handleNumberChange = (n: string) => {
