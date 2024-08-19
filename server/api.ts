@@ -42,6 +42,8 @@ export const login = async (userData: UserInputs) => {
     } else {
       console.log('error on /api/user/profile')
     }
+  } else if (!loginResponse.success) {
+    return { loginResponse }
   } else {
     console.log('error on /login/api')
   }

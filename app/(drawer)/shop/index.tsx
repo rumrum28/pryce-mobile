@@ -18,6 +18,13 @@ export default function Page() {
   const setAddressRef = usePryceStore((set) => set.setAddressRef)
   const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
+  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const setToken = usePryceStore((state) => state.setToken)
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
+  const setUsers = usePryceStore((state) => state.setUsers)
+  const setEmail = usePryceStore((state) => state.setEmail)
 
   const fetchProducts = useMutation({
     mutationFn: changeAddressOnLoad,
@@ -41,7 +48,24 @@ export default function Page() {
 
       fetchProducts.mutate(userData)
     }
+
+    console.log(token)
   }, [selectedUser])
+
+  // useEffect(() => {
+  //   if (
+  //     !fetchProducts.isPending &&
+  //     (fetchProducts.data === null || !fetchProducts.data)
+  //   ) {
+  //     setSelectedUser(null)
+  //     setToken('')
+  //     setUsers([])
+  //     setEmail('')
+  //     setChangeAddressTrigger(false)
+  //     setAddressRef('')
+  //     router.push('/onboarding/login')
+  //   }
+  // }, [fetchProducts.isPending])
 
   if (fetchProducts.isPending) {
     return (

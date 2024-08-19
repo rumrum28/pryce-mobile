@@ -1,26 +1,11 @@
-import { AntDesign, Ionicons, SimpleLineIcons } from '@expo/vector-icons'
-import React, { useEffect, useState } from 'react'
-import { router, useLocalSearchParams } from 'expo-router'
-import { View, Image, YStack, Text, Button } from 'tamagui'
-import {
-  Pressable,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  useWindowDimensions,
-} from 'react-native'
+import { View, Text } from 'tamagui'
+import { StyleSheet } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-
-import usePryceStore from '~/hooks/pryceStore'
 import { colorTokens } from '@tamagui/themes'
 import LoginForm from '~/components/login/login-form'
 import { fonts } from '~/utils/fonts'
 
 export default function LogIn() {
-  const setGetStarted = usePryceStore((state) => state.setGetStarted)
-
-  const { loginType } = useLocalSearchParams()
-
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.textContainer}>
