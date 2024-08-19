@@ -5,13 +5,22 @@ import {
   DrawerItem,
   DrawerItemList,
 } from '@react-navigation/drawer'
-import { useRouter } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
 import { useSafeAreaInsets } from 'react-native-safe-area-context'
+import usePryceStore from '~/hooks/pryceStore'
+import { router } from 'expo-router'
 
 export default function CustomDrawer(props: any) {
-  const router = useRouter()
-  const { top, bottom } = useSafeAreaInsets()
+  const { bottom } = useSafeAreaInsets()
+  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const setAddressRef = usePryceStore((set) => set.setAddressRef)
+  const setToken = usePryceStore((state) => state.setToken)
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
+  const setUsers = usePryceStore((state) => state.setUsers)
+  const setEmail = usePryceStore((state) => state.setEmail)
+
   return (
     <View style={{ flex: 1 }}>
       <DrawerContentScrollView {...props} scrollEnabled={false}>
@@ -33,7 +42,18 @@ export default function CustomDrawer(props: any) {
           </Text>
         </View>
         <DrawerItemList {...props} />
-        <DrawerItem label={'Logout'} onPress={() => router.replace('/')} />
+        <DrawerItem
+          label={'Logout'}
+          onPress={() => {
+            setSelectedUser(null)
+            setToken('')
+            setUsers([])
+            setEmail('')
+            setChangeAddressTrigger(false)
+            setAddressRef('')
+            router.push('/onboarding/login')
+          }}
+        />
       </DrawerContentScrollView>
       <View
         style={{

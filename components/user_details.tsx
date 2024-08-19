@@ -28,14 +28,11 @@ import StyledButton from '~/components/styled_button'
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
 
-const Details = () => {
+const UserDetails = ({ productCode }: { productCode: string }) => {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const { items, total } = useBasketStore()
-
-  const { id } = useLocalSearchParams()
-
-  const item = getFilteredProductById(+id!)
+  const item = getFilteredProductById(String(productCode))
 
   const filteredProducts = allProducts.filter(
     (product) => item?.name && product.name.includes(item.name)
@@ -121,8 +118,7 @@ const Details = () => {
     <View style={{ flex: 1, backgroundColor: 'white', paddingBottom: 30 }}>
       <Stack.Screen
         options={{
-          headerTitle: '',
-
+          title: '',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -156,7 +152,7 @@ const Details = () => {
       />
       <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
         <Animated.Image
-          source={item?.img}
+          source={item?.image}
           style={[styles.image, imageAnimatedStyle]}
         />
         <View
@@ -266,7 +262,6 @@ const Details = () => {
     </View>
   )
 }
-export default Details
 
 const styles = StyleSheet.create({
   image: {
@@ -282,3 +277,5 @@ const styles = StyleSheet.create({
     paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
   },
 })
+
+export default UserDetails

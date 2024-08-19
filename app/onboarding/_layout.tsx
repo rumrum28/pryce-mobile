@@ -10,52 +10,46 @@ export const unstable_settings = {
 
 export default function _layout() {
   return (
-    <SafeAreaProvider>
-      <Stack
-        screenOptions={{
-          headerTitle: '',
-          headerShadowVisible: false,
-          headerTransparent: true,
-          headerTintColor: 'white',
+    <Stack
+      screenOptions={{
+        title: '',
+        headerShadowVisible: false,
+        headerTransparent: true,
+        headerTintColor: 'white',
+        headerShown: false,
+      }}
+    >
+      <Stack.Screen name="index" options={{ headerShown: false }} />
+      <Stack.Screen
+        name="login/index"
+        options={{
           headerShown: false,
         }}
-      >
-        <Stack.Screen name="index" options={{ headerShown: false }} />
-        <Stack.Screen
-          name="register/index"
-          options={{
-            headerShown: true,
-            headerTintColor: colorTokens.light.orange.orange9,
-          }}
-        />
-        <Stack.Screen
-          name="login/index"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen
-          name="login/otp/index"
-          options={{
-            headerShown: true,
-            headerTintColor: colorTokens.light.orange.orange9,
-          }}
-        />
-        <Stack.Screen
-          name="login/otp/verify-otp/index"
-          options={{
-            headerShown: true,
-            headerTintColor: colorTokens.light.orange.orange9,
-          }}
-        />
-        <Stack.Screen
-          name="login/password/index"
-          options={{
-            headerTintColor: colorTokens.light.orange.orange9,
-            headerShown: true,
-          }}
-        />
-      </Stack>
-    </SafeAreaProvider>
+      />
+      <Stack.Screen
+        name="login/otp/index"
+        options={{
+          headerShown: true,
+          headerTintColor: colorTokens.light.orange.orange9,
+          title: '',
+        }}
+      />
+      <Stack.Screen
+        name="login/otp/verify-otp/index"
+        options={{
+          headerShown: true,
+          headerTintColor: colorTokens.light.orange.orange9,
+          title: '',
+        }}
+      />
+      <Stack.Screen
+        name="login/password/index"
+        options={{
+          headerTintColor: colorTokens.light.orange.orange9,
+          title: '',
+          headerShown: true,
+        }}
+      />
+    </Stack>
   )
 }

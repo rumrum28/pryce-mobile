@@ -1,38 +1,34 @@
-import { SafeAreaView, ScrollView, Text } from 'react-native'
+import { SafeAreaView, ScrollView, Text, TouchableOpacity } from 'react-native'
 import React, { useEffect } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
-import Carousel from '~/components/shop/carousel'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
-import { ToastViewport, useToastController } from '@tamagui/toast'
+import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { useMutation } from '@tanstack/react-query'
 import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
-import { Button, Spinner, YStack } from 'tamagui'
-import { SelectAddressModal } from '~/components/selectAddress'
+import { Button, Spinner, View, YStack } from 'tamagui'
 import { router } from 'expo-router'
+import ProductGroup from '../productGroup'
 
 export default function Page() {
-  const toast = useToastController()
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const setAddressRef = usePryceStore((set) => set.setAddressRef)
+  const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
-  const setToken = usePryceStore((state) => state.setToken)
-  const users = usePryceStore((state) => state.users)
-  const setChangeAddressTrigger = usePryceStore(
-    (state) => state.setChangeAddressTrigger
-  )
-  const setUsers = usePryceStore((state) => state.setUsers)
-  const setEmail = usePryceStore((state) => state.setEmail)
 
   const fetchProducts = useMutation({
     mutationFn: changeAddressOnLoad,
     onSuccess: (data) => {
       queryClient.invalidateQueries({
-        queryKey: ['changeAddress'],
+        queryKey: ['fetchProductsOnLoad'],
       })
+
+      if (data?.addressRef) {
+        setAddressRef(data.addressRef)
+      }
     },
   })
 
@@ -66,23 +62,55 @@ export default function Page() {
         }}
       />
 
-      <Button
-        onPress={() => {
-          setSelectedUser(null)
-          setToken('')
-          setUsers([])
-          setEmail('')
-          setChangeAddressTrigger(false)
-          router.push('/onboarding/login')
-        }}
-      >
-        logout
-      </Button>
-
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
+        {fetchProducts.data && favorites.length > 0 ? (
+          <>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                paddingTop: 10,
+                paddingHorizontal: 20,
+              }}
+            >
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  fontSize: 18,
+                }}
+              >
+                Your Favorite Products
+              </Text>
+
+              <TouchableOpacity
+                onPress={() => router.push('(drawer)/favorites')}
+              >
+                <Text style={{ fontSize: 12 }}>See all</Text>
+              </TouchableOpacity>
+            </View>
+            <Categories
+              products={fetchProducts.data?.productsResponse}
+              favorites={favorites}
+            />
+          </>
+        ) : null}
+
+        {/* <Text
+          style={{
+            paddingHorizontal: 10,
+            fontWeight: 'bold',
+            marginTop: 16,
+            fontSize: 18,
+          }}
+        >
+          Top picks in your neighborhood 
+        </Text>
+        <Products products={fetchProducts.data?.productsResponse} /> */}
+
         <Text
           style={{
             paddingHorizontal: 10,
@@ -91,20 +119,11 @@ export default function Page() {
             fontSize: 18,
           }}
         >
-          Your Favorite Products
+          Hottest
         </Text>
-        <Categories />
-        <Text
-          style={{
-            paddingHorizontal: 10,
-            fontWeight: 'bold',
-            marginTop: 16,
-            fontSize: 18,
-          }}
-        >
-          Top picks in your neighborhood
-        </Text>
-        <Products products={fetchProducts.data} />
+
+        <ProductGroup />
+
         <Text
           style={{
             paddingHorizontal: 10,
@@ -116,7 +135,7 @@ export default function Page() {
           All products
         </Text>
 
-        <AllProducts products={fetchProducts.data} />
+        <AllProducts products={fetchProducts.data?.productsResponse} />
       </ScrollView>
     </SafeAreaView>
   )

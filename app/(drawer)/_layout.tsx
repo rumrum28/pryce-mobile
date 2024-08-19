@@ -32,7 +32,7 @@ export default function DrawerLayout() {
             name="news/index"
             options={{
               drawerLabel: 'News',
-              headerTitle: 'News',
+              title: 'News',
               drawerIcon: ({ size, color }) => (
                 <Ionicons name="newspaper" size={size} color={color} />
               ),
@@ -42,9 +42,19 @@ export default function DrawerLayout() {
             name="profile"
             options={{
               drawerLabel: 'Profile',
-              headerTitle: 'Profile',
+              title: 'Profile',
               drawerIcon: ({ size, color }) => (
-                <Ionicons name="newspaper" size={size} color={color} />
+                <Ionicons name="person" size={size} color={color} />
+              ),
+            }}
+          />
+          <Drawer.Screen
+            name="favorites/index"
+            options={{
+              drawerLabel: 'Favorites',
+              title: 'Favorites',
+              drawerIcon: ({ size, color }) => (
+                <Ionicons name="star" size={size} color={color} />
               ),
             }}
           />

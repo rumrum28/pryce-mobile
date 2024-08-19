@@ -1,5 +1,6 @@
 import { create } from 'zustand'
-import { FavoriteProps, ProductSingle, ProductsProps } from '~/types/product'
+import { createJSONStorage, persist } from 'zustand/middleware'
+import { cartStorage } from '~/server/mmkv'
 
 type Product = {
   productCode: string
@@ -8,98 +9,116 @@ type Product = {
 
 type CartState = {
   cart: Array<Product>
-  favorites: FavoriteProps[] | []
   addProduct: (product: Product) => void
-  increaseQuantity: (product: Product) => void
-  decreaseQuantity: (product: Product) => void
-  removeProduct: (product: Product) => void
-  setFavorites: (fav: FavoriteProps) => void
+  increaseQuantity: (product: string) => void
+  decreaseQuantity: (product: string) => void
+  removeProduct: (product: string) => void
+  clearCart: () => void
 }
 
-const useCartStore = create<CartState>((set) => ({
-  cart: [],
-  favorites: [],
-  setFavorites: (fav: FavoriteProps) =>
-    set((state) => {
-      const checkFavoriteIfExists = state.favorites.find(
-        (favFind: FavoriteProps) => favFind.productCode === fav.productCode
-      )
+const useCartStore = create<CartState>()(
+  persist(
+    (set, get) => ({
+      cart: [],
+      addProduct: (product: Product) =>
+        set((state) => {
+          const hasProduct = state.cart.find(
+            (p: Product) => p.productCode === product.productCode
+          )
 
-      if (checkFavoriteIfExists) {
-        // Optionally handle the case where the item already exists, for example, by removing it
-        return {
-          favorites: state.favorites.filter(
-            (favFind: FavoriteProps) => favFind.productCode !== fav.productCode
-          ),
-        }
-      } else {
-        return {
-          favorites: [...state.favorites, { ...fav }],
-        }
-      }
-    }),
-  addProduct: (product: Product) =>
-    set((state) => {
-      const hasProduct = state.cart.find(
-        (p: Product) => p.productCode === product.productCode
-      )
-
-      if (hasProduct) {
-        return {
-          cart: state.cart.map((p: Product) => {
-            if (p.productCode === product.productCode) {
-              return { ...p, quantity: p.quantity + 1 }
-            }
-            return p
-          }),
-        }
-      } else {
-        return {
-          cart: [...state.cart, { ...product, quantity: 1 }],
-        }
-      }
-    }),
-  increaseQuantity: (product: Product) =>
-    set((state) => {
-      return {
-        cart: state.cart.map((p) => {
-          if (p.productCode === product.productCode) {
+          if (hasProduct) {
             return {
-              ...p,
-              quantity: p.quantity + 1,
+              cart: state.cart.map((p: Product) => {
+                if (p.productCode === product.productCode) {
+                  return {
+                    ...p,
+                    quantity:
+                      product.quantity > 1
+                        ? p.quantity + product.quantity
+                        : p.quantity + 1,
+                  }
+                }
+                return p
+              }),
+            }
+          } else {
+            return {
+              cart: [...state.cart, { ...product, quantity: product.quantity }],
             }
           }
-          return p
         }),
-      }
-    }),
-  decreaseQuantity: (product: Product) =>
-    set((state) => {
-      return {
-        cart: state.cart.map((p) => {
-          if (p.productCode === product.productCode) {
-            return {
-              ...p,
-              quantity: p.quantity - 1,
-            }
+      increaseQuantity: (productCode: string) =>
+        set((state) => {
+          return {
+            cart: state.cart.map((p) => {
+              if (p.productCode === productCode) {
+                return {
+                  ...p,
+                  quantity: p.quantity + 1,
+                }
+              }
+              return p
+            }),
           }
-          return p
         }),
-      }
-    }),
-  removeProduct: (product: Product) =>
-    set((state) => {
-      const hasProduct = state.cart.find(
-        (p: Product) => p.productCode !== product.productCode
-      )
+      decreaseQuantity: (productCode: string) =>
+        set((state) => {
+          // return {
+          //   cart: state.cart.find((p) => {
+          //     if (p.productCode === productCode && p.quantity < 2) {
+          //       const hasProduct = state.cart.find(
+          //         (p: Product) => p.productCode !== productCode
+          //       )
 
-      return {
-        cart: [...state.cart, { ...product, hasProduct }],
-      }
-      //   return {
-      //     cart: hasProduct
-      //   }
+          //       return [...state.cart, hasProduct]
+          //     } else {
+          //       if (p.productCode === productCode) {
+          //         return {
+          //           ...p,
+          //           quantity: p.quantity - 1,
+          //         }
+          //       }
+
+          //       return p
+          //     }
+          //   })
+          // }
+
+          return {
+            cart: state.cart.map((p) => {
+              if (p.productCode === productCode) {
+                return {
+                  ...p,
+                  quantity: p.quantity - 1 < 1 ? 1 : p.quantity - 1,
+                }
+              }
+
+              return p
+            }),
+          }
+        }),
+      removeProduct: (productCode: string) =>
+        set((state) => {
+          const newCart = state.cart.filter(
+            (p) => p.productCode !== productCode
+          )
+
+          return {
+            cart: newCart,
+          }
+        }),
+      clearCart: () =>
+        set((state) => {
+          return {
+            cart: [],
+          }
+        }),
     }),
-}))
+    {
+      name: 'cart-storage',
+      storage: createJSONStorage(() => cartStorage),
+    }
+  )
+)
 
 export default useCartStore

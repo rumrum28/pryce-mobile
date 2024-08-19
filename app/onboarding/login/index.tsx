@@ -66,52 +66,45 @@ export default function Page() {
             Hello !
           </Text>
 
-          <View
-            style={{ flex: 1, width: '100%', alignItems: 'center', gap: 20 }}
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: '/onboarding/login/password',
+                params: { loginType: 'password' },
+              })
+            }
+            style={{
+              backgroundColor: colorTokens.light.orange.orange9,
+              paddingVertical: 13,
+              borderRadius: 50,
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
           >
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: '/onboarding/login/password',
-                  params: { loginType: 'password' },
-                })
-              }
-              style={{
-                backgroundColor: colorTokens.light.orange.orange9,
-                paddingVertical: 13,
-                borderRadius: 50,
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ color: 'white', fontSize: 16 }}>
-                Sign in with Password
-              </Text>
-            </TouchableOpacity>
-            <Text style={{ color: colorTokens.light.gray.gray9 }}>or</Text>
-            <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: '/onboarding/login/otp',
-                  params: { loginType: 'otp' },
-                })
-              }
-              style={{
-                borderWidth: 1,
-                borderColor: colorTokens.light.gray.gray6,
-                paddingVertical: 13,
-                borderRadius: 50,
-                width: '100%',
-                alignItems: 'center',
-                justifyContent: 'center',
-              }}
-            >
-              <Text style={{ color: 'black', fontSize: 16 }}>
-                Sign in with OTP
-              </Text>
-            </TouchableOpacity>
-          </View>
+            <Text style={{ color: 'white' }}>Sign in with Password</Text>
+          </TouchableOpacity>
+          <Text style={{ color: 'black' }}>or</Text>
+          <TouchableOpacity
+            onPress={() =>
+              router.push({
+                pathname: '/onboarding/login/otp',
+                params: { loginType: 'otp' },
+              })
+            }
+            style={{
+              borderWidth: 1,
+              borderColor: colorTokens.light.gray.gray6,
+              paddingVertical: 13,
+              borderRadius: 50,
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: 'black' }}>Sign in with OTP</Text>
+          </TouchableOpacity>
+
           <View
             style={{
               flexDirection: 'row',
@@ -122,11 +115,7 @@ export default function Page() {
               Dont have an account?{' '}
             </Text>
             <TouchableOpacity
-              onPress={() =>
-                router.push({
-                  pathname: '/onboarding/register',
-                })
-              }
+              onPress={() => router.push('/onboarding/register')}
             >
               <Text
                 style={{

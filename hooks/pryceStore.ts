@@ -2,6 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { pryceStorage } from '~/server/mmkv'
 import { ProfileProps } from '~/types/userStorage'
+import { FavoriteProps, FavoritesList } from '~/types/product'
 
 type PryceState = {
   getStarted: boolean
@@ -10,6 +11,10 @@ type PryceState = {
   selectedUser: string | null
   users: ProfileProps
   changeAddressTrigger: boolean
+  addressRef: string
+  favorites: FavoriteProps | []
+  setFavorites: (fav: string) => void
+  setAddressRef: (e: string) => void
   setChangeAddressTrigger: (e: boolean) => void
   setGetStarted: (getStarted: boolean) => void
   setEmail: (email: string) => void
@@ -27,6 +32,32 @@ const usePryceStore = create<PryceState>()(
       selectedUser: null,
       users: [],
       changeAddressTrigger: false,
+      addressRef: '',
+      favorites: [],
+      setFavorites: (fav: string) =>
+        set((state) => {
+          const checkFavoriteIfExists = state.favorites.filter(
+            (favFind: FavoritesList) => favFind.productCode === fav
+          )
+
+          if (checkFavoriteIfExists.length > 0) {
+            // Optionally handle the case where the item already exists, for example, by removing it
+            return {
+              favorites: state.favorites.filter(
+                (favFind: FavoritesList) => favFind.productCode !== fav
+              ),
+            }
+          } else {
+            return {
+              favorites: [...state.favorites, { ...{ productCode: fav } }],
+            }
+          }
+        }),
+      setAddressRef: (e: string) => {
+        set(() => ({
+          addressRef: e,
+        }))
+      },
       setChangeAddressTrigger: (e: boolean) => {
         set(() => ({
           changeAddressTrigger: e,

@@ -8,19 +8,16 @@ export default function _layout() {
     <Stack
       screenOptions={{
         headerShown: true,
-        headerTitle: '',
+        title: '',
         headerTintColor: 'black',
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen
-        name="index"
-        options={{ headerShown: false, headerTitle: '' }}
-      />
+      <Stack.Screen name="index" options={{ headerShown: false, title: '' }} />
       <Stack.Screen
         name="user/[id]"
         options={{
-          headerTitle: 'User Profile',
+          title: 'User Profile',
           headerStyle: {
             backgroundColor: colorTokens.light.gray.gray3,
           },

@@ -21,3 +21,12 @@ ios folder info.plist
         </dict>
       </dict>
     </dict>
+
+nvm
+nvm ls
+nvm use 22 //22.5.0
+
+
+adb pair 192.168.2.2:41363
+adb tcpip 5555
+adb connect 192.168.2.2:37147

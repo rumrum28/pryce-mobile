@@ -28,7 +28,11 @@ import { AntDesign } from '@expo/vector-icons'
 import { z } from 'zod'
 
 export default function OtpVerification() {
+  const setUsers = usePryceStore((s) => s.setUsers)
+  const setToken = usePryceStore((s) => s.setToken)
   const [phoneNumber, setPhoneNumber] = useState<string>('')
+  const [otpNumber, setOtpNumber] = useState<string>('')
+  const [type, setType] = useState<'otp' | 'password'>('otp')
   const toast = useToastController()
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width } = Dimensions.get('window')
@@ -61,6 +65,41 @@ export default function OtpVerification() {
       }
     },
   })
+
+  const loginResponse = useMutation({
+    mutationFn: login,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['login'],
+      })
+
+      if (data) {
+        toast.show('Success', {
+          message: data.loginResponse?.message,
+          native: false,
+        })
+        setToken(data.loginResponse?.access_token)
+        setUsers(data.profileResponse)
+
+        router.push('/(drawer)/shop')
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number',
+          native: false,
+        })
+      }
+    },
+  })
+
+  const checkOtpHandler = async () => {
+    const userData: UserInputs = {
+      phone_number: phoneNumber.replace(/\s+/g, ''),
+      value: otpNumber,
+      type: type,
+    }
+
+    loginResponse.mutate(userData)
+  }
 
   const sendOtpHandler = async () => {
     // const send = {
