@@ -28,7 +28,7 @@ export default function OtpInput({ value, disabled, onChange }: OtpInputProps) {
 
       return item
     })
-
+    // console.log(newValue)
     onChange(newValue)
   }
 
