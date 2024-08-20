@@ -29,16 +29,9 @@ import { z } from 'zod'
 import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
 
 export default function OtpVerification() {
-  const setUsers = usePryceStore((s) => s.setUsers)
-  const setToken = usePryceStore((s) => s.setToken)
   const [phoneNumber, setPhoneNumber] = useState<string>('')
-  const [otpNumber, setOtpNumber] = useState<string>('')
-  const [type, setType] = useState<'otp' | 'password'>('otp')
   const toast = useToastController()
-  const [type, setType] = useState<'password' | 'otp'>('otp')
-  const setGetStarted = usePryceStore((state) => state.setGetStarted)
-  const { width, height } = Dimensions.get('window')
-  const { loginType } = useLocalSearchParams()
+  const { width } = Dimensions.get('window')
   const [loading, isLoading] = useState<boolean>(false)
   const [invalidNumber, setInvalidNumber] = useState<boolean>(true)
   const [verifyCountDown, isVerifyCountDown] = useState<boolean>(false)
@@ -253,7 +246,7 @@ export default function OtpVerification() {
         >
           Terms and Conditions and Data Privacy.
         </Text>
-      </SafeAreaView>
+      </View>
     </SafeAreaView>
   )
 }

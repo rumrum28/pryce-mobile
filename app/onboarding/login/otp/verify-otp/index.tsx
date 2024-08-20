@@ -32,7 +32,7 @@ export default function VerifyOtp() {
   const setToken = usePryceStore((set) => set.setToken)
   const setUsers = usePryceStore((set) => set.setUsers)
   const [otpNumber, setOtpNumber] = useState<string>('')
-  const [otp, setOtp] = useState<string>('')
+  const [otp, setOtp] = useState<any>('')
   const toast = useToastController()
   const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width, height } = Dimensions.get('window')
@@ -83,7 +83,7 @@ export default function VerifyOtp() {
   }
 
   const handleOtpChange = (newValue: string[]) => {
-    setOtpNumber(newValue)
+    setOtp(newValue)
   }
 
   const getOtpResponse = useMutation({
@@ -129,20 +129,17 @@ export default function VerifyOtp() {
         <Text style={styles.headingText}>OTP Verification</Text>
         <Text style={styles.subText}>
           We have sent SMS with code to{' '}
-          <Text style={styles.subTextNumber}>{phoneNumber}</Text> Please write
-          the code below and hit log in button.
+          <Text style={styles.subTextNumber}>{id}</Text> Please write the code
+          below and hit log in button.
         </Text>
       </View>
       {/* <View style={styles.timerContainer}></View> */}
       <View>
         <View style={[styles.inputContainer, { width: width }]}>
-          <OtpInput
-            value={otpNumber}
-            disabled={false}
-            onChange={handleOtpChange}
-          />
+          <OtpInput value={otp} disabled={false} onChange={handleOtpChange} />
         </View>
-        <View style={styles.textBtnContainer}>
+
+        {/* <View style={styles.textBtnContainer}>
           <Text style={{ fontSize: 16, fontWeight: '300', marginRight: 3 }}>
             Don&apos;t receive the code?
           </Text>
@@ -171,17 +168,20 @@ export default function VerifyOtp() {
               </Text>
             )}
           </TouchableOpacity>
-        </View>
+        </View> */}
+
         <Form onSubmit={checkOtpHandler}>
           <View style={{ marginTop: 50, alignItems: 'center' }}>
-            <Form.Trigger asChild>
+            <Form.Trigger asChild disabled={invalidNumber}>
               <TouchableOpacity
                 style={{
                   paddingVertical: 10,
                   borderRadius: 12,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: colorTokens.light.orange.orange9,
+                  backgroundColor: invalidNumber
+                    ? colorTokens.dark.gray.gray8
+                    : colorTokens.light.orange.orange9,
                   width: width - 32,
                 }}
               >
