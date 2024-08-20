@@ -13,7 +13,7 @@ import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
 import { useEffect, useState } from 'react'
-import { useToastController } from '@tamagui/toast'
+import { ToastViewport, useToastController } from '@tamagui/toast'
 import { useMutation } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { getOtp, login } from '~/server/api'
@@ -44,6 +44,7 @@ export default function OtpVerification() {
         queryKey: ['otp'],
       })
 
+      console.log(data)
       if (data) {
         toast.show('Success', {
           message: data.message,
@@ -82,9 +83,6 @@ export default function OtpVerification() {
         result = !mobileOrDigitSchema.safeParse(n).success
       }
     }
-    // else {
-    //   result = !mobileOrDigitSchema.safeParse(n).success
-    // }
 
     setInvalidNumber(result)
     const formatted = formatPhoneNumber(n)
@@ -98,6 +96,7 @@ export default function OtpVerification() {
     if (otpCountDown <= 0) {
       isVerifyCountDown(false)
       isLoading(false)
+      setOTPCountDown(300)
       return
     }
 

@@ -1,10 +1,19 @@
-import { Adapt, Select, SelectProps, Sheet, YStack } from 'tamagui'
+import {
+  Adapt,
+  FontSizeTokens,
+  getFontSize,
+  Select,
+  SelectProps,
+  Sheet,
+  YStack,
+} from 'tamagui'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
 export function PaymentMethod({
   paymentMethod,
   setPaymentMethod,
+  ...props
 }: {
   paymentMethod: string
   setPaymentMethod: (pm: string) => void
@@ -14,33 +23,36 @@ export function PaymentMethod({
       value={paymentMethod}
       onValueChange={setPaymentMethod}
       disablePreventBodyScroll
+      {...props}
     >
       <Select.Trigger width={220} iconAfter={ChevronDown}>
-        <Select.Value placeholder="Something" />
+        <Select.Value placeholder="cash-on-delivery" />
       </Select.Trigger>
 
-      <Sheet
-        native={false}
-        modal
-        dismissOnSnapToBottom
-        animationConfig={{
-          type: 'spring',
-          damping: 20,
-          mass: 1.2,
-          stiffness: 250,
-        }}
-      >
-        <Sheet.Frame>
-          <Sheet.ScrollView>
-            <Adapt.Contents />
-          </Sheet.ScrollView>
-        </Sheet.Frame>
-        <Sheet.Overlay
-          animation="lazy"
-          enterStyle={{ opacity: 0 }}
-          exitStyle={{ opacity: 0 }}
-        />
-      </Sheet>
+      <Adapt when="sm" platform="touch">
+        <Sheet
+          native={false}
+          modal
+          dismissOnSnapToBottom
+          animationConfig={{
+            type: 'spring',
+            damping: 20,
+            mass: 1.2,
+            stiffness: 250,
+          }}
+        >
+          <Sheet.Frame>
+            <Sheet.ScrollView>
+              <Adapt.Contents />
+            </Sheet.ScrollView>
+          </Sheet.Frame>
+          <Sheet.Overlay
+            animation="lazy"
+            enterStyle={{ opacity: 0 }}
+            exitStyle={{ opacity: 0 }}
+          />
+        </Sheet>
+      </Adapt>
 
       <Select.Content zIndex={200000}>
         <Select.ScrollUpButton
@@ -87,6 +99,23 @@ export function PaymentMethod({
               </Select.ItemIndicator>
             </Select.Item>
           </Select.Group>
+
+          {props.native && (
+            <YStack
+              position="absolute"
+              right={0}
+              top={0}
+              bottom={0}
+              alignItems="center"
+              justifyContent="center"
+              width={'$4'}
+              pointerEvents="none"
+            >
+              <ChevronDown
+                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
+              />
+            </YStack>
+          )}
         </Select.Viewport>
 
         <Select.ScrollDownButton

@@ -11,6 +11,7 @@ import CustomButton from '~/components/onboarding/custom-button'
 import { useEffect } from 'react'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
+import { ToastViewport } from '@tamagui/toast'
 
 const OnboardingScreen = () => {
   const getStarted = usePryceStore((state) => state.getStarted)

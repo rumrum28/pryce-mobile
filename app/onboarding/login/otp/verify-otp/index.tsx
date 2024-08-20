@@ -6,11 +6,12 @@ import {
   TouchableOpacity,
   View,
   Text,
+  Platform,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Dimensions } from 'react-native'
 import { useEffect, useState } from 'react'
-import { useToastController } from '@tamagui/toast'
+import { ToastViewport, useToastController } from '@tamagui/toast'
 import { useMutation } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { getOtp, login } from '~/server/api'
@@ -31,12 +32,10 @@ import {
 export default function VerifyOtp() {
   const setToken = usePryceStore((set) => set.setToken)
   const setUsers = usePryceStore((set) => set.setUsers)
-  const [otpNumber, setOtpNumber] = useState<string>('')
-  const [otp, setOtp] = useState<any>('')
+  const [otp, setOtp] = useState<string[]>([])
   const toast = useToastController()
-  const setGetStarted = usePryceStore((state) => state.setGetStarted)
-  const { width, height } = Dimensions.get('window')
-  const [invalidNumber, setInvalidNumber] = useState<boolean>(true)
+  const { width } = Dimensions.get('window')
+  const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const { id } = useLocalSearchParams() as any
   const [loading, isLoading] = useState<boolean>(false)
 
@@ -48,9 +47,7 @@ export default function VerifyOtp() {
       })
 
       if (data) {
-        isLoading(false)
-        setInvalidNumber(false)
-        toast.show('Success', {
+        toast.show(`${data.loginResponse.success ? 'Success' : 'Failed'}`, {
           message: data.loginResponse?.message,
           native: false,
         })
@@ -63,7 +60,7 @@ export default function VerifyOtp() {
         isLoading(false)
         setInvalidNumber(false)
         toast.show('Error', {
-          message: 'Invalid phone number',
+          message: 'Invalid OTP',
           native: false,
         })
       }
@@ -71,10 +68,24 @@ export default function VerifyOtp() {
   })
 
   const checkOtpHandler = async () => {
+    //check otp if not missing
+    let finalOTP = ''
+    for (let i = 0; i < otp.length; i++) {
+      finalOTP += otp[i]
+    }
+
+    // check if otp is 6 digits
+    if (finalOTP.length < 6) {
+      return toast.show('Error', {
+        message: 'Please enter a valid OTP',
+        native: false,
+      })
+    }
+
     isLoading(true)
     const userData: UserInputs = {
       phone_number: id,
-      value: otp,
+      value: finalOTP,
       type: 'otp',
     }
 
@@ -86,45 +97,17 @@ export default function VerifyOtp() {
     setOtp(newValue)
   }
 
-  const getOtpResponse = useMutation({
-    mutationFn: getOtp,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['otp'],
-      })
-
-      if (data) {
-        toast.show('Success', {
-          message: data.message,
-          native: false,
-        })
-      } else {
-        toast.show('Error', {
-          message: 'Invalid phone number',
-          native: false,
-        })
-      }
-    },
-  })
-
-  const handleNumberChange = (n: string) => {
-    let result = true
-
-    if (n.length === 7) {
-      result = false
-    }
-
-    setInvalidNumber(result)
-    const formatted = formatOTP(n)
-
-    if (formatted.replace(/\s+/g, '').length > 6) return null
-
-    setOtpNumber(formatted)
-    setOtp(formatted.replace(/\s+/g, ''))
-  }
-
   return (
     <SafeAreaView style={styles.container}>
+      <ToastViewport
+        style={{
+          width: '100%',
+          justifyContent: 'center',
+          alignItems: 'center',
+          marginTop: Platform.OS === 'ios' ? 65 : 20,
+        }}
+      />
+
       <View style={styles.textContainer}>
         <Text style={styles.headingText}>OTP Verification</Text>
         <Text style={styles.subText}>

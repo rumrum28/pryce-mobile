@@ -1,4 +1,10 @@
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Link, router } from 'expo-router'
@@ -14,7 +20,6 @@ import SwipeableRow from '~/components/swipeable_row'
 import { Image, Label, Spinner, XStack, YStack } from 'tamagui'
 import { formatCurrency } from '~/utils/utils'
 import NonePgcmCheckoutAlert from '~/components/none_pgcm_checkout_alert'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 import { PaymentMethod } from '~/components/payment_method'
@@ -155,7 +160,7 @@ export default function CheckoutItem() {
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <View
         style={{
           flexDirection: 'row',
@@ -402,7 +407,6 @@ export default function CheckoutItem() {
               >
                 <SafeAreaView
                   style={{ backgroundColor: 'white', paddingHorizontal: 10 }}
-                  edges={['bottom']}
                 >
                   <View
                     style={{
@@ -462,6 +466,6 @@ export default function CheckoutItem() {
           )}
         </>
       ) : null}
-    </View>
+    </SafeAreaView>
   )
 }
