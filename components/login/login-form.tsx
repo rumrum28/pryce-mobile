@@ -1,11 +1,6 @@
-import { Button, Form, Input, XStack, View, Text, Spinner } from 'tamagui'
+import { Form, View, Text } from 'tamagui'
 import { useState } from 'react'
-import {
-  AntDesign,
-  Feather,
-  Ionicons,
-  SimpleLineIcons,
-} from '@expo/vector-icons'
+import { AntDesign, Feather, SimpleLineIcons } from '@expo/vector-icons'
 import {
   StyleSheet,
   TextInput,
@@ -20,20 +15,14 @@ import { queryClient } from '~/hooks/queryClient'
 import { login } from '~/server/api'
 import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
-import { z } from 'zod'
 import { fonts } from '~/utils/fonts'
-
-// tell zod to only accept number that start with 09
-const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
-  message: 'Invalid phone number',
-})
+import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
 
 export default function LoginForm() {
   const [phoneNumber, setPhoneNumber] = useState<string>('')
   const [password, setPassword] = useState<string>('')
   const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
-  const [type, setType] = useState<'password' | 'otp'>('password')
   const setToken = usePryceStore((state) => state.setToken)
   const setUsers = usePryceStore((state) => state.setUsers)
   const toast = useToastController()
@@ -51,9 +40,12 @@ export default function LoginForm() {
           message: 'Welcome to PRYCEGAS!',
           native: false,
         })
-        setToken(data.loginResponse?.access_token)
-        setUsers(data.profileResponse)
-        router.push('/(drawer)/shop')
+
+        if (data.profileResponse) {
+          setToken(data.loginResponse?.access_token)
+          setUsers(data.profileResponse)
+          router.push('/(drawer)/shop')
+        }
       } else {
         toast.show('Error', {
           message: 'Invalid phone number or password',
@@ -67,21 +59,10 @@ export default function LoginForm() {
     const userData: UserInputs = {
       phone_number: phoneNumber.replace(/\s+/g, ''),
       value: password,
-      type: type,
+      type: 'password',
     }
 
     loginResponse.mutate(userData)
-  }
-
-  const formatPhoneNumber = (input: string) => {
-    const numbers = input.replace(/\D/g, '')
-    const match = numbers.match(/^(\d{0,4})(\d{0,3})(\d{0,4})$/)
-
-    if (match) {
-      return `${match[1]}${match[2] ? ' ' + match[2] : ''}${match[3] ? ' ' + match[3] : ''}`
-    }
-
-    return numbers
   }
 
   const handleNumberChange = (n: string) => {

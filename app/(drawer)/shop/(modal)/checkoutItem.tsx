@@ -1,7 +1,13 @@
-import { View, Text, FlatList, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  FlatList,
+  TouchableOpacity,
+  SafeAreaView,
+} from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
-import { Link } from 'expo-router'
+import { Link, router } from 'expo-router'
 import StyledButton from '~/components/styled_button'
 import useCartStore from '~/hooks/productsStore'
 import usePryceStore from '~/hooks/pryceStore'
@@ -11,13 +17,13 @@ import { queryClient } from '~/hooks/queryClient'
 import { useEffect, useState } from 'react'
 import { useToastController } from '@tamagui/toast'
 import SwipeableRow from '~/components/swipeable_row'
-import { Image, Label, XStack, YStack } from 'tamagui'
+import { Image, Label, Spinner, XStack, YStack } from 'tamagui'
 import { formatCurrency } from '~/utils/utils'
 import NonePgcmCheckoutAlert from '~/components/none_pgcm_checkout_alert'
-import { SafeAreaView } from 'react-native-safe-area-context'
 import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 import { PaymentMethod } from '~/components/payment_method'
+import { env } from '~/types/env'
 
 export default function CheckoutItem() {
   const cart = useCartStore((state) => state.cart)
@@ -25,6 +31,9 @@ export default function CheckoutItem() {
   const toast = useToastController()
   const [subTotal, setSubTotal] = useState<number>(0)
   const removeProduct = useCartStore((state) => state.removeProduct)
+  const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
+  const [loading, isLoading] = useState<boolean>(false)
+  const token = usePryceStore((s) => s.token)
 
   const fetchProducts = useMutation({
     mutationFn: fetchProductsQuery,
@@ -66,18 +75,92 @@ export default function CheckoutItem() {
     }
   }, [fetchProducts.isPending, fetchProducts.data, cart])
 
-  const placeOrder = () => {
+  const placeOrder = async () => {
+    isLoading(true)
     if (cart.length < 1)
       return toast.show('Something is wrong with your order!', {
         message: 'Please check your orders.',
         native: false,
       })
 
-    console.log(cart)
+    if (!paymentMethod)
+      return toast.show('Something is wrong with your order!', {
+        message: 'Please select a payment method.',
+        native: false,
+      })
+
+    const data = {
+      payment_method: paymentMethod,
+      line_items: [],
+    } as any
+
+    if (!fetchProducts.isPending && fetchProducts.data) {
+      cart.forEach((item) => {
+        data.line_items.push({
+          product_id: fetchProducts.data.find(
+            (e) => e.ProductCode === item.productCode
+          )?.Id,
+          product_area_code: fetchProducts.data.find(
+            (e) => e.ProductCode === item.productCode
+          )?.Product2Id,
+          amount: fetchProducts.data.find(
+            (e) => e.ProductCode === item.productCode
+          )?.RegularPrice,
+          currency: 'PHP',
+          description: fetchProducts.data.find(
+            (e) => e.ProductCode === item.productCode
+          )?.Name,
+          images: [
+            `https://prycegas.com/images/product-thumbs/${item.productCode}.png`,
+          ],
+          name: fetchProducts.data.find(
+            (e) => e.ProductCode === item.productCode
+          )?.Name,
+          quantity: item.quantity,
+        })
+      })
+
+      try {
+        const response = await fetch(
+          `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+          }
+        )
+
+        const placeOrderResponse: {
+          success: boolean
+          checkout_url: string
+        } = await response.json()
+
+        if (placeOrderResponse.success) {
+          router.push({
+            pathname: 'checkout/paymongo_webview',
+            params: {
+              url: placeOrderResponse.checkout_url,
+            },
+          })
+        } else {
+          return toast.show('Something is wrong with your order!', {
+            message: 'Please check your orders.',
+            native: false,
+          })
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isLoading(false)
+      }
+    }
   }
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white' }}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
       <View
         style={{
           flexDirection: 'row',
@@ -122,7 +205,10 @@ export default function CheckoutItem() {
             Payment Method
           </Label>
 
-          <PaymentMethod id="select-payment-method" />
+          <PaymentMethod
+            paymentMethod={paymentMethod}
+            setPaymentMethod={setPaymentMethod}
+          />
         </XStack>
       </YStack>
 
@@ -143,30 +229,38 @@ export default function CheckoutItem() {
                 )}
                 ListHeaderComponent={
                   <View style={{ paddingHorizontal: 15 }}>
-                    <View
-                      style={{
-                        flex: 1,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                      }}
-                    >
-                      <Text
-                        style={{
-                          fontSize: 16,
-                          fontWeight: 'bold',
-                          marginVertical: 8,
-                        }}
-                      >
-                        Order Summary
-                      </Text>
-                    </View>
-                    <View
-                      style={{
-                        height: 1,
-                        backgroundColor: colorTokens.light.gray.gray5,
-                      }}
-                    ></View>
+                    {fetchProducts.isPending ? (
+                      <YStack padding="$3" gap="$4" alignItems="flex-end">
+                        <Spinner size="large" color="$orange10" />
+                      </YStack>
+                    ) : (
+                      <>
+                        <View
+                          style={{
+                            flex: 1,
+                            flexDirection: 'row',
+                            alignItems: 'center',
+                            justifyContent: 'space-between',
+                          }}
+                        >
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              fontWeight: 'bold',
+                              marginVertical: 8,
+                            }}
+                          >
+                            Order Summary
+                          </Text>
+                        </View>
+                        <View
+                          style={{
+                            height: 1,
+                            backgroundColor: colorTokens.light.gray.gray5,
+                          }}
+                        ></View>
+                      </>
+                    )}
                   </View>
                 }
                 renderItem={({ item }) => {
@@ -313,7 +407,6 @@ export default function CheckoutItem() {
               >
                 <SafeAreaView
                   style={{ backgroundColor: 'white', paddingHorizontal: 10 }}
-                  edges={['bottom']}
                 >
                   <View
                     style={{
@@ -345,17 +438,27 @@ export default function CheckoutItem() {
                   <StyledButton
                     style={{
                       marginBottom: 30,
+                      backgroundColor: loading
+                        ? colorTokens.light.gray.gray4
+                        : colorTokens.light.orange.orange9,
                     }}
                     onPress={placeOrder}
+                    loading={loading}
                   >
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 14,
-                      }}
-                    >
-                      Place order
-                    </Text>
+                    {loading ? (
+                      <YStack padding="$3" gap="$4" alignItems="flex-end">
+                        <Spinner size="large" color="$orange10" />
+                      </YStack>
+                    ) : (
+                      <Text
+                        style={{
+                          color: loading ? 'black' : 'white',
+                          fontSize: 14,
+                        }}
+                      >
+                        Place order
+                      </Text>
+                    )}
                   </StyledButton>
                 </SafeAreaView>
               </View>
@@ -363,6 +466,6 @@ export default function CheckoutItem() {
           )}
         </>
       ) : null}
-    </View>
+    </SafeAreaView>
   )
 }

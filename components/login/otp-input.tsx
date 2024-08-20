@@ -21,15 +21,24 @@ export default function OtpInput({ value, disabled, onChange }: OtpInputProps) {
   const inputRefs = useRef<Array<Nullable<TextInput>>>([])
 
   const onChangeValue = (text: string, index: number) => {
-    const newValue = value.map((item, valueIndex) => {
-      if (valueIndex === index) {
-        return text
-      }
+    // const newValue = value.map((item, valueIndex) => {
+    //   if (valueIndex === index) {
+    //     return text
+    //   }
 
+<<<<<<< HEAD
       return item
     })
     // console.log(newValue)
     onChange(newValue)
+=======
+    //   return item
+    // })
+
+    value[index] = text
+
+    onChange(value)
+>>>>>>> origin/john
   }
 
   const handleChange = (text: string, index: number) => {

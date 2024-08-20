@@ -1,4 +1,3 @@
-import { useMemo, useState } from 'react'
 import {
   Adapt,
   FontSizeTokens,
@@ -11,25 +10,28 @@ import {
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { LinearGradient } from 'tamagui/linear-gradient'
 
-export function PaymentMethod(props: SelectProps) {
-  const [val, setVal] = useState('Cash on delivery')
-
-  const items = [{ name: 'Cash on delivery' }, { name: 'Online payment' }]
-
+export function PaymentMethod({
+  paymentMethod,
+  setPaymentMethod,
+  ...props
+}: {
+  paymentMethod: string
+  setPaymentMethod: (pm: string) => void
+}) {
   return (
     <Select
-      value={val}
-      onValueChange={setVal}
+      value={paymentMethod}
+      onValueChange={setPaymentMethod}
       disablePreventBodyScroll
       {...props}
     >
       <Select.Trigger width={220} iconAfter={ChevronDown}>
-        <Select.Value placeholder="Something" />
+        <Select.Value placeholder="cash-on-delivery" />
       </Select.Trigger>
 
       <Adapt when="sm" platform="touch">
         <Sheet
-          native={!!props.native}
+          native={false}
           modal
           dismissOnSnapToBottom
           animationConfig={{
@@ -83,21 +85,21 @@ export function PaymentMethod(props: SelectProps) {
           <Select.Group>
             <Select.Label>Payment Method</Select.Label>
 
-            <Select.Item index={1} value="cod">
+            <Select.Item index={1} value="cash-on-delivery">
               <Select.ItemText>Cash on delivery</Select.ItemText>
               <Select.ItemIndicator marginLeft="auto">
                 <Check size={16} />
               </Select.ItemIndicator>
             </Select.Item>
 
-            <Select.Item index={2} value="op">
+            <Select.Item index={2} value="online-payment">
               <Select.ItemText>Online payment</Select.ItemText>
               <Select.ItemIndicator marginLeft="auto">
                 <Check size={16} />
               </Select.ItemIndicator>
             </Select.Item>
           </Select.Group>
-          {/* Native gets an extra icon */}
+
           {props.native && (
             <YStack
               position="absolute"

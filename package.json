@@ -54,6 +54,7 @@
     "react-native-svg": "15.2.0",
     "react-native-swiper-flatlist": "^3.2.4",
     "react-native-web": "^0.19.11",
+    "react-native-webview": "^13.10.5",
     "sharp-cli": "^4.2.0",
     "styled-components": "^6.1.11",
     "tamagui": "^1.97.1",
