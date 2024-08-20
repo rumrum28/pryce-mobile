@@ -1,248 +1,94 @@
-import { AntDesign, Feather, Fontisto } from '@expo/vector-icons'
+import { AntDesign, Ionicons, SimpleLineIcons } from '@expo/vector-icons'
 import React, { useEffect, useState } from 'react'
-import { colorTokens } from '@tamagui/themes'
-import { router } from 'expo-router'
+import { router, useLocalSearchParams } from 'expo-router'
+import { View, Image, YStack, Text, Button } from 'tamagui'
 import {
-  Button,
-  Form,
-  H4,
-  Input,
-  Spinner,
-  XGroup,
-  XStack,
-  View,
-  Image,
-  YStack,
-  Text,
-  Main,
-  Label,
-} from 'tamagui'
-import { SafeAreaView, TouchableOpacity } from 'react-native'
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+
 import usePryceStore from '~/hooks/pryceStore'
+import { colorTokens } from '@tamagui/themes'
+import LoginForm from '~/components/login/login-form'
+import { fonts } from '~/utils/fonts'
+import RegisterForm from '~/components/register/register-form'
+import Register from '~/components/register/register'
 
 export default function Page() {
-  const [focused, setFocused] = useState(false)
-  const [focusedPassword, setFocusedPassword] = useState(false)
-  const [passwordIsVisible, setPasswordIsVisible] = useState<boolean>(false)
-  const token = usePryceStore((state) => state.token)
-  const users = usePryceStore((state) => state.users)
+  const setGetStarted = usePryceStore((state) => state.setGetStarted)
+  const insets = useSafeAreaInsets()
 
-  useEffect(() => {
-    if (token && users.length > 0) {
-      router.push('/(drawer)/shop')
-    }
-  }, [token, users])
+  const { loginType } = useLocalSearchParams()
 
   return (
-    <Main
-      style={{
-        flex: 1,
-        backgroundColor: colorTokens.light.orange.orange9,
-      }}
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
     >
-      <SafeAreaView style={{ display: 'flex' }}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'flex-start',
-          }}
-        >
-          <TouchableOpacity
-            onPress={() => router.back()}
-            style={{ marginLeft: 10, padding: 10 }}
-          >
-            <AntDesign name="arrowleft" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
-      <Image
-        source={require('~/assets/98000.png')}
-        style={{
-          height: 250,
-          width: '100%',
-        }}
-        resizeMode="contain"
-      />
+      <View style={styles.textContainer}>
+        <Text style={styles.headingText}>Sign up</Text>
+        <Text style={styles.subText}>Let&apos;s create your account</Text>
+      </View>
 
-      <YStack
-        style={{
-          flex: 1,
-          backgroundColor: 'white',
-          paddingHorizontal: 50,
-          paddingTop: 20,
-          marginTop: 20,
-          borderTopRightRadius: 50,
-          borderTopLeftRadius: 50,
-        }}
-        gap="$5"
-      >
-        <Text
-          style={{
-            fontSize: 30,
-            fontWeight: 'bold',
-
-            textAlign: 'center',
-          }}
-        >
-          Create New Account
-        </Text>
-        <Form gap="$6" onSubmit={() => {}}>
-          <XStack alignItems="center" gap="$3">
-            <Input
-              style={{
-                flex: 1,
-                fontSize: 16,
-                position: 'relative',
-                paddingLeft: 40,
-              }}
-              placeholder="Email"
-            />
-            <Fontisto
-              name="email"
-              size={24}
-              color="gray"
-              style={{ position: 'absolute', left: 10 }}
-            />
-          </XStack>
-          <XStack alignItems="center" gap="$3">
-            <Input
-              style={{
-                flex: 1,
-                fontSize: 16,
-                position: 'relative',
-                paddingLeft: 40,
-              }}
-              placeholder="+639 000 000 000"
-            />
-
-            <AntDesign
-              name="mobile1"
-              size={24}
-              color="gray"
-              style={{ position: 'absolute', left: 10 }}
-            />
-          </XStack>
-          <XStack alignItems="center" gap="$3">
-            <Input
-              style={{
-                flex: 1,
-                fontSize: 16,
-                position: 'relative',
-                paddingLeft: 40,
-              }}
-              placeholder="Password"
-              secureTextEntry={!passwordIsVisible}
-            />
-
-            <AntDesign
-              name="lock"
-              size={24}
-              color="gray"
-              style={{ position: 'absolute', left: 10 }}
-            />
-            <TouchableOpacity
-              style={{ position: 'absolute', right: 12 }}
-              onPress={() => setPasswordIsVisible(!passwordIsVisible)}
-            >
-              <Feather
-                name={passwordIsVisible ? 'eye' : 'eye-off'}
-                size={20}
-                color="#7C808D"
-              />
-            </TouchableOpacity>
-          </XStack>
-          {/* <TouchableOpacity style={{ alignSelf: 'flex-end' }}>
-            <Text
-              style={{
-                color: colorTokens.light.orange.orange9,
-                fontSize: 16,
-                fontWeight: '500',
-              }}
-            >
-              Forgot password?
-            </Text>
-          </TouchableOpacity> */}
-          <Form.Trigger asChild>
-            <Button
-              style={{
-                backgroundColor: colorTokens.light.orange.orange9,
-                width: '100%',
-                borderRadius: 50,
-                marginTop: 20,
-                color: 'white',
-              }}
-              onPress={() => router.push('/')}
-            >
-              Sign up
-            </Button>
-          </Form.Trigger>
-          {/* <View
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-              marginTop: 20,
-              marginBottom: 20,
-            }}
-          >
-            <View style={{ height: 1, backgroundColor: '#eee', flex: 1 }} />
-            <Text
-              style={{
-                color: '#7C808D',
-                marginRight: 10,
-                marginLeft: 10,
-                fontSize: 14,
-              }}
-            >
-              or continue with
-            </Text>
-            <View style={{ height: 1, backgroundColor: '#eee', flex: 1 }} />
-          </View> */}
-          {/* <TouchableOpacity
-            style={{
-              backgroundColor: '#F2F6F2',
-              padding: 14,
-              borderRadius: 50,
-              flexDirection: 'row',
-              alignItems: 'center',
-              justifyContent: 'center',
-              position: 'relative',
-            }}
-          >
-            <Text
-              style={{
-                color: '#4E5867',
-                fontSize: 16,
-                fontWeight: '500',
-                textAlign: 'center',
-              }}
-            >
-              Sign in with Phone Number
-            </Text>
-          </TouchableOpacity> */}
-        </Form>
-        <View
-          style={{
-            flexDirection: 'row',
-            alignSelf: 'center',
-            marginTop: 50,
-          }}
-        >
-          <Text style={{ fontSize: 16, color: '#7C808D' }}>
-            Already have an account?{' '}
-          </Text>
-          <TouchableOpacity onPress={() => router.push('/onboarding/login')}>
-            <Text
-              style={{
-                fontSize: 16,
-                color: colorTokens.light.orange.orange9,
-                fontWeight: '500',
-              }}
-            >
-              Sign in
-            </Text>
-          </TouchableOpacity>
-        </View>
-      </YStack>
-    </Main>
+      <View style={{ flex: 1, width: '100%', gap: 20 }}>
+        {/* <RegisterForm /> */}
+        <Register />
+      </View>
+      <View style={styles.footerContainer}>
+        <Text style={styles.accountText}>Already have an account?</Text>
+        <TouchableOpacity>
+          <Text style={styles.signupText}>Sign in</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  textContainer: {
+    marginTop: 30,
+    padding: 20,
+  },
+  headingText: {
+    fontSize: 36,
+    color: colorTokens.light.gray.gray12,
+    fontFamily: fonts.SemiBold,
+  },
+  subText: {
+    fontSize: 20,
+    color: colorTokens.light.gray.gray11,
+    fontFamily: fonts.SemiBold,
+  },
+  footerContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    alignItems: 'center',
+
+    gap: 5,
+  },
+  accountText: {
+    color: colorTokens.light.gray.gray9,
+    fontWeight: 'regular',
+    fontSize: 16,
+  },
+  signupText: {
+    color: colorTokens.light.orange.orange9,
+    fontWeight: 'bold',
+    fontSize: 16,
+  },
+})

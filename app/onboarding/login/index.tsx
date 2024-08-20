@@ -20,8 +20,13 @@ export default function Page() {
   }, [token, users])
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>
-      <StatusBar hidden />
+    <SafeAreaView
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+      }}
+    >
+      {/* <StatusBar hidden /> */}
       <ToastViewport
         style={{
           width: '100%',
@@ -31,87 +36,91 @@ export default function Page() {
         }}
       />
 
-      <View
-        style={{
-          alignItems: 'center',
-          flex: 1,
-          paddingHorizontal: 20,
-          gap: 20,
-        }}
-      >
-        <Image
-          source={require('~/assets/lady.png')}
-          style={{
-            marginVertical: 20,
-            height: 250,
-            width: '100%',
-          }}
-          resizeMode="contain"
-        />
-
-        <Text
-          style={{
-            fontSize: 40,
-            fontWeight: 'semibold',
-            paddingHorizontal: 20,
-            textAlign: 'center',
-            color: colorTokens.light.orange.orange9,
-          }}
-        >
-          Let&apos;s you in
-        </Text>
-
-        <TouchableOpacity
-          onPress={() => router.push('/onboarding/login/password')}
-          style={{
-            backgroundColor: colorTokens.light.orange.orange9,
-            paddingVertical: 13,
-            borderRadius: 50,
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ color: 'white' }}>Sign in with Password</Text>
-        </TouchableOpacity>
-        <Text style={{ color: 'black' }}>or</Text>
-        <TouchableOpacity
-          onPress={() => router.push('/onboarding/login/otp')}
-          style={{
-            borderWidth: 1,
-            borderColor: colorTokens.light.gray.gray6,
-            paddingVertical: 13,
-            borderRadius: 50,
-            width: '100%',
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <Text style={{ color: 'black' }}>Sign in with OTP</Text>
-        </TouchableOpacity>
-
+      {!loginType && (
         <View
           style={{
-            flexDirection: 'row',
-            alignSelf: 'center',
+            alignItems: 'center',
+            flex: 1,
+            paddingHorizontal: 20,
           }}
         >
-          <Text style={{ fontSize: 14, color: colorTokens.light.gray.gray8 }}>
-            Dont have an account?{' '}
+          <Image
+            source={require('~/assets/98000.png')}
+            style={{
+              marginVertical: 20,
+              height: 250,
+              width: '100%',
+            }}
+            resizeMode="contain"
+          />
+
+          <Text
+            style={{
+              fontSize: 40,
+              fontWeight: 'semibold',
+              paddingHorizontal: 20,
+              textAlign: 'center',
+              color: colorTokens.light.orange.orange9,
+              marginBottom: 50,
+            }}
+          >
+            Hello !
           </Text>
-          <TouchableOpacity onPress={() => router.push('/onboarding/register')}>
-            <Text
-              style={{
-                fontSize: 14,
-                color: colorTokens.light.orange.orange9,
-                fontWeight: '500',
-              }}
-            >
-              Sign up
-            </Text>
+
+          <TouchableOpacity
+            onPress={() => router.push('/onboarding/login/password')}
+            style={{
+              backgroundColor: colorTokens.light.orange.orange9,
+              paddingVertical: 13,
+              borderRadius: 50,
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: 'white' }}>Sign in with Password</Text>
           </TouchableOpacity>
+          <Text style={{ color: 'black' }}>or</Text>
+          <TouchableOpacity
+            onPress={() => router.push('/onboarding/login/otp')}
+            style={{
+              borderWidth: 1,
+              borderColor: colorTokens.light.gray.gray6,
+              paddingVertical: 13,
+              borderRadius: 50,
+              width: '100%',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}
+          >
+            <Text style={{ color: 'black' }}>Sign in with OTP</Text>
+          </TouchableOpacity>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              alignSelf: 'center',
+            }}
+          >
+            <Text style={{ fontSize: 14, color: colorTokens.light.gray.gray9 }}>
+              Dont have an account?{' '}
+            </Text>
+            <TouchableOpacity
+              onPress={() => router.push('/onboarding/register')}
+            >
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: colorTokens.light.orange.orange9,
+                  fontWeight: '500',
+                }}
+              >
+                Sign up
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
+      )}
     </SafeAreaView>
   )
 }

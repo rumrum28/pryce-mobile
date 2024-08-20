@@ -6,8 +6,10 @@ import {
   TouchableOpacity,
   View,
   Text,
+  StatusBar,
+  ActivityIndicator,
 } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
 import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
 import { useEffect, useState } from 'react'
@@ -23,12 +25,20 @@ import { colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
 import { Form, Spinner, YStack } from 'tamagui'
 import { AntDesign } from '@expo/vector-icons'
+import { z } from 'zod'
 import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
 
 export default function OtpVerification() {
-  const [phoneNumber, setPhoneNumber] = useState('')
+  const setUsers = usePryceStore((s) => s.setUsers)
+  const setToken = usePryceStore((s) => s.setToken)
+  const [phoneNumber, setPhoneNumber] = useState<string>('')
+  const [otpNumber, setOtpNumber] = useState<string>('')
+  const [type, setType] = useState<'otp' | 'password'>('otp')
   const toast = useToastController()
+  const [type, setType] = useState<'password' | 'otp'>('otp')
+  const setGetStarted = usePryceStore((state) => state.setGetStarted)
   const { width, height } = Dimensions.get('window')
+  const { loginType } = useLocalSearchParams()
   const [loading, isLoading] = useState<boolean>(false)
   const [invalidNumber, setInvalidNumber] = useState<boolean>(true)
   const [verifyCountDown, isVerifyCountDown] = useState<boolean>(false)
@@ -108,7 +118,7 @@ export default function OtpVerification() {
   }, [verifyCountDown, otpCountDown])
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.area}>
       <View style={styles.textContainer}>
         <Text style={styles.headingText}>Verify your</Text>
         <Text style={styles.headingText}>phone number</Text>
@@ -243,19 +253,19 @@ export default function OtpVerification() {
         >
           Terms and Conditions and Data Privacy.
         </Text>
-      </View>
+      </SafeAreaView>
     </SafeAreaView>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
+  area: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
   },
   textContainer: {
-    marginVertical: 50,
+    marginVertical: 30,
+    padding: 20,
   },
   headingText: {
     fontSize: 36,
@@ -271,13 +281,19 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     flexDirection: 'row',
-    borderColor: colorTokens.light.gray.gray11,
+
     borderBottomWidth: 0.4,
     height: 58,
     alignItems: 'center',
-    // marginVertical: 32,
   },
+  textInvalidNum: {
+    borderColor: colorTokens.light.red.red9,
 
+    borderBottomWidth: 0.8,
+  },
+  textValidNum: {
+    borderColor: colorTokens.light.gray.gray11,
+  },
   input: {
     flex: 1,
     marginVertical: 10,
@@ -286,12 +302,10 @@ const styles = StyleSheet.create({
     color: colorTokens.light.gray.gray12,
     fontFamily: fonts.Regular,
   },
-  verifyBtn: {
-    paddingVertical: 10,
-    borderRadius: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: colorTokens.light.orange.orange9,
+  otpBtn: {
+    fontSize: 20,
+    fontFamily: fonts.SemiBold,
+    color: 'white',
   },
   bottomContainer: {
     position: 'absolute',

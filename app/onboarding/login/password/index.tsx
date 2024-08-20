@@ -1,20 +1,47 @@
-import { View, Text } from 'tamagui'
-import { StyleSheet } from 'react-native'
-import { SafeAreaView } from 'react-native-safe-area-context'
+import { AntDesign, Ionicons, SimpleLineIcons } from '@expo/vector-icons'
+import React, { useEffect, useState } from 'react'
+import { router, useLocalSearchParams } from 'expo-router'
+import { View, Image, YStack, Text, Button } from 'tamagui'
+import {
+  Pressable,
+  StyleSheet,
+  TextInput,
+  TouchableOpacity,
+  useWindowDimensions,
+} from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
+
+import usePryceStore from '~/hooks/pryceStore'
 import { colorTokens } from '@tamagui/themes'
 import LoginForm from '~/components/login/login-form'
 import { fonts } from '~/utils/fonts'
 
 export default function LogIn() {
+  const setGetStarted = usePryceStore((state) => state.setGetStarted)
+  const insets = useSafeAreaInsets()
+
+  const { loginType } = useLocalSearchParams()
+
   return (
-    <SafeAreaView style={styles.container}>
+    <View
+      style={[
+        styles.container,
+        {
+          paddingTop: insets.top,
+          paddingBottom: insets.bottom,
+          paddingLeft: insets.left,
+          paddingRight: insets.right,
+        },
+      ]}
+    >
       <View style={styles.textContainer}>
         <Text style={styles.headingText}>Hey,</Text>
-        <Text style={styles.headingText}>Welcome</Text>
-        <Text style={styles.headingText}>Back</Text>
+        <Text style={styles.headingText}>welcome</Text>
+        <Text style={styles.headingText}>back!</Text>
       </View>
+
       <LoginForm />
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -22,10 +49,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
   },
   textContainer: {
-    marginVertical: 50,
+    marginVertical: 30,
+    padding: 20,
   },
   headingText: {
     fontSize: 36,

@@ -8,21 +8,20 @@ import {
   Text,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useToastController } from '@tamagui/toast'
 import { useMutation } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { getOtp, login } from '~/server/api'
-import { Container } from '~/tamagui.config'
 import { UserInputs } from '~/types/apiresults'
 import usePryceStore from '~/hooks/pryceStore'
 import { router, useLocalSearchParams } from 'expo-router'
 import { color, colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
 import { Form } from 'tamagui'
-import { AntDesign } from '@expo/vector-icons'
+import OtpInput from '~/components/login/otp-input'
+import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors'
 import {
   formatOTP,
   formatPhoneNumber,
@@ -83,6 +82,31 @@ export default function VerifyOtp() {
     setInvalidNumber(true)
   }
 
+  const handleOtpChange = (newValue: string[]) => {
+    setOtpNumber(newValue)
+  }
+
+  const getOtpResponse = useMutation({
+    mutationFn: getOtp,
+    onSuccess: (data) => {
+      queryClient.invalidateQueries({
+        queryKey: ['otp'],
+      })
+
+      if (data) {
+        toast.show('Success', {
+          message: data.message,
+          native: false,
+        })
+      } else {
+        toast.show('Error', {
+          message: 'Invalid phone number',
+          native: false,
+        })
+      }
+    },
+  })
+
   const handleNumberChange = (n: string) => {
     let result = true
 
@@ -105,72 +129,59 @@ export default function VerifyOtp() {
         <Text style={styles.headingText}>OTP Verification</Text>
         <Text style={styles.subText}>
           We have sent SMS with code to{' '}
-          <Text style={styles.subTextNumber}>09123627891</Text> Please write the
-          code below and hit log in button
+          <Text style={styles.subTextNumber}>{phoneNumber}</Text> Please write
+          the code below and hit log in button.
         </Text>
       </View>
-
-      <Form onSubmit={checkOtpHandler}>
-        <View>
-          <Text>
-            Enter one-time pin.{' '}
-            {!loginResponse.isPending &&
-            loginResponse.data?.loginResponse.success ? null : (
+      {/* <View style={styles.timerContainer}></View> */}
+      <View>
+        <View style={[styles.inputContainer, { width: width }]}>
+          <OtpInput
+            value={otpNumber}
+            disabled={false}
+            onChange={handleOtpChange}
+          />
+        </View>
+        <View style={styles.textBtnContainer}>
+          <Text style={{ fontSize: 16, fontWeight: '300', marginRight: 3 }}>
+            Don&apos;t receive the code?
+          </Text>
+          <TouchableOpacity
+            disabled={isDisabled}
+            onPress={sendOtpHandler}
+            style={styles.newCodeContainer}
+          >
+            <Text
+              style={[
+                styles.newCodeBtn,
+                isDisabled ? styles.newCodeDisabled : styles.newCodeEnabled,
+              ]}
+            >
+              Get new code
+            </Text>
+            {minutes === 0 && seconds === 0 ? null : (
               <Text
                 style={{
-                  color: colorTokens.light.red.red9,
+                  fontSize: 16,
+                  fontWeight: '500',
+                  color: colorTokens.light.orange.orange9,
                 }}
               >
-                ({loginResponse.data?.loginResponse.message})
+                in {minutes}:{seconds < 10 ? `0${seconds}` : seconds}
               </Text>
             )}
-          </Text>
+          </TouchableOpacity>
         </View>
-        <View style={{ alignItems: 'center' }}>
-          <View
-            style={{
-              flexDirection: 'row',
-              borderColor:
-                !loginResponse.isPending &&
-                loginResponse.data?.loginResponse.success
-                  ? colorTokens.light.gray.gray12
-                  : colorTokens.light.red.red9,
-              borderBottomWidth: 0.4,
-              height: 58,
-              alignItems: 'center',
-              width: width - 32,
-            }}
-          >
-            <View style={{ justifyContent: 'center', marginRight: 10 }}>
-              <AntDesign
-                name={'mobile1'}
-                size={24}
-                color={colorTokens.light.orange.orange7}
-              />
-            </View>
-            <TextInput
-              style={styles.input}
-              placeholder="Enter 6 digit pin"
-              placeholderTextColor={colorTokens.light.orange.orange7}
-              keyboardType="number-pad"
-              selectionColor={colorTokens.light.gray.gray12}
-              value={otpNumber}
-              onChangeText={handleNumberChange}
-              numberOfLines={1}
-              maxLength={7}
-            />
-          </View>
-          <View style={{ marginTop: 20 }}>
-            <Form.Trigger asChild disabled={invalidNumber}>
+        <Form onSubmit={checkOtpHandler}>
+          <View style={{ marginTop: 50, alignItems: 'center' }}>
+            <Form.Trigger asChild>
               <TouchableOpacity
                 style={{
                   paddingVertical: 10,
                   borderRadius: 12,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: invalidNumber
-                    ? colorTokens.dark.gray.gray8
-                    : colorTokens.light.orange.orange9,
+                  backgroundColor: colorTokens.light.orange.orange9,
                   width: width - 32,
                 }}
               >
@@ -181,27 +192,12 @@ export default function VerifyOtp() {
                     color: 'white',
                   }}
                 >
-                  CONFIRM
+                  Submit
                 </Text>
               </TouchableOpacity>
             </Form.Trigger>
           </View>
-        </View>
-      </Form>
-
-      <View style={styles.bottomContainer}>
-        <Text style={{ fontSize: 14, textAlign: 'center' }}>
-          By continuing you agree with the
-        </Text>
-        <Text
-          style={{
-            fontSize: 14,
-            textDecorationColor: colorTokens.light.gray.gray12,
-            textDecorationLine: 'underline',
-          }}
-        >
-          Terms and Conditions and Data Privacy.
-        </Text>
+        </Form>
       </View>
     </SafeAreaView>
   )
@@ -211,15 +207,14 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: 'white',
-    padding: 20,
   },
   textContainer: {
-    marginVertical: 50,
+    marginVertical: 30,
+    padding: 20,
   },
   headingText: {
     fontSize: 36,
     color: colorTokens.light.gray.gray11,
-    // fontFamily: fonts.SemiBold,
     fontWeight: '500',
   },
   subText: {
@@ -233,6 +228,39 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     color: colorTokens.light.gray.gray11,
+  },
+  timerContainer: {
+    marginBottom: 20,
+    alignItems: 'center',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    height: 58,
+    alignItems: 'center',
+    marginVertical: 22,
+  },
+  textBtnContainer: {
+    flexDirection: 'column',
+    alignItems: 'flex-start',
+    paddingHorizontal: 20,
+    marginTop: 30,
+  },
+  newCodeContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 10,
+  },
+  newCodeBtn: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginRight: 3,
+    color: colorTokens.light.gray.gray9,
+  },
+  newCodeDisabled: {
+    opacity: 0.5,
+  },
+  newCodeEnabled: {
+    opacity: 1,
   },
   input: {
     flex: 1,

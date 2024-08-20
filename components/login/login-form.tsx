@@ -98,7 +98,7 @@ export default function LoginForm() {
         >
           <AntDesign
             name={'mobile1'}
-            size={30}
+            size={24}
             color={colorTokens.light.orange.orange7}
           />
           <TextInput
@@ -113,7 +113,7 @@ export default function LoginForm() {
         <View style={styles.inputContainer}>
           <SimpleLineIcons
             name={'lock'}
-            size={30}
+            size={24}
             color={colorTokens.light.orange.orange7}
           />
           <TextInput
@@ -177,7 +177,7 @@ export default function LoginForm() {
 
 const styles = StyleSheet.create({
   formContainer: {
-    marginTop: 20,
+    padding: 20,
   },
   inputContainer: {
     borderWidth: 1,
@@ -200,12 +200,12 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     paddingHorizontal: 10,
-    fontFamily: fonts.Light,
+    fontWeight: 'light',
   },
   forgotPasswordText: {
     textAlign: 'right',
     color: colorTokens.light.orange.orange9,
-    fontFamily: fonts.SemiBold,
+    fontWeight: 'semibold',
     marginVertical: 10,
     fontSize: 16,
   },
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
   loginText: {
     color: 'white',
     fontSize: 16,
-    fontFamily: fonts.SemiBold,
+    fontWeight: 'light',
     textAlign: 'center',
     padding: 5,
   },
@@ -226,12 +226,12 @@ const styles = StyleSheet.create({
   },
   accountText: {
     color: colorTokens.light.gray.gray9,
-    fontFamily: fonts.Regular,
+    fontWeight: 'regular',
     fontSize: 16,
   },
   signupText: {
     color: colorTokens.light.orange.orange9,
-    fontFamily: fonts.Bold,
+    fontWeight: 'bold',
     fontSize: 16,
   },
 })
