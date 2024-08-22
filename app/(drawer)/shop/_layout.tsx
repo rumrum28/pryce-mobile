@@ -105,7 +105,7 @@ export default function _layout() {
           ),
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="(modal)/paymentMethod"
         options={{
           presentation: 'fullScreenModal',
@@ -123,7 +123,7 @@ export default function _layout() {
             </TouchableOpacity>
           ),
         }}
-      />
+      /> */}
     </Stack>
   )
 }

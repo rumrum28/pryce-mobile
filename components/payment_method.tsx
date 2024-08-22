@@ -99,23 +99,6 @@ export function PaymentMethod({
               </Select.ItemIndicator>
             </Select.Item>
           </Select.Group>
-
-          {props.native && (
-            <YStack
-              position="absolute"
-              right={0}
-              top={0}
-              bottom={0}
-              alignItems="center"
-              justifyContent="center"
-              width={'$4'}
-              pointerEvents="none"
-            >
-              <ChevronDown
-                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
-              />
-            </YStack>
-          )}
         </Select.Viewport>
 
         <Select.ScrollDownButton

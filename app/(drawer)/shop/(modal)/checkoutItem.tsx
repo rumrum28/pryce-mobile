@@ -24,6 +24,7 @@ import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 import { PaymentMethod } from '~/components/payment_method'
 import { env } from '~/types/env'
+import DropdownComponent from '~/components/register/dropdown'
 
 export default function CheckoutItem() {
   const cart = useCartStore((state) => state.cart)
@@ -120,42 +121,45 @@ export default function CheckoutItem() {
         })
       })
 
-      try {
-        const response = await fetch(
-          `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(data),
-          }
-        )
+      // try {
+      //   const response = await fetch(
+      //     `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
+      //     {
+      //       method: 'POST',
+      //       headers: {
+      //         'Content-Type': 'application/json',
+      //         Authorization: `Bearer ${token}`,
+      //       },
+      //       body: JSON.stringify(data),
+      //     }
+      //   )
 
-        const placeOrderResponse: {
-          success: boolean
-          checkout_url: string
-        } = await response.json()
+      //   const placeOrderResponse: {
+      //     success: boolean
+      //     checkout_url: string
+      //   } = await response.json()
 
-        if (placeOrderResponse.success) {
-          router.push({
-            pathname: 'checkout/paymongo_webview',
-            params: {
-              url: placeOrderResponse.checkout_url,
-            },
-          })
-        } else {
-          return toast.show('Something is wrong with your order!', {
-            message: 'Please check your orders.',
-            native: false,
-          })
-        }
-      } catch (error) {
-        console.log(error)
-      } finally {
-        isLoading(false)
-      }
+      //   console.log(placeOrderResponse)
+
+      // if (placeOrderResponse.success) {
+      router.push({
+        pathname: '/checkout/paymongo_webview',
+        params: {
+          url: 'https://checkout.paymongo.com/cs_NtEzDA3unpfoE4kP4eZBqdsV_client_gMV38Q8DdxbTcn49CPQWkiPg#cGtfdGVzdF9Zc3Y0ZWJXcm5mcHk0dkJjSjdmRXdaZTg=',
+          // url: placeOrderResponse.checkout_url,
+        },
+      })
+      //   } else {
+      //     return toast.show('Something is wrong with your order!', {
+      //       message: 'Please check your orders.',
+      //       native: false,
+      //     })
+      //   }
+      // } catch (error) {
+      //   console.log(error)
+      // } finally {
+      //   isLoading(false)
+      // }
     }
   }
 
@@ -193,22 +197,27 @@ export default function CheckoutItem() {
         </Text>
       </View>
 
-      <YStack gap="$4" p={10}>
-        <XStack ai="center" gap="$4">
-          <Label
+      <YStack paddingHorizontal={10}>
+        <XStack>
+          {/* <Label
             htmlFor="select-payment-method"
             f={1}
-            miw={80}
             fs={16}
             fontWeight={'800'}
           >
             Payment Method
-          </Label>
+          </Label> */}
 
-          <PaymentMethod
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-          />
+          <View style={{ width: '100%', paddingHorizontal: 10 }}>
+            <DropdownComponent
+              data={[
+                { value: 'cash-on-delivery', label: 'Cash on Delivery' },
+                { value: 'online-payment', label: 'Online Payment' },
+              ]}
+              onChange={setPaymentMethod}
+              placeholder="Payment Method"
+            />
+          </View>
         </XStack>
       </YStack>
 

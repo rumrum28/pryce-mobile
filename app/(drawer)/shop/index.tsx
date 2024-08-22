@@ -1,4 +1,11 @@
-import { SafeAreaView, ScrollView, Text, TouchableOpacity } from 'react-native'
+import {
+  Platform,
+  RefreshControl,
+  SafeAreaView,
+  ScrollView,
+  Text,
+  TouchableOpacity,
+} from 'react-native'
 import React, { useEffect } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
@@ -25,6 +32,7 @@ export default function Page() {
   )
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
+  const [refreshing, setRefreshing] = React.useState(false)
 
   const fetchProducts = useMutation({
     mutationFn: changeAddressOnLoad,
@@ -33,6 +41,7 @@ export default function Page() {
         queryKey: ['fetchProductsOnLoad'],
       })
 
+      setRefreshing(false)
       if (data?.addressRef) {
         setAddressRef(data.addressRef)
       }
@@ -48,9 +57,20 @@ export default function Page() {
 
       fetchProducts.mutate(userData)
     }
-
-    console.log(token)
   }, [selectedUser])
+
+  const refreshPage = () => {
+    setRefreshing(true)
+    if (selectedUser) {
+      const userData: { token: string; accountNumber: string } = {
+        token: token,
+        accountNumber: selectedUser,
+      }
+
+      console.log(userData)
+      fetchProducts.mutate(userData)
+    }
+  }
 
   // useEffect(() => {
   //   if (
@@ -76,7 +96,11 @@ export default function Page() {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: colorTokens.light.gray.gray2 }}>
+    <SafeAreaView
+      style={{
+        backgroundColor: colorTokens.light.gray.gray2,
+      }}
+    >
       <ToastViewport
         style={{
           width: '100%',
@@ -89,6 +113,9 @@ export default function Page() {
       <ScrollView
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={refreshPage} />
+        }
       >
         {fetchProducts.data && favorites.length > 0 ? (
           <>
