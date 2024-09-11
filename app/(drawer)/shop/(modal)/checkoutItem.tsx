@@ -77,91 +77,96 @@ export default function CheckoutItem() {
   }, [fetchProducts.isPending, fetchProducts.data, cart])
 
   const placeOrder = async () => {
-    isLoading(true)
-    if (cart.length < 1)
-      return toast.show('Something is wrong with your order!', {
-        message: 'Please check your orders.',
-        native: false,
-      })
+    router.push({
+      pathname: '/checkout/paymongo_webview',
+      params: {
+        url: 'https://checkout.paymongo.com/cs_pMgbf16mpWG3vxD35cSMtpop_client_fLj6NNvyiYVCJzXDGc1fLwX2#cGtfdGVzdF9Zc3Y0ZWJXcm5mcHk0dkJjSjdmRXdaZTg=',
+      },
+    })
+    // isLoading(true)
+    // if (cart.length < 1)
+    //   return toast.show('Something is wrong with your order!', {
+    //     message: 'Please check your orders.',
+    //     native: false,
+    //   })
 
-    if (!paymentMethod)
-      return toast.show('Something is wrong with your order!', {
-        message: 'Please select a payment method.',
-        native: false,
-      })
+    // if (!paymentMethod)
+    //   return toast.show('Something is wrong with your order!', {
+    //     message: 'Please select a payment method.',
+    //     native: false,
+    //   })
 
-    const data = {
-      payment_method: paymentMethod,
-      line_items: [],
-    } as any
+    // const data = {
+    //   payment_method: paymentMethod,
+    //   line_items: [],
+    // } as any
 
-    if (!fetchProducts.isPending && fetchProducts.data) {
-      cart.forEach((item) => {
-        data.line_items.push({
-          product_id: fetchProducts.data.find(
-            (e) => e.ProductCode === item.productCode
-          )?.Id,
-          product_area_code: fetchProducts.data.find(
-            (e) => e.ProductCode === item.productCode
-          )?.Product2Id,
-          amount: fetchProducts.data.find(
-            (e) => e.ProductCode === item.productCode
-          )?.RegularPrice,
-          currency: 'PHP',
-          description: fetchProducts.data.find(
-            (e) => e.ProductCode === item.productCode
-          )?.Name,
-          images: [
-            `https://prycegas.com/images/product-thumbs/${item.productCode}.png`,
-          ],
-          name: fetchProducts.data.find(
-            (e) => e.ProductCode === item.productCode
-          )?.Name,
-          quantity: item.quantity,
-        })
-      })
+    // if (!fetchProducts.isPending && fetchProducts.data) {
+    //   cart.forEach((item) => {
+    //     data.line_items.push({
+    //       product_id: fetchProducts.data.find(
+    //         (e) => e.ProductCode === item.productCode
+    //       )?.Id,
+    //       product_area_code: fetchProducts.data.find(
+    //         (e) => e.ProductCode === item.productCode
+    //       )?.Product2Id,
+    //       amount: fetchProducts.data.find(
+    //         (e) => e.ProductCode === item.productCode
+    //       )?.RegularPrice,
+    //       currency: 'PHP',
+    //       description: fetchProducts.data.find(
+    //         (e) => e.ProductCode === item.productCode
+    //       )?.Name,
+    //       images: [
+    //         `https://prycegas.com/images/product-thumbs/${item.productCode}.png`,
+    //       ],
+    //       name: fetchProducts.data.find(
+    //         (e) => e.ProductCode === item.productCode
+    //       )?.Name,
+    //       quantity: item.quantity,
+    //     })
+    //   })
 
-      // try {
-      //   const response = await fetch(
-      //     `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
-      //     {
-      //       method: 'POST',
-      //       headers: {
-      //         'Content-Type': 'application/json',
-      //         Authorization: `Bearer ${token}`,
-      //       },
-      //       body: JSON.stringify(data),
-      //     }
-      //   )
+    //   try {
+    //     const response = await fetch(
+    //       `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
+    //       {
+    //         method: 'POST',
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //         body: JSON.stringify(data),
+    //       }
+    //     )
 
-      //   const placeOrderResponse: {
-      //     success: boolean
-      //     checkout_url: string
-      //   } = await response.json()
+    //     const placeOrderResponse: {
+    //       success: boolean
+    //       checkout_url: string
+    //     } = await response.json()
 
-      //   console.log(placeOrderResponse)
-
-      // if (placeOrderResponse.success) {
-      router.push({
-        pathname: '/checkout/paymongo_webview',
-        params: {
-          url: 'https://checkout.paymongo.com/cs_NtEzDA3unpfoE4kP4eZBqdsV_client_gMV38Q8DdxbTcn49CPQWkiPg#cGtfdGVzdF9Zc3Y0ZWJXcm5mcHk0dkJjSjdmRXdaZTg=',
-          // url: placeOrderResponse.checkout_url,
-        },
-      })
-      //   } else {
-      //     return toast.show('Something is wrong with your order!', {
-      //       message: 'Please check your orders.',
-      //       native: false,
-      //     })
-      //   }
-      // } catch (error) {
-      //   console.log(error)
-      // } finally {
-      //   isLoading(false)
-      // }
-    }
+    //     if (placeOrderResponse.success) {
+    //       router.push({
+    //         pathname: '/checkout/paymongo_webview',
+    //         params: {
+    //           url: placeOrderResponse.checkout_url,
+    //         },
+    //       })
+    //     } else {
+    //       return toast.show('Something is wrong with your order!', {
+    //         message: 'Please check your orders.',
+    //         native: false,
+    //       })
+    //     }
+    //   } catch (error) {
+    //     console.log(error)
+    //   } finally {
+    //     isLoading(false)
+    //   }
+    // }
   }
+
+  //moviestart://(drawer)/shop
 
   return (
     <SafeAreaView style={{ flex: 1, backgroundColor: 'white' }}>

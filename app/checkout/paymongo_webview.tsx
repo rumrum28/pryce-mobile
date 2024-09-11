@@ -16,15 +16,21 @@ import { Ionicons } from '@expo/vector-icons'
 
 /* <button class="button full-width button--secondary" type="button"><div class="button__content"><span>Back</span></div></button> */
 
-export default function PaymongoWebview() {
+export default function PaymongoWebview({ navigation }: any) {
   const { url } = useLocalSearchParams() as any
   const [webViewVisible, setWebViewVisible] = useState(true)
   const webViewRef = useRef(null)
   const { width, height } = useWindowDimensions()
 
-  const handleNavigationChange = (navState: any) => {
-    if (navState.url.includes('button full-width button--secondary')) {
-      setWebViewVisible(false)
+  const injectedJavaScript = `
+    document.getElementById('backButton').addEventListener('click', function() {
+      window.ReactNativeWebView.postMessage('goBack');
+    });
+  `
+
+  const handleMessage = (event: any) => {
+    if (event.nativeEvent.data === 'goBack') {
+      // Trigger back navigation or other action
       router.back()
     }
   }
@@ -62,26 +68,11 @@ export default function PaymongoWebview() {
           source={{ uri: url }}
           originWhitelist={['*']}
           ref={webViewRef}
-          onNavigationStateChange={handleNavigationChange}
           allowFileAccess={true}
           allowUniversalAccessFromFileURLs={true}
           allowsInlineMediaPlayback={true}
           mediaPlaybackRequiresUserAction={false}
           startInLoadingState={true}
-          renderError={(errorName) => (
-            <View
-              style={{
-                flex: 1,
-              }}
-            />
-          )}
-          renderLoading={() => (
-            <View
-              style={{
-                flex: 1,
-              }}
-            />
-          )}
           javaScriptEnabled={true}
           domStorageEnabled={true}
           allowFileAccessFromFileURLs={true}
@@ -89,7 +80,9 @@ export default function PaymongoWebview() {
           removeClippedSubviews={true}
           // scrollEnabled={false}
           nestedScrollEnabled
-          limitsNavigationsToAppBoundDomains={true}
+          // limitsNavigationsToAppBoundDomains={true}
+          injectedJavaScript={injectedJavaScript}
+          onMessage={handleMessage}
         />
       )}
     </>

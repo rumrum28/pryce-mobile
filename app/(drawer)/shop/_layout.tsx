@@ -71,7 +71,7 @@ export default function _layout() {
         name="(modal)/basket"
         options={{
           title: 'carts',
-          presentation: 'fullScreenModal',
+          // presentation: 'fullScreenModal',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
