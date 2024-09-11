@@ -58,6 +58,7 @@ export default function Page() {
   }, [data])
 
   useEffect(() => {
+    setRefreshing(true)
     if (selectedUser) {
       const userData: { token: string; accountNumber: string } = {
         token: token,
@@ -66,7 +67,7 @@ export default function Page() {
 
       fetchProducts(userData)
     }
-  }, [selectedUser])
+  }, [selectedUser, fetchProducts])
 
   const refreshPage = () => {
     setRefreshing(true)
@@ -76,8 +77,7 @@ export default function Page() {
         accountNumber: selectedUser,
       }
 
-      console.log(userData)
-      fetchProducts.mutate(userData)
+      fetchProducts(userData)
     }
   }
 
