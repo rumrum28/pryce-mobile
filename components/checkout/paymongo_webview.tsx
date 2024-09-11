@@ -1,4 +1,4 @@
-import { WebView } from 'react-native-webview'
+// import { WebView } from 'react-native-webview'
 import { SafeAreaView, StatusBar, StyleSheet } from 'react-native'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { Text } from 'tamagui'
@@ -24,7 +24,7 @@ export default function PaymongoWebview() {
     <SafeAreaView style={{ flex: 1 }}>
       <StatusBar hidden />
 
-      {url ? (
+      {/* {url ? (
         <>
           {webViewVisible && (
             <WebView
@@ -37,7 +37,7 @@ export default function PaymongoWebview() {
             />
           )}
         </>
-      ) : null}
+      ) : null} */}
     </SafeAreaView>
   )
 }

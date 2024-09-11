@@ -29,7 +29,7 @@ export function PaymentMethod({
         <Select.Value placeholder="cash-on-delivery" />
       </Select.Trigger>
 
-      <Adapt when="sm" platform="touch">
+      <Adapt when="sm" platform="ios">
         <Sheet
           native={false}
           modal
@@ -99,7 +99,7 @@ export function PaymentMethod({
               </Select.ItemIndicator>
             </Select.Item>
           </Select.Group>
-
+          {/* 
           {props.native && (
             <YStack
               position="absolute"
@@ -115,7 +115,7 @@ export function PaymentMethod({
                 size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
               />
             </YStack>
-          )}
+          )} */}
         </Select.Viewport>
 
         <Select.ScrollDownButton

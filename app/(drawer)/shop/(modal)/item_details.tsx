@@ -1,278 +1,189 @@
-import { View, TouchableOpacity } from 'react-native'
+import {
+  View,
+  Text,
+  Image,
+  TouchableOpacity,
+  Dimensions,
+  Platform,
+  StyleSheet,
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
-import { router, useLocalSearchParams } from 'expo-router'
+import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
+import { formatCurrency } from '~/utils/utils'
 import { SafeAreaView } from 'react-native-safe-area-context'
-import Animated, { FadeIn, FadeInLeft } from 'react-native-reanimated'
+import Animated, {
+  FadeIn,
+  FadeInLeft,
+  interpolate,
+  useAnimatedRef,
+  useAnimatedStyle,
+  useScrollViewOffset,
+} from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
+import useBasketStore, { AddOn } from '~/utils/basketStore'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
+import StyledButton from '~/components/styled_button'
 import { useMutation } from '@tanstack/react-query'
-import { fetchProductsQuery } from '~/server/api'
+import { fetchProductsQuery, getProductById } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import usePryceStore from '~/hooks/pryceStore'
-import { Button, Image, Spinner, Text, YStack } from 'tamagui'
 import { exemptedOnProducts, ProductsDetail } from '~/utils/products'
-import AddToCartButton from '~/components/add_to_cart_button'
-import { formatCurrency } from '~/utils/utils'
+import { Spinner, YStack } from 'tamagui'
 import { ProductSingle } from '~/types/product'
-import useCartStore from '~/hooks/productsStore'
-import { useToastController } from '@tamagui/toast'
+import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
+import Skeleton from '~/components/skeleton'
+import AddOns from '~/components/shop/addOns/add_ons'
+import { ScrollView } from 'react-native-gesture-handler'
 
-const AddOnsProductsRender = ({
-  productCodeMap,
-  realTimeProductData,
-}: {
-  productCodeMap: string[]
-  realTimeProductData: ProductSingle[] | undefined
-}) => {
-  const cart = useCartStore((state) => state.cart)
-  const addProduct = useCartStore((state) => state.addProduct)
-  const removeProduct = useCartStore((state) => state.removeProduct)
-  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
+const { width } = Dimensions.get('window')
+const IMG_HEIGHT = 300
 
-  const addOnAddQuantity = (e: string) => {
-    const addProductToCart = {
-      productCode: e,
-      quantity: 1,
-    }
-    addProduct(addProductToCart)
-  }
+let paddingTop
 
-  const addOnMinusQuantity = (e: string) => {
-    decreaseQuantity(e)
-  }
-
-  const removeProductFromCart = (e: string) => {
-    removeProduct(e)
-  }
-
-  useEffect(() => {
-    console.log(cart)
-  }, [cart])
-
-  return (
-    <>
-      {productCodeMap.map((e, index) => {
-        const regularPrice = realTimeProductData
-          ? realTimeProductData.find((fp) => fp.ProductCode === e)?.RegularPrice
-          : 0
-        const unitPrice = realTimeProductData
-          ? realTimeProductData.find((fp) => fp.ProductCode === e)?.RegularPrice
-          : 0
-
-        return (
-          <View
-            key={index}
-            style={{
-              flexDirection: 'row',
-              alignItems: 'center',
-            }}
-          >
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                flex: 1,
-              }}
-            >
-              <Image
-                source={{
-                  uri: ProductsDetail.find((pd) => pd.id === e)?.image,
-                  width: 60,
-                  height: 60,
-                }}
-              />
-
-              <View style={{ flex: 1 }}>
-                <Text
-                  style={{
-                    fontSize: 12,
-                    paddingRight: 5,
-                  }}
-                  numberOfLines={1}
-                >
-                  {ProductsDetail.find((pd) => pd.id === e)?.name}
-                </Text>
-
-                <View style={{ marginRight: 5 }}>
-                  {unitPrice && regularPrice ? (
-                    unitPrice < regularPrice ? (
-                      <View>
-                        <Text
-                          style={{
-                            color: colorTokens.light.gray.gray10,
-                            paddingVertical: 2,
-                            textDecorationLine: 'line-through',
-                          }}
-                        >
-                          {formatCurrency(regularPrice)}
-                        </Text>
-
-                        <Text
-                          style={{
-                            color: colorTokens.light.orange.orange10,
-                            paddingVertical: 2,
-                          }}
-                        >
-                          {formatCurrency(unitPrice)}
-                        </Text>
-                      </View>
-                    ) : (
-                      <Text
-                        style={{
-                          color: colorTokens.light.gray.gray12,
-                          paddingVertical: 2,
-                        }}
-                      >
-                        {formatCurrency(regularPrice)}
-                      </Text>
-                    )
-                  ) : null}
-                </View>
-              </View>
-            </View>
-
-            <View
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                backgroundColor: '#FFEAD3',
-                padding: 5,
-                borderRadius: 5,
-              }}
-            >
-              {cart.length > 0 ? (
-                <>
-                  {cart.map((cf, i) => {
-                    if (cf.productCode === e) {
-                      if (cf.quantity === 1) {
-                        return (
-                          <React.Fragment key={i}>
-                            <TouchableOpacity
-                              onPress={() => removeProductFromCart(e)}
-                              style={{
-                                borderWidth: 1,
-                                borderColor: '#FF4500',
-                                borderRadius: 5,
-                              }}
-                            >
-                              <Ionicons
-                                name="remove"
-                                size={20}
-                                color={'orangered'}
-                              />
-                            </TouchableOpacity>
-
-                            <Text
-                              style={{ marginHorizontal: 10, color: '#460D04' }}
-                            >
-                              {cf.quantity}
-                            </Text>
-                          </React.Fragment>
-                        )
-                      } else {
-                        return (
-                          <React.Fragment key={i}>
-                            <TouchableOpacity
-                              onPress={() => addOnMinusQuantity(e)}
-                              style={{
-                                borderWidth: 1,
-                                borderColor: '#FF4500',
-                                borderRadius: 5,
-                              }}
-                            >
-                              <Ionicons
-                                name="remove"
-                                size={20}
-                                color={'orangered'}
-                              />
-                            </TouchableOpacity>
-
-                            <Text
-                              style={{ marginHorizontal: 10, color: '#460D04' }}
-                            >
-                              {cf.quantity}
-                            </Text>
-                          </React.Fragment>
-                        )
-                      }
-                    }
-                  })}
-                </>
-              ) : null}
-
-              <TouchableOpacity
-                onPress={() => addOnAddQuantity(e)}
-                style={{
-                  borderWidth: 1,
-                  borderColor: '#FF4500',
-                  borderRadius: 5,
-                }}
-              >
-                <Ionicons name="add" size={20} color={'orangered'} />
-              </TouchableOpacity>
-            </View>
-          </View>
-        )
-      })}
-    </>
-  )
+if (Platform.OS === 'ios') {
+  paddingTop = 45
+} else {
+  paddingTop = 25
 }
 
 export default function ItemDetails() {
   const { productCode } = useLocalSearchParams()
+  const {
+    mutate: fetchProductsDetails,
+    data,
+    isPending,
+  } = useFetchProductsDetails()
+
   const [quantity, setQuantity] = useState(1)
+  const [totalPriceNumber, setTotalPriceNumber] = useState(0)
+  const [items, setItems] = useState(0)
   const addressRef = usePryceStore((set) => set.addressRef)
-  const favorites = usePryceStore((set) => set.favorites)
-  const setFavorites = usePryceStore((set) => set.setFavorites)
-  const addProduct = useCartStore((state) => state.addProduct)
-  const removeProduct = useCartStore((state) => state.removeProduct)
-  const clearCart = useCartStore((state) => state.clearCart)
-  const cart = useCartStore((state) => state.cart)
-  const toast = useToastController()
+  const [item, setItem] = useState<ProductSingle | null>(null)
+  const scrollRef = useAnimatedRef<Animated.ScrollView>()
+  const scrollOfset = useScrollViewOffset(scrollRef)
+  const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
 
-  const addToFavoritesHandler = async (f: string) => {
-    setFavorites(f)
-  }
-
-  const fetchProducts = useMutation({
-    mutationFn: fetchProductsQuery,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['fetchProductsOnLoad'],
-      })
-    },
-  })
+  const { addProduct, reduceProduct, clearCart } = useBasketStore()
 
   useEffect(() => {
     if (addressRef) {
-      fetchProducts.mutate(addressRef)
+      fetchProductsDetails(addressRef)
     }
-  }, [addressRef])
+  }, [addressRef, fetchProductsDetails])
 
-  const addToCart = (e: string) => {
-    const addProductToCart = {
-      productCode: e,
-      quantity,
+  useEffect(() => {
+    const productDetails = async () => {
+      if (addressRef && productCode) {
+        const productCodeString = Array.isArray(productCode)
+          ? productCode[0]
+          : productCode
+
+        const item = await getProductById(addressRef, productCodeString)
+        if (item) {
+          setItem(item)
+        } else {
+          console.error('Product not found for code:', productCodeString)
+        }
+      }
     }
 
-    if (e === 'PGCM' || e === 'PGCMV') {
-      clearCart()
+    productDetails()
+  }, [addressRef, productCode, data])
+
+  const handleToggleAddOn = (addOn: AddOn) => {
+    setSelectedAddOns((prevSelectedAddOns) => {
+      const isSelected = prevSelectedAddOns.some((ao) => ao.Id === addOn.Id)
+      if (isSelected) {
+        return prevSelectedAddOns.filter((ao) => ao.Id !== addOn.Id)
+      } else {
+        return [...prevSelectedAddOns, addOn]
+      }
+    })
+  }
+
+  const addToCart = async () => {
+    if (addressRef && productCode) {
+      const productCodeString = Array.isArray(productCode)
+        ? productCode[0]
+        : productCode
+      const selectedProduct = await getProductById(
+        addressRef,
+        productCodeString
+      )
+      if (selectedProduct) {
+        const unitPrice = selectedProduct.UnitPrice
+        const numQuantity = quantity ?? 1
+
+        addProduct(selectedProduct, numQuantity, selectedAddOns)
+
+        const totalAddOnsPrice = selectedAddOns.reduce(
+          (sum, addOn) => sum + addOn.UnitPrice,
+          0
+        )
+        const priceToAdd = (unitPrice + totalAddOnsPrice) * numQuantity
+        setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
+        setItems((prevItems) => prevItems + numQuantity)
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        router.back()
+      } else {
+        console.error('Product not found for code:', productCodeString)
+      }
     }
+  }
 
-    const checkForPGCMOrder = cart.some(
-      (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
-    )
-
-    if (checkForPGCMOrder) {
-      toast.show('PGCM Order Found!', {
-        message: 'You must clear your cart first before you can continue.',
-        native: false,
-      })
+  const removeFromCart = () => {
+    if (item) {
+      if (quantity > 1) {
+        setQuantity(quantity - 1)
+        reduceProduct(item)
+      } else if (quantity === 1) {
+        reduceProduct(item)
+      }
     } else {
-      addProduct(addProductToCart)
+      console.error('Cannot remove item from cart: item is null')
     }
+  }
 
-    router.back()
+  const formatCurrency = (value: number): string => {
+    const formattedValue = value.toFixed(2)
+    return formattedValue
+  }
+  const formattedPrice = formatCurrency(
+    Number(data && data.find((e) => e.ProductCode === productCode)?.UnitPrice)
+  )
+
+  const totalPrice = quantity * parseFloat(formattedPrice)
+
+  const imageAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      transform: [
+        {
+          translateY: interpolate(
+            scrollOfset.value,
+            [-IMG_HEIGHT, 0, IMG_HEIGHT],
+            [-IMG_HEIGHT / 2, 0, IMG_HEIGHT * 0.5]
+          ),
+        },
+        {
+          scale: interpolate(
+            scrollOfset.value,
+            [-IMG_HEIGHT, 0, IMG_HEIGHT],
+            [2, 1, 1]
+          ),
+        },
+      ],
+    }
+  })
+
+  const headerAnimatedStyle = useAnimatedStyle(() => {
+    return {
+      opacity: interpolate(scrollOfset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
+    }
+  })
+
+  const handleClear = () => {
+    clearCart()
   }
 
   return (
@@ -280,145 +191,241 @@ export default function ItemDetails() {
       style={{ flex: 1, backgroundColor: 'white' }}
       edges={['bottom']}
     >
-      {fetchProducts.isPending ? (
-        <YStack padding="$3" gap="$4" alignItems="flex-end" marginTop={20}>
-          <Spinner size="large" color="$orange10" />
-        </YStack>
-      ) : (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <Stack.Screen
+          options={{
+            headerTitle: '',
+            headerLeft: () => (
+              <TouchableOpacity
+                onPress={() => router.back()}
+                style={{
+                  backgroundColor: 'white',
+                  borderRadius: 20,
+                  padding: 3,
+                }}
+              >
+                <Ionicons
+                  name="close"
+                  size={24}
+                  color={colorTokens.light.orange.orange9}
+                />
+              </TouchableOpacity>
+            ),
+            headerTransparent: true,
+            headerBackground: () => (
+              <Animated.View style={[styles.header, headerAnimatedStyle]}>
+                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                  {data &&
+                    data.find((e) => e.ProductCode === productCode)?.Name}
+                </Text>
+              </Animated.View>
+            ),
+          }}
+        />
+        <Animated.ScrollView
+          ref={scrollRef}
+          scrollEventThrottle={16}
+          contentContainerStyle={{ paddingBottom: 100 }}
+          showsVerticalScrollIndicator={false}
+        >
           <Animated.Image
             source={ProductsDetail.find((e) => e.id === productCode)?.image}
-            style={{ width: '100%', height: 300 }}
+            style={[styles.image, imageAnimatedStyle]}
+            // style={{ width: '100%', height: 300 }}
             entering={FadeIn.duration(400).delay(200)}
           />
-
-          <View style={{ padding: 20 }}>
-            <View
+          {/* <View style={{ margin: 16 }}>
+            <Animated.Text
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
+                fontSize: 20,
+                fontWeight: 'bold',
+                // margin: 16,
+                paddingBottom: 10,
               }}
+              entering={FadeInLeft.duration(400).delay(200)}
             >
-              <Animated.Text
-                entering={FadeInLeft.duration(400).delay(200)}
-                style={{ fontSize: 24, fontWeight: 'bold', marginBottom: 8 }}
-              >
-                {fetchProducts.data &&
-                  fetchProducts.data.find((e) => e.ProductCode === productCode)
-                    ?.Name}
-              </Animated.Text>
-
-              {favorites &&
-              favorites.find((fav) => fav.productCode === productCode) ? (
-                <Button
-                  onPress={() => addToFavoritesHandler(String(productCode))}
-                >
-                  <Ionicons name="star" size={26} color="orangered" />
-                </Button>
-              ) : (
-                <Button
-                  onPress={() => addToFavoritesHandler(String(productCode))}
-                >
-                  <Ionicons name="star-outline" size={26} color="orange" />
-                </Button>
-              )}
-            </View>
+              {data && data.find((e) => e.ProductCode === productCode)?.Name}
+            </Animated.Text>
 
             <Animated.Text
               entering={FadeInLeft.duration(400).delay(400)}
               style={{
                 fontSize: 16,
-                marginBottom: 8,
+                // marginBottom: 8,
                 color: colorTokens.light.gray.gray11,
               }}
             >
               {ProductsDetail.find((e) => e.id === productCode)?.description}
             </Animated.Text>
-
-            {productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
-              <>
-                <Text mt={10}>Add-ons</Text>
-                <AddOnsProductsRender
-                  productCodeMap={exemptedOnProducts}
-                  realTimeProductData={fetchProducts.data}
-                />
-              </>
-            )}
+          </View> */}
+          <View style={{ margin: 16 }}>
+            <Animated.Text
+              style={{
+                fontSize: 20,
+                fontWeight: 'bold',
+                paddingBottom: 10,
+              }}
+              entering={FadeInLeft.duration(400).delay(200)}
+            >
+              {data && data.find((e) => e.ProductCode === productCode)?.Name}
+            </Animated.Text>
+            <Animated.Text
+              entering={FadeInLeft.duration(400).delay(400)}
+              style={{
+                fontSize: 16,
+                // marginBottom: 8,
+                color: colorTokens.light.gray.gray11,
+              }}
+            >
+              {ProductsDetail.find((e) => e.id === productCode)?.description}
+            </Animated.Text>
           </View>
-
-          <View
+          <Animated.Text
             style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              width: '100%',
-              backgroundColor: 'white',
-              padding: 10,
-              elevation: 10,
-              shadowColor: 'black',
-              shadowOffset: { width: 0, height: -10 },
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-              paddingTop: 20,
+              fontSize: 16,
+              fontWeight: 'bold',
+              margin: 16,
             }}
+            entering={FadeInLeft.duration(400).delay(200)}
           >
+            Add-ons
+          </Animated.Text>
+          <TouchableOpacity onPress={clearCart}>
+            <Text>Clear</Text>
+          </TouchableOpacity>
+
+          {isPending ? (
             <View
               style={{
                 flexDirection: 'row',
-                alignItems: 'center',
-                paddingHorizontal: 10,
-                justifyContent: 'space-between',
-                gap: 10,
+                backgroundColor: 'white',
               }}
             >
               <View
-                style={{ flexDirection: 'row', flex: 1, alignItems: 'center' }}
+                style={{
+                  flex: 1,
+                  justifyContent: 'space-between',
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                }}
               >
-                <TouchableOpacity
-                  onPress={() =>
-                    quantity > 1
-                      ? setQuantity(quantity - 1)
-                      : removeProduct(String(productCode))
-                  }
-                  style={{
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    borderRadius: 20,
-                    padding: 3,
-                  }}
-                >
-                  <AntDesign name="minus" size={24} color="white" />
-                </TouchableOpacity>
+                <View style={{ marginLeft: 10 }}>
+                  <Skeleton width={100} height={100} />
+                </View>
 
+                <View style={{}}>
+                  <Skeleton width={120} height={20} />
+                </View>
+                <View style={{ marginRight: 10 }}>
+                  <Skeleton width={90} height={20} />
+                </View>
+              </View>
+            </View>
+          ) : productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
+            <>
+              <AddOns
+                productCodeMap={exemptedOnProducts}
+                realTimeProductData={data}
+                selectedAddOns={selectedAddOns}
+                onToggleAddOn={handleToggleAddOn}
+              />
+            </>
+          )}
+        </Animated.ScrollView>
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            backgroundColor: 'white',
+            padding: 10,
+            elevation: 10,
+            shadowColor: 'black',
+            shadowOffset: { width: 0, height: -10 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+            paddingTop: 20,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              alignItems: 'center',
+            }}
+          >
+            <TouchableOpacity
+              onPress={removeFromCart}
+              style={{
+                backgroundColor: colorTokens.light.orange.orange9,
+                borderRadius: 20,
+                padding: 3,
+              }}
+            >
+              <AntDesign name="minus" size={20} color="white" />
+            </TouchableOpacity>
+            <Text
+              style={{
+                fontSize: 16,
+                fontWeight: 'bold',
+                // flex: 1,
+                textAlign: 'center',
+                marginHorizontal: 15,
+              }}
+            >
+              {quantity}
+            </Text>
+            <TouchableOpacity
+              onPress={() => setQuantity(quantity + 1)}
+              style={{
+                backgroundColor: colorTokens.light.orange.orange9,
+                borderRadius: 20,
+                padding: 3,
+                marginRight: 10,
+              }}
+            >
+              <Ionicons name="add" size={20} color="white" />
+            </TouchableOpacity>
+
+            <StyledButton
+              style={{
+                // width: 200,
+                flex: 1,
+              }}
+              onPress={addToCart}
+            >
+              {isPending ? (
+                <Spinner size="large" color="white" />
+              ) : (
                 <Text
                   style={{
+                    color: 'white',
                     fontSize: 16,
                     fontWeight: 'bold',
-                    flex: 1,
-                    textAlign: 'center',
                   }}
                 >
-                  {quantity}
+                  Add for {totalPrice}
                 </Text>
-
-                <TouchableOpacity
-                  onPress={() => setQuantity(quantity + 1)}
-                  style={{
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    borderRadius: 20,
-                    padding: 3,
-                  }}
-                >
-                  <Ionicons name="add" size={24} color="white" />
-                </TouchableOpacity>
-              </View>
-
-              <AddToCartButton
-                addToCart={() => addToCart(String(productCode))}
-              />
-            </View>
+              )}
+            </StyledButton>
           </View>
         </View>
-      )}
+      </View>
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  image: {
+    width,
+    height: IMG_HEIGHT,
+  },
+  header: {
+    backgroundColor: 'white',
+    height: 100,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop,
+  },
+})

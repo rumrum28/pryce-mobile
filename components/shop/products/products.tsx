@@ -1,97 +1,82 @@
 import { colorTokens } from '@tamagui/themes'
-import { router } from 'expo-router'
-import { useEffect, useState } from 'react'
+import { Link, router } from 'expo-router'
 import {
   View,
   Text,
   ScrollView,
   Image,
+  TouchableOpacity,
   Pressable,
   FlatList,
+  ListRenderItem,
+  VirtualizedList,
 } from 'react-native'
-import { ProductSingle } from '~/types/product'
-import { ProductsDetail } from '~/utils/products'
-import { topPickProducts } from '~/utils/topPickProducts'
+import { categories, filteredProducts } from '~/data/mock'
+import { ProductDisplayProps } from '~/types/product'
+import { productDisplay } from '~/utils/products'
 
-const renderItem = ({ item }: { item: ProductSingle }) => {
-  return (
-    <Pressable
-      onPress={() =>
-        router.push({
-          pathname: '/(drawer)/shop/details',
-          params: {
-            productCode: item.ProductCode,
-          },
-        })
-      }
-      key={item.ProductCode}
-    >
-      <View
+export default function Products() {
+  const renderItem = ({ item }: { item: ProductDisplayProps }) => {
+    return (
+      <Pressable
+        onPress={() =>
+          router.push({
+            pathname: '/(drawer)/shop/details',
+            params: {
+              id: item.id,
+            },
+          })
+        }
+        key={item.id}
         style={{
-          height: 230,
-          width: 300,
-          backgroundColor: 'white',
-          marginEnd: 10,
-          elevation: 2,
-          shadowColor: 'black',
-          shadowOffset: {
-            width: 0,
-            height: 4,
-          },
-          shadowOpacity: 0.06,
-          borderRadius: 4,
+          paddingVertical: 10,
+          paddingHorizontal: 16,
         }}
       >
-        <Image
-          source={ProductsDetail.find((p) => p.id === item.ProductCode)?.image}
-          style={{ height: '100%', width: '100%', flex: 5 }}
-          resizeMode="stretch"
-        />
+        <View
+          style={{
+            height: 230,
+            width: 300,
+            elevation: 2,
+            shadowColor: 'transparent',
+            shadowOffset: {
+              width: 4,
+              height: 8,
+            },
+            shadowOpacity: 0.06,
+            // borderRadius: 20,
+            overflow: 'hidden',
+          }}
+        >
+          <Image
+            source={item.image}
+            style={{ height: '100%', width: '100%', flex: 7, borderRadius: 10 }}
+            // resizeMode="fit"
+          />
 
-        <View style={{ flex: 2, padding: 10 }}>
-          <Text
-            style={{
-              fontSize: 14,
-              fontWeight: 'bold',
-              paddingVertical: 5,
-            }}
-          >
-            {item.UnitPrice}
-          </Text>
-          <Text
-            style={{
-              color: colorTokens.light.gray.gray9,
-            }}
-          >
-            {item.Name}
-          </Text>
+          <View style={{ flex: 2 }}>
+            <View style={{ paddingTop: 15 }}>
+              <Text
+                style={{
+                  color: colorTokens.light.gray.gray12,
+                  fontSize: 15,
+                  fontWeight: 'bold',
+                }}
+              >
+                {item.name}
+              </Text>
+            </View>
+          </View>
         </View>
-      </View>
-    </Pressable>
-  )
-}
-
-export default function Products({
-  products,
-}: {
-  products: ProductSingle[] | undefined
-}) {
-  const [topPicks, setTopPicks] = useState<ProductSingle[]>([])
-
-  useEffect(() => {
-    if (products) {
-      const filteredProducts = products.filter((product) =>
-        topPickProducts.includes(product.ProductCode)
-      )
-
-      setTopPicks(filteredProducts)
-    }
-  }, [products])
+      </Pressable>
+    )
+    // }
+  }
 
   return (
     <ScrollView contentContainerStyle={{ padding: 15 }}>
       <FlatList
-        data={topPicks}
+        data={productDisplay}
         renderItem={renderItem}
         horizontal={true}
         showsHorizontalScrollIndicator={false}

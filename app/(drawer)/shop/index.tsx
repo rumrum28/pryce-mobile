@@ -11,11 +11,13 @@ import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import { Button, Spinner, View, YStack } from 'tamagui'
 import { router } from 'expo-router'
-import ProductGroup from '../productGroup'
+import ProductGroup from '~/components/productGroup'
+import { useFetchProducts } from '~/hooks/fetchProducts'
 
 export default function Page() {
+  const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const setAddressRef = usePryceStore((set) => set.setAddressRef)
+  const addressRef = usePryceStore((state) => state.addressRef)
   const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
@@ -26,19 +28,6 @@ export default function Page() {
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
 
-  const fetchProducts = useMutation({
-    mutationFn: changeAddressOnLoad,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['fetchProductsOnLoad'],
-      })
-
-      if (data?.addressRef) {
-        setAddressRef(data.addressRef)
-      }
-    },
-  })
-
   useEffect(() => {
     if (selectedUser) {
       const userData: { token: string; accountNumber: string } = {
@@ -46,11 +35,11 @@ export default function Page() {
         accountNumber: selectedUser,
       }
 
-      fetchProducts.mutate(userData)
+      fetchProducts(userData)
     }
-
+    // console.log(data?.productsResponse)
     console.log(token)
-  }, [selectedUser])
+  }, [selectedUser, fetchProducts])
 
   // useEffect(() => {
   //   if (
@@ -65,9 +54,8 @@ export default function Page() {
   //     setAddressRef('')
   //     router.push('/onboarding/login')
   //   }
-  // }, [fetchProducts.isPending])
 
-  if (fetchProducts.isPending) {
+  if (isPending) {
     return (
       <YStack padding="$3" gap="$4" alignItems="center" marginTop={20}>
         <Spinner size="large" color="$orange10" />
@@ -90,7 +78,7 @@ export default function Page() {
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
       >
-        {fetchProducts.data && favorites.length > 0 ? (
+        {/* {fetchProducts.data && favorites.length > 0 ? (
           <>
             <View
               style={{
@@ -111,7 +99,7 @@ export default function Page() {
               </Text>
 
               <TouchableOpacity
-                onPress={() => router.push('(drawer)/favorites')}
+                onPress={() => router.push('/(drawer)/favorites')}
               >
                 <Text style={{ fontSize: 12 }}>See all</Text>
               </TouchableOpacity>
@@ -121,7 +109,7 @@ export default function Page() {
               favorites={favorites}
             />
           </>
-        ) : null}
+        ) : null} */}
 
         {/* <Text
           style={{
@@ -143,10 +131,12 @@ export default function Page() {
             fontSize: 18,
           }}
         >
-          Hottest
+          Top picks in your neighborhood
         </Text>
 
-        <ProductGroup />
+        {/* <ProductGroup /> */}
+
+        <Products />
 
         <Text
           style={{
@@ -159,7 +149,7 @@ export default function Page() {
           All products
         </Text>
 
-        <AllProducts products={fetchProducts.data?.productsResponse} />
+        <AllProducts products={data?.productsResponse} />
       </ScrollView>
     </SafeAreaView>
   )

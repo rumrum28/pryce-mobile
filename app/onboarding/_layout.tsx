@@ -50,6 +50,14 @@ export default function _layout() {
           headerShown: true,
         }}
       />
+      <Stack.Screen
+        name="register/index"
+        options={{
+          headerShown: true,
+          headerTintColor: colorTokens.light.orange.orange9,
+          title: '',
+        }}
+      />
     </Stack>
   )
 }

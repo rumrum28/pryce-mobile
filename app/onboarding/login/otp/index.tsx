@@ -10,7 +10,6 @@ import {
   ActivityIndicator,
 } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context'
-import { OtpInput } from 'react-native-otp-entry'
 import { Dimensions } from 'react-native'
 import { useEffect, useState } from 'react'
 import { ToastViewport, useToastController } from '@tamagui/toast'
@@ -31,7 +30,7 @@ import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
 export default function OtpVerification() {
   const [phoneNumber, setPhoneNumber] = useState<string>('')
   const toast = useToastController()
-  const { width } = Dimensions.get('window')
+  const { width, height } = Dimensions.get('window')
   const [loading, isLoading] = useState<boolean>(false)
   const [invalidNumber, setInvalidNumber] = useState<boolean>(true)
   const [verifyCountDown, isVerifyCountDown] = useState<boolean>(false)
@@ -110,7 +109,7 @@ export default function OtpVerification() {
   }, [verifyCountDown, otpCountDown])
 
   return (
-    <SafeAreaView style={styles.area}>
+    <SafeAreaView style={[styles.area, { minHeight: Math.round(height) }]}>
       <View style={styles.textContainer}>
         <Text style={styles.headingText}>Verify your</Text>
         <Text style={styles.headingText}>phone number</Text>
@@ -125,7 +124,7 @@ export default function OtpVerification() {
       </View>
 
       <Form onSubmit={sendOtpHandler}>
-        <View>
+        <View style={{ justifyContent: 'center', marginLeft: 20 }}>
           <Text>Enter mobile no.*</Text>
         </View>
         <View style={{ alignItems: 'center' }}>

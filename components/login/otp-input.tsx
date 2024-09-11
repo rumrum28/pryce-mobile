@@ -26,19 +26,12 @@ export default function OtpInput({ value, disabled, onChange }: OtpInputProps) {
     //     return text
     //   }
 
-<<<<<<< HEAD
-      return item
-    })
-    // console.log(newValue)
-    onChange(newValue)
-=======
     //   return item
     // })
 
     value[index] = text
 
     onChange(value)
->>>>>>> origin/john
   }
 
   const handleChange = (text: string, index: number) => {

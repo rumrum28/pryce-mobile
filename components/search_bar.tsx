@@ -31,6 +31,8 @@ export const SearchBar = () => {
             borderRadius: 5,
             flexDirection: 'row',
             alignItems: 'center',
+            overflow: 'hidden',
+            whiteSpace: 'nowrap',
           }}
         >
           <Feather
@@ -40,7 +42,10 @@ export const SearchBar = () => {
             style={{ paddingLeft: 10 }}
           />
           <TextInput
-            style={{ padding: 10, color: colorTokens.light.gray.gray11 }}
+            style={{
+              padding: 10,
+              color: colorTokens.light.gray.gray11,
+            }}
             placeholder="LPG, Accessories, Medical and Industrial Gases"
           />
         </View>
