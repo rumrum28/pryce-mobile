@@ -29,7 +29,7 @@ export function PaymentMethod({
         <Select.Value placeholder="cash-on-delivery" />
       </Select.Trigger>
 
-      <Adapt when="sm" platform="touch">
+      <Adapt when="sm" platform="ios">
         <Sheet
           native={false}
           modal

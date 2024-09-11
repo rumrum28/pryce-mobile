@@ -98,6 +98,8 @@ export const changeAddressOnLoad = async (data: {
   )
   const changeAddressResponse: Profile = await changeAddress.json()
 
+  // console.log(changeAddressResponse)
+
   if (changeAddressResponse) {
     const addressRef = changeAddressResponse?.ref
     const getAllProducts = await fetch(
@@ -148,12 +150,23 @@ export const fetchProductsQuery = async (addressRef: string) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      cache: 'no-store',
     }
   )
   const getProductResponse: ProductSingle[] = await getProducts.json()
 
   return getProductResponse
+}
+
+export const getProductById = async (
+  addressRef: string,
+  productCodeString: string
+) => {
+  const products = await fetchProductsQuery(addressRef)
+  const foundProduct = products.find(
+    (product) => product.ProductCode === productCodeString
+  )
+  // console.log(foundProduct)
+  return foundProduct
 }
 
 // export const getSearchResults = async (

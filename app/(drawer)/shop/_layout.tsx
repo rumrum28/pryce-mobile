@@ -47,7 +47,7 @@ export default function _layout() {
           ),
         }}
       />
-      <Stack.Screen
+      {/* <Stack.Screen
         name="(modal)/item_details"
         options={{
           presentation: 'modal',
@@ -66,11 +66,11 @@ export default function _layout() {
           ),
           headerTransparent: true,
         }}
-      />
+      /> */}
       <Stack.Screen
         name="(modal)/basket"
         options={{
-          title: 'carts',
+          title: 'My Cart',
           // presentation: 'fullScreenModal',
           headerLeft: () => (
             <TouchableOpacity

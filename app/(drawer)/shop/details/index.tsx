@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   Platform,
   FlatList,
+  ListRenderItem,
+  Image,
 } from 'react-native'
 import Animated, {
   interpolate,
@@ -16,135 +18,64 @@ import Animated, {
 import { Link, Stack, router, useLocalSearchParams } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
+import { allProducts, getFilteredProductById } from '~/data/mock'
+import { formatCurrency } from '~/utils/utils'
+import useBasketStore from '~/utils/basketStore'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import StyledButton from '~/components/styled_button'
+import { useMutation } from '@tanstack/react-query'
+import { fetchProductsQuery } from '~/server/api'
+import { queryClient } from '~/hooks/queryClient'
 import { Suspense, useEffect, useState } from 'react'
-import { Image, Spinner, YStack } from 'tamagui'
+import usePryceStore from '~/hooks/pryceStore'
 import { ProductDisplayProps } from '~/types/product'
 import { productDisplay, ProductsDetail } from '~/utils/products'
-import PGCM from '~/components/pgcm'
-import usePryceStore from '~/hooks/pryceStore'
-import { useMutation } from '@tanstack/react-query'
-import { changeAddressOnLoad, fetchProductsQuery } from '~/server/api'
-import { queryClient } from '~/hooks/queryClient'
-import { formatCurrency } from '~/utils/utils'
+import { Spinner, YStack } from 'tamagui'
+import { useFetchProducts } from '~/hooks/fetchProducts'
+import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
+import Skeleton from '~/components/skeleton'
+
+const { width } = Dimensions.get('window')
+const IMG_HEIGHT = 300
+
+let paddingTop
+
+if (Platform.OS === 'ios') {
+  paddingTop = 45
+} else {
+  paddingTop = 0
+}
 
 const Details = () => {
+  const {
+    mutate: fetchProductsDetails,
+    data,
+    isPending,
+  } = useFetchProductsDetails()
+
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
-  const { idParam } = useLocalSearchParams()
+  const { items, total } = useBasketStore()
+  const addressRef = usePryceStore((set) => set.addressRef)
+  const { id } = useLocalSearchParams()
   const [itemProducts, setItemProducts] = useState<ProductDisplayProps | null>(
     null
   )
-  const { width } = Dimensions.get('window')
-  const IMG_HEIGHT = 300
-  const [descriptionLength, setDescriptionLength] = useState<boolean>(false)
 
-  const selectedUser = usePryceStore((state) => state.selectedUser)
-  const token = usePryceStore((state) => state.token)
-  const addressRef = usePryceStore((set) => set.addressRef)
-
-  const fetchProducts = useMutation({
-    mutationFn: fetchProductsQuery,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['fetchProductsOnLoad'],
-      })
-    },
-  })
+  const formattedPrice = formatCurrency(Number(total))
 
   useEffect(() => {
     if (addressRef) {
-      fetchProducts.mutate(addressRef)
+      fetchProductsDetails(addressRef)
     }
-  }, [addressRef])
+  }, [addressRef, fetchProductsDetails])
 
   useEffect(() => {
-    if (idParam) {
-      const getSingleData = productDisplay.filter(
-        (e) => e.id === Number(idParam)
-      )
+    if (id) {
+      const getSingleData = productDisplay.filter((e) => e.id === Number(id))
       setItemProducts(getSingleData[0])
     }
-  }, [idParam])
-
-  const styles = StyleSheet.create({
-    image: {
-      width: 'auto',
-      height: IMG_HEIGHT,
-      resizeMode: 'contain',
-    },
-    header: {
-      backgroundColor: 'white',
-      height: 100,
-      flex: 1,
-      alignItems: 'center',
-      justifyContent: 'center',
-      paddingTop: Platform.OS === 'ios' ? 45 : 0,
-    },
-  })
-
-  const productOnClickHandler = (productCode: string) => {
-    router.push({
-      pathname: '/(drawer)/shop/(modal)/item_details',
-      params: { productCode },
-    })
-  }
-
-  const displayGroups = ({ item, index }: { item: any; index: number }) => (
-    <TouchableOpacity onPress={() => productOnClickHandler(item)} key={index}>
-      {fetchProducts.isPending ? (
-        <View>
-          <Text>to be replace with skeleton</Text>
-          <YStack padding="$3" gap="$4" alignItems="flex-end" marginTop={20}>
-            <Spinner size="large" color="$orange10" />
-          </YStack>
-        </View>
-      ) : (
-        <View
-          style={{
-            flexDirection: 'row',
-            backgroundColor: 'white',
-            padding: 16,
-          }}
-        >
-          <View style={{ flex: 1 }}>
-            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-              {fetchProducts?.data?.find((e) => e.ProductCode === item)?.Name}
-            </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                color: colorTokens.light.gray.gray9,
-                paddingVertical: 4,
-              }}
-            >
-              {
-                fetchProducts?.data?.find((e) => e.ProductCode === item)
-                  ?.ProductCode
-              }
-            </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: 'bold',
-                color: colorTokens.light.gray.gray11,
-              }}
-            >
-              {formatCurrency(
-                fetchProducts?.data?.find((e) => e.ProductCode === item)
-                  ?.RegularPrice || 0
-              )}
-            </Text>
-          </View>
-          <Image
-            source={ProductsDetail.find((e) => e.id === item)?.image}
-            style={{ height: 80, width: 80, borderRadius: 4 }}
-          />
-        </View>
-      )}
-    </TouchableOpacity>
-  )
+  }, [id])
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -173,198 +104,251 @@ const Details = () => {
     }
   })
 
-  return (
-    <Suspense
-      fallback={
-        <YStack padding="$3" gap="$4" alignItems="center" marginTop={20}>
-          <Spinner size="large" color="$orange10" />
-        </YStack>
-      }
-    >
-      <View style={{ flex: 1, backgroundColor: 'white', paddingBottom: 30 }}>
-        <Stack.Screen
-          options={{
-            title: '',
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: 20,
-                  padding: 3,
-                }}
-              >
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={colorTokens.light.orange.orange9}
-                />
-              </TouchableOpacity>
-            ),
-            headerTransparent: true,
-            headerBackground: () => (
-              <Animated.View style={[styles.header, headerAnimatedStyle]}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                  {itemProducts?.description}
-                </Text>
-              </Animated.View>
-            ),
+  const renderItem = ({ item, index }: { item: any; index: number }) => {
+    const productCode = item
+    return (
+      <Link
+        href={{
+          pathname: '/(drawer)/shop/(modal)/item_details',
+          params: { productCode },
+        }}
+        asChild
+      >
+        <TouchableOpacity
+          key={index}
+          style={{
+            flexDirection: 'row',
+            backgroundColor: 'white',
+            padding: 16,
           }}
-        />
-
-        <Animated.ScrollView ref={scrollRef} scrollEventThrottle={16}>
-          <Animated.Image
-            source={
-              itemProducts?.image
-                ? itemProducts?.image
-                : require('~/assets/images/no-image.png')
-            }
-            style={[styles.image, imageAnimatedStyle]}
-          />
-
-          <View
-            style={{
-              marginBottom: 5,
-              paddingBottom: 10,
-              backgroundColor: 'white',
-            }}
-          >
-            <Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                margin: 16,
-              }}
-            >
-              {itemProducts?.name}
+        >
+          <View style={{ flex: 1 }}>
+            <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+              {data?.find((e) => e.ProductCode === item)?.Name}
             </Text>
             <Text
               style={{
-                fontSize: 16,
-                marginHorizontal: 16,
-                lineHeight: 26,
+                fontSize: 14,
+                color: colorTokens.light.gray.gray9,
+                paddingVertical: 4,
+              }}
+            >
+              {data?.find((e) => e.ProductCode === item)?.ProductCode}
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                fontWeight: 'bold',
                 color: colorTokens.light.gray.gray11,
               }}
-              numberOfLines={descriptionLength ? 10 : 2}
             >
-              {itemProducts?.description}
-            </Text>
-
-            <TouchableOpacity
-              onPress={() => setDescriptionLength(!descriptionLength)}
-            >
-              <Text
-                style={{
-                  marginTop: 5,
-                  marginLeft: 16,
-                  textAlign: 'left',
-                  color: colorTokens.light.orange.orange9,
-                }}
-              >
-                {descriptionLength ? 'View less' : 'View more'}
-              </Text>
-            </TouchableOpacity>
-          </View>
-
-          {itemProducts && (
-            <FlatList
-              data={itemProducts.productCode}
-              scrollEnabled={false}
-              renderItem={displayGroups}
-              ItemSeparatorComponent={() => (
-                <View
-                  style={{
-                    marginHorizontal: 16,
-                    height: 1,
-                    backgroundColor: colorTokens.light.gray.gray4,
-                  }}
-                />
+              {formatCurrency(
+                data?.find((e) => e.ProductCode === item)?.UnitPrice || 0
               )}
-            />
-          )}
+            </Text>
+          </View>
+          <Image
+            source={ProductsDetail.find((e) => e.id === item)?.image}
+            style={{ height: 80, width: 80, borderRadius: 4 }}
+          />
+        </TouchableOpacity>
+      </Link>
+    )
+  }
 
-          {itemProducts?.productCode.some(
-            (e) => e === 'PGCM' || e === 'PGCMV'
-          ) ? (
-            <PGCM />
-          ) : null}
-
-          <View style={{ marginVertical: 20 }} />
-        </Animated.ScrollView>
-
-        {itemProducts && (
-          <View
+  return (
+    <View style={{ flex: 1, backgroundColor: 'white' }}>
+      <Stack.Screen
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 20,
+                padding: 3,
+              }}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          ),
+          headerTransparent: true,
+          headerBackground: () => (
+            <Animated.View style={[styles.header, headerAnimatedStyle]}>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                {itemProducts?.name}
+              </Text>
+            </Animated.View>
+          ),
+        }}
+      />
+      <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.Image
+          source={
+            itemProducts?.image
+              ? itemProducts?.image
+              : require('~/assets/images/no-image.png')
+          }
+          style={[styles.image, imageAnimatedStyle]}
+        />
+        <View style={{ height: 200, backgroundColor: 'white' }}>
+          <Text
             style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              width: '100%',
-              backgroundColor: 'white',
-              padding: 10,
-              elevation: 10,
-              shadowColor: 'black',
-              shadowOffset: { width: 0, height: -10 },
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-              paddingTop: 20,
+              fontSize: 20,
+              fontWeight: 'bold',
+              margin: 16,
             }}
           >
-            <SafeAreaView
-              style={{
-                flex: 1,
-                backgroundColor: 'white',
-                paddingHorizontal: 10,
-              }}
-              edges={['bottom']}
-            >
-              <Link href="/(drawer)/shop/(modal)/basket" asChild>
-                <StyledButton>
-                  <View
+            {itemProducts?.name}
+          </Text>
+          <Text
+            style={{
+              fontSize: 16,
+              marginHorizontal: 16,
+              lineHeight: 22,
+              color: colorTokens.light.gray.gray9,
+              textAlign: 'justify',
+            }}
+          >
+            {itemProducts?.description}
+          </Text>
+        </View>
+        {isPending && itemProducts ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: 'white',
+              padding: 16,
+            }}
+          >
+            <View style={{ flex: 1 }}>
+              <View>
+                <Skeleton width={200} height={20} />
+              </View>
+              <View
+                style={{
+                  paddingVertical: 4,
+                }}
+              >
+                <Skeleton width={100} height={20} />
+              </View>
+              <View>
+                <Skeleton width={100} height={20} />
+              </View>
+            </View>
+            <View>
+              <Skeleton width={90} height={100} />
+            </View>
+          </View>
+        ) : (
+          <FlatList
+            data={itemProducts?.productCode || []}
+            scrollEnabled={false}
+            renderItem={renderItem}
+            ItemSeparatorComponent={() => (
+              <View
+                style={{
+                  marginHorizontal: 16,
+                  height: 1,
+                  backgroundColor: colorTokens.light.gray.gray4,
+                }}
+              />
+            )}
+          />
+        )}
+      </Animated.ScrollView>
+      {items > 0 && (
+        <View
+          style={{
+            position: 'absolute',
+            bottom: 0,
+            left: 0,
+            width: '100%',
+            backgroundColor: 'white',
+            padding: 10,
+            elevation: 10,
+            shadowColor: 'black',
+            shadowOffset: { width: 0, height: -10 },
+            shadowOpacity: 0.1,
+            shadowRadius: 10,
+            paddingTop: 20,
+          }}
+        >
+          <SafeAreaView
+            style={{ flex: 1, backgroundColor: 'white' }}
+            edges={['bottom']}
+          >
+            <Link href="/(drawer)/shop/(modal)/basket" asChild>
+              <StyledButton>
+                <View
+                  style={{
+                    justifyContent: 'space-between',
+                    flexDirection: 'row',
+                    flex: 1,
+                    alignItems: 'center',
+                  }}
+                >
+                  <Text
                     style={{
-                      justifyContent: 'space-between',
-                      flexDirection: 'row',
-                      flex: 1,
-                      alignItems: 'center',
+                      color: colorTokens.light.orange.orange9,
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                      padding: 8,
+                      backgroundColor: 'white',
                     }}
                   >
-                    <Text
-                      style={{
-                        color: colorTokens.light.orange.orange9,
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        padding: 8,
-                        backgroundColor: 'white',
-                      }}
-                    >
-                      {itemProducts.id}
-                    </Text>
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      View Basket
-                    </Text>
-                    <Text
-                      style={{
-                        color: 'white',
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      1
-                    </Text>
-                  </View>
-                </StyledButton>
-              </Link>
-            </SafeAreaView>
-          </View>
-        )}
-      </View>
-    </Suspense>
+                    {items}
+                  </Text>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    View Basket
+                  </Text>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    {formattedPrice}
+                  </Text>
+                </View>
+              </StyledButton>
+            </Link>
+          </SafeAreaView>
+        </View>
+      )}
+    </View>
   )
 }
-
 export default Details
+
+const styles = StyleSheet.create({
+  image: {
+    width,
+    height: IMG_HEIGHT,
+  },
+  header: {
+    backgroundColor: 'white',
+    height: 100,
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingTop,
+  },
+})

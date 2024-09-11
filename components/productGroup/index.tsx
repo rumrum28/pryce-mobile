@@ -44,10 +44,10 @@ export default function ProductGroup() {
           <Image
             source={item.image}
             style={{ height: '100%', width: '100%', flex: 1 }}
-            resizeMode="fit"
+            // resizeMode="fit"
           />
 
-          {/* <View style={{ padding: 10 }}>
+          <View style={{ padding: 10 }}>
             <Text
               style={{
                 color: colorTokens.light.gray.gray9,
@@ -55,7 +55,7 @@ export default function ProductGroup() {
             >
               {item.name}
             </Text>
-          </View> */}
+          </View>
         </View>
       </Pressable>
     )

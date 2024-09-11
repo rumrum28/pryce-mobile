@@ -15,12 +15,15 @@ import { DrawerActions } from '@react-navigation/native'
 import { SearchBar } from '~/components/search_bar'
 import usePryceStore from '~/hooks/pryceStore'
 import useCartStore from '~/hooks/productsStore'
+import useBasketStore from '~/utils/basketStore'
 
 export default function Header() {
   const token = usePryceStore((state) => state.token)
   const users = usePryceStore((state) => state.users)
   const cart = useCartStore((state) => state.cart)
   const selectedUser = usePryceStore((state) => state.selectedUser)
+  const { items, total } = useBasketStore()
+
   const [addressText, setAddressText] = useState<string>('Select Address')
   const navigation = useNavigation()
   const setChangeAddressTrigger = usePryceStore(
@@ -100,7 +103,7 @@ export default function Header() {
           </Text>
         </TouchableOpacity>
 
-        <View
+        {/* <View
           style={{
             flexDirection: 'row',
             alignItems: 'center',
@@ -133,6 +136,47 @@ export default function Header() {
                   </Text>
                 </View>
               ) : null}
+              <Feather
+                name="shopping-bag"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          </Link>
+        </View> */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            gap: 20,
+            marginRight: 10,
+          }}
+        >
+          <Link href="/(drawer)/shop/(modal)/basket" asChild>
+            <TouchableOpacity>
+              <View
+                style={{
+                  position: 'absolute',
+                  left: 15,
+                  top: 10,
+                  width: 20,
+                  height: 20,
+                  borderRadius: 10,
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  backgroundColor: colorTokens.light.orange.orange9,
+                  zIndex: 10,
+                }}
+              >
+                <Text
+                  style={{
+                    color: 'white',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  {items}
+                </Text>
+              </View>
               <Feather
                 name="shopping-bag"
                 size={24}

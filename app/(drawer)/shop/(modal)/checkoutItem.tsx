@@ -1,10 +1,4 @@
-import {
-  View,
-  Text,
-  FlatList,
-  TouchableOpacity,
-  SafeAreaView,
-} from 'react-native'
+import { View, Text, FlatList, TouchableOpacity } from 'react-native'
 import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Link, router } from 'expo-router'
@@ -24,9 +18,30 @@ import { ProductSingle } from '~/types/product'
 import { ProductsDetail } from '~/utils/products'
 import { PaymentMethod } from '~/components/payment_method'
 import { env } from '~/types/env'
-import DropdownComponent from '~/components/register/dropdown'
+import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
+import useBasketStore from '~/utils/basketStore'
+import { ScrollView } from 'react-native-gesture-handler'
+import { SafeAreaView } from 'react-native-safe-area-context'
+import Skeleton from '~/components/skeleton'
+
+type ProductProps = {
+  ProductCode: string
+  Id: string
+  Product2Id: string
+  RegularPrice: number
+  Name: string
+}
 
 export default function CheckoutItem() {
+  const {
+    mutate: fetchProductsDetails,
+    data,
+    isPending,
+  } = useFetchProductsDetails()
+  // const { products, total, updateProducts, calculateTotal, reduceProduct } =
+  //   useBasketStore()
+  const { products, total, updateProducts, reduceProduct } = useBasketStore()
+
   const cart = useCartStore((state) => state.cart)
   const addressRef = usePryceStore((set) => set.addressRef)
   const toast = useToastController()
@@ -36,134 +51,130 @@ export default function CheckoutItem() {
   const [loading, isLoading] = useState<boolean>(false)
   const token = usePryceStore((s) => s.token)
 
-  const fetchProducts = useMutation({
-    mutationFn: fetchProductsQuery,
-    onSuccess: (data) => {
-      queryClient.invalidateQueries({
-        queryKey: ['fetchProductsOnLoad'],
-      })
-    },
-  })
-
-  function calculateSubtotal(
-    cart: Array<{
-      productCode: string
-      quantity: number
-    }>,
-    products: ProductSingle[]
-  ) {
-    return cart.reduce((total, item) => {
-      const product = products.find((p) => p.ProductCode === item.productCode)
-      if (product) {
-        return total + product?.RegularPrice * item.quantity
-      } else {
-        console.warn(`Product with code ${item.productCode} not found.`)
-        return total
-      }
-    }, 0)
-  }
+  // function calculateSubtotal(
+  //   cart: Array<{
+  //     productCode: string
+  //     quantity: number
+  //   }>,
+  //   products: ProductSingle[]
+  // ) {
+  //   return cart.reduce((total, item) => {
+  //     const product = products.find((p) => p.ProductCode === item.productCode)
+  //     if (product) {
+  //       return total + product?.RegularPrice * item.quantity
+  //     } else {
+  //       console.warn(`Product with code ${item.productCode} not found.`)
+  //       return total
+  //     }
+  //   }, 0)
+  // }
 
   useEffect(() => {
     if (addressRef) {
-      fetchProducts.mutate(addressRef)
+      fetchProductsDetails(addressRef)
     }
-  }, [addressRef])
+  }, [addressRef, fetchProductsDetails])
 
   useEffect(() => {
-    if (!fetchProducts.isPending && fetchProducts.data) {
-      const subtotal = calculateSubtotal(cart, fetchProducts.data)
-      setSubTotal(subtotal)
+    if (data) {
+      updateProducts(data)
+      // calculateTotal()
     }
-  }, [fetchProducts.isPending, fetchProducts.data, cart])
+    // }, [data, updateProducts, calculateTotal])
+  }, [data, updateProducts])
+
+  // console.log('products in cart:', products)
+  // console.log('total products', total)
+
+  // useEffect(() => {
+  //   if (!isPending && data) {
+  //     const subtotal = calculateSubtotal(cart, data)
+  //     setSubTotal(subtotal)
+  //   }
+  // }, [isPending, data, cart])
 
   const placeOrder = async () => {
-    router.push({
-      pathname: '/checkout/paymongo_webview',
-      params: {
-        url: 'https://checkout.paymongo.com/cs_pMgbf16mpWG3vxD35cSMtpop_client_fLj6NNvyiYVCJzXDGc1fLwX2#cGtfdGVzdF9Zc3Y0ZWJXcm5mcHk0dkJjSjdmRXdaZTg=',
-      },
-    })
-    // isLoading(true)
-    // if (cart.length < 1)
-    //   return toast.show('Something is wrong with your order!', {
-    //     message: 'Please check your orders.',
-    //     native: false,
-    //   })
+    isLoading(true)
+    if (products.length < 1)
+      return toast.show('Something is wrong with your order!', {
+        message: 'Please check your orders.',
+        native: false,
+      })
 
-    // if (!paymentMethod)
-    //   return toast.show('Something is wrong with your order!', {
-    //     message: 'Please select a payment method.',
-    //     native: false,
-    //   })
+    if (!paymentMethod)
+      return toast.show('Something is wrong with your order!', {
+        message: 'Please select a payment method.',
+        native: false,
+      })
 
-    // const data = {
-    //   payment_method: paymentMethod,
-    //   line_items: [],
-    // } as any
+    const data = {
+      payment_method: paymentMethod,
+      line_items: [],
+    } as any
 
-    // if (!fetchProducts.isPending && fetchProducts.data) {
-    //   cart.forEach((item) => {
-    //     data.line_items.push({
-    //       product_id: fetchProducts.data.find(
-    //         (e) => e.ProductCode === item.productCode
-    //       )?.Id,
-    //       product_area_code: fetchProducts.data.find(
-    //         (e) => e.ProductCode === item.productCode
-    //       )?.Product2Id,
-    //       amount: fetchProducts.data.find(
-    //         (e) => e.ProductCode === item.productCode
-    //       )?.RegularPrice,
-    //       currency: 'PHP',
-    //       description: fetchProducts.data.find(
-    //         (e) => e.ProductCode === item.productCode
-    //       )?.Name,
-    //       images: [
-    //         `https://prycegas.com/images/product-thumbs/${item.productCode}.png`,
-    //       ],
-    //       name: fetchProducts.data.find(
-    //         (e) => e.ProductCode === item.productCode
-    //       )?.Name,
-    //       quantity: item.quantity,
-    //     })
-    //   })
+    if (!isPending && data) {
+      products.forEach((item) => {
+        data.line_items.push({
+          product_id: data.find(
+            (e: ProductProps) => e.ProductCode === item.ProductCode
+          )?.Id,
+          product_area_code: data.find(
+            (e: ProductProps) => e.ProductCode === item.ProductCode
+          )?.Product2Id,
+          amount: data.find(
+            (e: ProductProps) => e.ProductCode === item.ProductCode
+          )?.RegularPrice,
+          currency: 'PHP',
+          description: data.find(
+            (e: ProductProps) => e.ProductCode === item.ProductCode
+          )?.Name,
+          images: [
+            `https://prycegas.com/images/product-thumbs/${item.ProductCode}.png`,
+          ],
+          name: data.find(
+            (e: ProductProps) => e.ProductCode === item.ProductCode
+          )?.Name,
+          quantity: item.quantity,
+        })
+      })
 
-    //   try {
-    //     const response = await fetch(
-    //       `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
-    //       {
-    //         method: 'POST',
-    //         headers: {
-    //           'Content-Type': 'application/json',
-    //           Authorization: `Bearer ${token}`,
-    //         },
-    //         body: JSON.stringify(data),
-    //       }
-    //     )
+      try {
+        const response = await fetch(
+          `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
+          {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify(data),
+          }
+        )
 
-    //     const placeOrderResponse: {
-    //       success: boolean
-    //       checkout_url: string
-    //     } = await response.json()
+        const placeOrderResponse: {
+          success: boolean
+          checkout_url: string
+        } = await response.json()
 
-    //     if (placeOrderResponse.success) {
-    //       router.push({
-    //         pathname: '/checkout/paymongo_webview',
-    //         params: {
-    //           url: placeOrderResponse.checkout_url,
-    //         },
-    //       })
-    //     } else {
-    //       return toast.show('Something is wrong with your order!', {
-    //         message: 'Please check your orders.',
-    //         native: false,
-    //       })
-    //     }
-    //   } catch (error) {
-    //     console.log(error)
-    //   } finally {
-    //     isLoading(false)
-    //   }
-    // }
+        // if (placeOrderResponse.success) {
+        //   router.push({
+        //     pathname: 'checkout/paymongo_webview',
+        //     params: {
+        //       url: placeOrderResponse.checkout_url,
+        //     },
+        //   })
+        // } else {
+        //   return toast.show('Something is wrong with your order!', {
+        //     message: 'Please check your orders.',
+        //     native: false,
+        //   })
+        // }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isLoading(false)
+      }
+    }
   }
 
   //moviestart://(drawer)/shop
@@ -177,7 +188,7 @@ export default function CheckoutItem() {
           margin: 10,
         }}
       >
-        <Text style={{ fontSize: 18, fontWeight: 'bold' }}>
+        <Text style={{ fontSize: 20, fontWeight: 'bold' }}>
           Delivery Address
         </Text>
         <MaterialCommunityIcons
@@ -201,17 +212,304 @@ export default function CheckoutItem() {
           Capital Region, National Capital Region
         </Text>
       </View>
+      <ScrollView
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 130 }}
+      >
+        <FlatList
+          data={products}
+          scrollEnabled={false}
+          ItemSeparatorComponent={() => (
+            <View
+              style={{
+                height: 1,
+                backgroundColor: colorTokens.light.gray.gray5,
+                marginHorizontal: 15,
+              }}
+            />
+          )}
+          ListHeaderComponent={
+            <View style={{ paddingHorizontal: 15 }}>
+              <View
+                style={{
+                  flex: 1,
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'space-between',
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 20,
+                    fontWeight: 'bold',
+                    // marginVertical: 8,
+                  }}
+                >
+                  Order Summary
+                </Text>
+              </View>
+            </View>
+          }
+          renderItem={({ item }) => {
+            return (
+              <SwipeableRow onDelete={() => reduceProduct(item)}>
+                {isPending ? (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      padding: 15,
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <View style={{}}>
+                      <Skeleton width={120} height={20} />
+                    </View>
+                    <View style={{ marginRight: 10 }}>
+                      <Skeleton width={90} height={20} />
+                    </View>
+                  </View>
+                ) : (
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      padding: 15,
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <View
+                      style={{
+                        alignItems: 'center',
+                        flexDirection: 'row',
+                      }}
+                    >
+                      <Text
+                        style={{
+                          justifyContent: 'center',
+                          alignItems: 'center',
+                          fontSize: 16,
+                          color: colorTokens.light.orange.orange9,
+                          fontWeight: '600',
+                        }}
+                      >
+                        {item.quantity}x{' '}
+                      </Text>
 
-      <YStack paddingHorizontal={10}>
-        <XStack>
-          {/* <Label
+                      <Text style={{ fontSize: 16 }}>
+                        {data &&
+                          data.find((e) => e.ProductCode === item.ProductCode)
+                            ?.Name}
+                      </Text>
+                    </View>
+
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        color: colorTokens.light.orange.orange9,
+                        fontWeight: '600',
+                      }}
+                    >
+                      {formatCurrency(item.quantity * item.UnitPrice)}
+                    </Text>
+                  </View>
+                )}
+              </SwipeableRow>
+            )
+          }}
+          ListFooterComponent={
+            <View style={{ paddingHorizontal: 15 }}>
+              <View
+                style={{
+                  height: 1,
+                  backgroundColor: colorTokens.light.gray.gray5,
+                }}
+              />
+
+              {isPending ? (
+                <View
+                  style={{
+                    flexDirection: 'column',
+                    justifyContent: 'space-between',
+                    paddingVertical: 5,
+                  }}
+                >
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingBottom: 10,
+                    }}
+                  >
+                    <View>
+                      <Skeleton width={90} height={20} />
+                    </View>
+                    <View style={{ marginRight: 10 }}>
+                      <Skeleton width={80} height={20} />
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingBottom: 10,
+                    }}
+                  >
+                    <View>
+                      <Skeleton width={110} height={20} />
+                    </View>
+                    <View style={{ marginRight: 10 }}>
+                      <Skeleton width={90} height={20} />
+                    </View>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                    }}
+                  >
+                    <View>
+                      <Skeleton width={120} height={20} />
+                    </View>
+                    <View style={{ marginRight: 10 }}>
+                      <Skeleton width={100} height={20} />
+                    </View>
+                  </View>
+                </View>
+              ) : (
+                <>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingVertical: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: colorTokens.light.gray.gray9,
+                      }}
+                    >
+                      Subtotal
+                    </Text>
+                    <Text>{formatCurrency(total)}</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingVertical: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: colorTokens.light.gray.gray9,
+                      }}
+                    >
+                      Delivery Fee
+                    </Text>
+                    <Text>Free</Text>
+                  </View>
+                  <View
+                    style={{
+                      flexDirection: 'row',
+                      justifyContent: 'space-between',
+                      paddingVertical: 5,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        color: colorTokens.light.gray.gray9,
+                      }}
+                    >
+                      Order Total
+                    </Text>
+                    <Text>{formatCurrency(total)}</Text>
+                  </View>
+                </>
+              )}
+            </View>
+          }
+        />
+      </ScrollView>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          backgroundColor: 'white',
+          padding: 10,
+          elevation: 10,
+          shadowColor: 'black',
+          shadowOffset: { width: 0, height: -10 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          paddingTop: 20,
+        }}
+      >
+        <SafeAreaView style={{ backgroundColor: 'white' }} edges={['bottom']}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              alignItems: 'center',
+            }}
+          >
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 20,
+                padding: 8,
+              }}
+            >
+              Total
+            </Text>
+            {isPending ? (
+              <View>
+                <Skeleton width={90} height={20} />
+              </View>
+            ) : (
+              <Text
+                style={{
+                  color: 'black',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  padding: 8,
+                }}
+              >
+                <Text>{formatCurrency(total)}</Text>
+              </Text>
+            )}
+          </View>
+
+          <StyledButton onPress={placeOrder}>
+            {isPending ? (
+              <Spinner size="large" color="white" />
+            ) : (
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  padding: 8,
+                }}
+              >
+                Place order
+              </Text>
+            )}
+          </StyledButton>
+        </SafeAreaView>
+      </View>
+
+      {/* <YStack gap="$4" p={10}>
+        <XStack ai="center" gap="$4">
+          <Label
             htmlFor="select-payment-method"
             f={1}
             fs={16}
             fontWeight={'800'}
           >
             Payment Method
-          </Label> */}
+          </Label> 
 
           <View style={{ width: '100%', paddingHorizontal: 10 }}>
             <DropdownComponent
@@ -224,14 +522,15 @@ export default function CheckoutItem() {
             />
           </View>
         </XStack>
-      </YStack>
+      </YStack> */}
 
-      {cart.length > 0 ? (
+      {/* {products.length > 0 ? (
         <>
-          {!fetchProducts.isPending && (
+          {!isPending && (
             <>
               <FlatList
-                data={cart}
+                data={products}
+                scrollEnabled={false}
                 ItemSeparatorComponent={() => (
                   <View
                     style={{
@@ -243,7 +542,7 @@ export default function CheckoutItem() {
                 )}
                 ListHeaderComponent={
                   <View style={{ paddingHorizontal: 15 }}>
-                    {fetchProducts.isPending ? (
+                    {isPending ? (
                       <YStack padding="$3" gap="$4" alignItems="flex-end">
                         <Spinner size="large" color="$orange10" />
                       </YStack>
@@ -259,7 +558,7 @@ export default function CheckoutItem() {
                         >
                           <Text
                             style={{
-                              fontSize: 16,
+                              fontSize: 20,
                               fontWeight: 'bold',
                               marginVertical: 8,
                             }}
@@ -278,20 +577,19 @@ export default function CheckoutItem() {
                   </View>
                 }
                 renderItem={({ item }) => {
-                  const perPrice =
-                    fetchProducts.data &&
-                    fetchProducts.data.find(
-                      (e) => e.ProductCode === item.productCode
-                    )?.RegularPrice
+                  // const perPrice =
+                  //   data &&
+                  //   data.find((e) => e.ProductCode === item.ProductCode)
+                  //     ?.RegularPrice
 
                   return (
                     <SwipeableRow
-                      onDelete={() => removeProduct(item.productCode)}
+                      onDelete={() => removeProduct(item.ProductCode)}
                     >
                       <View
                         style={{
                           flexDirection: 'row',
-                          padding: 8,
+                          padding: 15,
                           justifyContent: 'space-between',
                         }}
                       >
@@ -299,14 +597,14 @@ export default function CheckoutItem() {
                           style={{
                             alignItems: 'center',
                             flexDirection: 'row',
-                            paddingHorizontal: 16,
+                            // paddingHorizontal: 16,
                           }}
                         >
                           <Text
                             style={{
                               justifyContent: 'center',
                               alignItems: 'center',
-                              fontSize: 12,
+                              fontSize: 16,
                               color: colorTokens.light.orange.orange9,
                               fontWeight: '600',
                             }}
@@ -314,22 +612,22 @@ export default function CheckoutItem() {
                             {item.quantity}x{' '}
                           </Text>
 
-                          <Text style={{ fontSize: 12 }}>
-                            {fetchProducts.data &&
-                              fetchProducts.data.find(
-                                (e) => e.ProductCode === item.productCode
+                          <Text style={{ fontSize: 16 }}>
+                            {data &&
+                              data.find(
+                                (e) => e.ProductCode === item.ProductCode
                               )?.Name}
                           </Text>
                         </View>
 
                         <Text
                           style={{
-                            fontSize: 12,
+                            fontSize: 16,
                             color: colorTokens.light.orange.orange9,
                             fontWeight: '600',
                           }}
                         >
-                          {formatCurrency(Number(perPrice))}
+                          {formatCurrency(item.quantity * item.UnitPrice)}
                         </Text>
                       </View>
                     </SwipeableRow>
@@ -353,14 +651,11 @@ export default function CheckoutItem() {
                       <Text
                         style={{
                           color: colorTokens.light.gray.gray9,
-                          fontSize: 12,
                         }}
                       >
                         Subtotal
                       </Text>
-                      <Text style={{ fontSize: 12 }}>
-                        {formatCurrency(subTotal)}
-                      </Text>
+                      <Text>{formatCurrency(total)}</Text>
                     </View>
                     <View
                       style={{
@@ -372,12 +667,11 @@ export default function CheckoutItem() {
                       <Text
                         style={{
                           color: colorTokens.light.gray.gray9,
-                          fontSize: 12,
                         }}
                       >
                         Delivery Fee
                       </Text>
-                      <Text style={{ fontSize: 12 }}>Free</Text>
+                      <Text style={{}}>Free</Text>
                     </View>
                     <View
                       style={{
@@ -389,18 +683,16 @@ export default function CheckoutItem() {
                       <Text
                         style={{
                           color: colorTokens.light.gray.gray9,
-                          fontSize: 12,
                         }}
                       >
                         Order Total
                       </Text>
-                      <Text style={{ fontSize: 12 }}>
-                        {formatCurrency(subTotal)}
-                      </Text>
+                      <Text style={{}}>{formatCurrency(total)}</Text>
                     </View>
                   </View>
                 }
               />
+
               <NonePgcmCheckoutAlert />
 
               <View
@@ -445,7 +737,7 @@ export default function CheckoutItem() {
                         fontWeight: 'bold',
                       }}
                     >
-                      <Text>{formatCurrency(subTotal)}</Text>
+                      <Text>{formatCurrency(total)}</Text>
                     </Text>
                   </View>
 
@@ -456,8 +748,7 @@ export default function CheckoutItem() {
                         ? colorTokens.light.gray.gray4
                         : colorTokens.light.orange.orange9,
                     }}
-                    onPress={placeOrder}
-                    loading={loading}
+                    // onPress={placeOrder}
                   >
                     {loading ? (
                       <YStack padding="$3" gap="$4" alignItems="flex-end">
@@ -467,7 +758,9 @@ export default function CheckoutItem() {
                       <Text
                         style={{
                           color: loading ? 'black' : 'white',
-                          fontSize: 14,
+                          fontSize: 16,
+                          fontWeight: 'bold',
+                          padding: 8,
                         }}
                       >
                         Place order
@@ -479,7 +772,7 @@ export default function CheckoutItem() {
             </>
           )}
         </>
-      ) : null}
+      ) : null} */}
     </SafeAreaView>
   )
 }
