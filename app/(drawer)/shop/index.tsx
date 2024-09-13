@@ -6,7 +6,7 @@ import {
   Text,
   TouchableOpacity,
 } from 'react-native'
-import React, { useEffect } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
 import { colorTokens } from '@tamagui/themes'
@@ -35,7 +35,7 @@ export default function Page() {
   )
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
-  const [refreshing, setRefreshing] = React.useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   // const fetchProducts = useMutation({
   //   mutationFn: changeAddressOnLoad,
@@ -53,6 +53,7 @@ export default function Page() {
 
   useEffect(() => {
     if (data?.addressRef) {
+      setRefreshing(false)
       setAddressRef(data.addressRef)
     }
   }, [data])
@@ -69,7 +70,7 @@ export default function Page() {
     }
   }, [selectedUser, fetchProducts])
 
-  const refreshPage = () => {
+  const refreshPage = useCallback(() => {
     setRefreshing(true)
     if (selectedUser) {
       const userData: { token: string; accountNumber: string } = {
@@ -79,7 +80,9 @@ export default function Page() {
 
       fetchProducts(userData)
     }
-  }
+  }, [])
+
+  console.log(isPending)
 
   // useEffect(() => {
   //   if (
@@ -122,7 +125,10 @@ export default function Page() {
         nestedScrollEnabled={true}
         contentContainerStyle={{ paddingBottom: 80 }}
         refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={refreshPage} />
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => refreshPage()}
+          />
         }
       >
         {/* {fetchProducts.data && favorites.length > 0 ? (
