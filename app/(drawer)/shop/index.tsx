@@ -189,7 +189,7 @@ export default function Page() {
 
         {/* <ProductGroup /> */}
 
-        <Products />
+        <Products products={data?.productsResponse} />
 
         <Text
           style={{
