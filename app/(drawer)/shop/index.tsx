@@ -5,6 +5,7 @@ import {
   ScrollView,
   Text,
   TouchableOpacity,
+  View,
 } from 'react-native'
 import { useCallback, useEffect, useState } from 'react'
 import Products from '~/components/shop/products/products'
@@ -16,10 +17,11 @@ import usePryceStore from '~/hooks/pryceStore'
 import { useMutation } from '@tanstack/react-query'
 import { changeAddressOnLoad } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
-import { Button, Spinner, View, YStack } from 'tamagui'
+// import { Button, Spinner, View, YStack } from 'tamagui'
 import { router } from 'expo-router'
 import ProductGroup from '~/components/productGroup'
 import { useFetchProducts } from '~/hooks/fetchProducts'
+import * as Progress from 'react-native-progress'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
@@ -100,9 +102,16 @@ export default function Page() {
 
   if (isPending) {
     return (
-      <YStack padding="$3" gap="$4" alignItems="center" marginTop={20}>
-        <Spinner size="large" color="$orange10" />
-      </YStack>
+      <View
+        style={{
+          padding: 20,
+          gap: 10,
+          alignItems: 'center',
+          marginTop: 20,
+        }}
+      >
+        <Progress.CircleSnail color={['red', 'orange', 'brown']} />
+      </View>
     )
   }
 
