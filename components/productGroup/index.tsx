@@ -8,7 +8,7 @@ import { exemptedOnProducts, productDisplay } from '~/utils/products'
 export default function ProductGroup() {
   const productOnClickHandler = (i: number) => {
     router.push({
-      pathname: '/(drawer)/shop/details',
+      pathname: '/details',
       params: {
         idParam: i,
       },

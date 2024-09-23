@@ -54,7 +54,7 @@ export default function VerifyOtp() {
         if (data.loginResponse.success && data.profileResponse) {
           setToken(data.loginResponse?.access_token)
           setUsers(data.profileResponse)
-          router.push('/(drawer)/shop')
+          router.push('/(tabs)/index')
         }
       } else {
         isLoading(false)

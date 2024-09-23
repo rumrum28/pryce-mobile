@@ -10,9 +10,10 @@ export const SearchBar = () => {
     <View
       style={{
         height: 60,
-        backgroundColor: 'white',
+        backgroundColor: colorTokens.light.orange.orange9,
         width,
         paddingHorizontal: 20,
+        paddingBottom: 20,
       }}
     >
       <View
@@ -20,15 +21,14 @@ export const SearchBar = () => {
           flexDirection: 'row',
           gap: 10,
           flex: 1,
-          borderRadius: 5,
           alignItems: 'center',
         }}
       >
         <View
           style={{
-            backgroundColor: colorTokens.light.gray.gray2,
+            backgroundColor: 'white',
             flex: 1,
-            borderRadius: 5,
+            borderRadius: 30,
             flexDirection: 'row',
             alignItems: 'center',
             overflow: 'hidden',
@@ -38,7 +38,7 @@ export const SearchBar = () => {
           <Feather
             name="search"
             size={20}
-            color={colorTokens.light.gray.gray9}
+            color={colorTokens.light.gray.gray11}
             style={{ paddingLeft: 10 }}
           />
           <TextInput

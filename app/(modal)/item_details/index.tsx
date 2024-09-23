@@ -6,6 +6,7 @@ import {
   Dimensions,
   Platform,
   StyleSheet,
+  ActivityIndicator,
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
@@ -63,6 +64,8 @@ export default function ItemDetails() {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
+  const productPrice = data?.find((e) => e.ProductCode === productCode)
+  const [loading, isLoading] = useState<boolean>(false)
 
   const { addProduct, reduceProduct, clearCart } = useBasketStore()
 
@@ -103,33 +106,53 @@ export default function ItemDetails() {
   }
 
   const addToCart = async () => {
+    isLoading(true)
     if (addressRef && productCode) {
       const productCodeString = Array.isArray(productCode)
         ? productCode[0]
         : productCode
+
       const selectedProduct = await getProductById(
         addressRef,
         productCodeString
       )
+
       if (selectedProduct) {
-        const unitPrice = selectedProduct.UnitPrice
+        const unitPrice = selectedProduct.UnitPrice ?? 0
+        const regularPrice = selectedProduct.RegularPrice ?? 0
         const numQuantity = quantity ?? 1
+
+        const calculatedPrice =
+          unitPrice < regularPrice ? unitPrice : regularPrice
+
+        const totalProductPrice = calculatedPrice * numQuantity
+
+        const totalAddOnsPrice = selectedAddOns.reduce((sum, addOn) => {
+          const addOnUnitPrice = addOn.UnitPrice ?? 0
+          const addOnRegularPrice = addOn.RegularPrice ?? 0
+
+          const effectiveAddOnPrice =
+            addOnUnitPrice < addOnRegularPrice
+              ? addOnUnitPrice
+              : addOnRegularPrice
+
+          return sum + effectiveAddOnPrice * numQuantity
+        }, 0)
+
+        const priceToAdd = totalProductPrice + totalAddOnsPrice
 
         addProduct(selectedProduct, numQuantity, selectedAddOns)
 
-        const totalAddOnsPrice = selectedAddOns.reduce(
-          (sum, addOn) => sum + addOn.UnitPrice,
-          0
-        )
-        const priceToAdd = (unitPrice + totalAddOnsPrice) * numQuantity
         setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
         setItems((prevItems) => prevItems + numQuantity)
+
         Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
         router.back()
       } else {
         console.error('Product not found for code:', productCodeString)
       }
     }
+    isLoading(false)
   }
 
   const removeFromCart = () => {
@@ -145,15 +168,16 @@ export default function ItemDetails() {
     }
   }
 
-  const formatCurrency = (value: number): string => {
-    const formattedValue = value.toFixed(2)
-    return formattedValue
-  }
-  const formattedPrice = formatCurrency(
-    Number(data && data.find((e) => e.ProductCode === productCode)?.UnitPrice)
-  )
+  let calculatedPrice = 0
 
-  const totalPrice = quantity * parseFloat(formattedPrice)
+  if (productPrice) {
+    calculatedPrice =
+      productPrice.UnitPrice < productPrice.RegularPrice
+        ? productPrice.UnitPrice
+        : productPrice.RegularPrice
+  }
+
+  const totalPrice = quantity * (calculatedPrice || 0)
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -231,33 +255,9 @@ export default function ItemDetails() {
           <Animated.Image
             source={ProductsDetail.find((e) => e.id === productCode)?.image}
             style={[styles.image, imageAnimatedStyle]}
-            // style={{ width: '100%', height: 300 }}
             entering={FadeIn.duration(400).delay(200)}
           />
-          {/* <View style={{ margin: 16 }}>
-            <Animated.Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                // margin: 16,
-                paddingBottom: 10,
-              }}
-              entering={FadeInLeft.duration(400).delay(200)}
-            >
-              {data && data.find((e) => e.ProductCode === productCode)?.Name}
-            </Animated.Text>
 
-            <Animated.Text
-              entering={FadeInLeft.duration(400).delay(400)}
-              style={{
-                fontSize: 16,
-                // marginBottom: 8,
-                color: colorTokens.light.gray.gray11,
-              }}
-            >
-              {ProductsDetail.find((e) => e.id === productCode)?.description}
-            </Animated.Text>
-          </View> */}
           <View style={{ margin: 16 }}>
             <Animated.Text
               style={{
@@ -278,6 +278,7 @@ export default function ItemDetails() {
               }}
             >
               {ProductsDetail.find((e) => e.id === productCode)?.description}
+              wqe
             </Animated.Text>
           </View>
           <Animated.Text
@@ -299,6 +300,7 @@ export default function ItemDetails() {
               style={{
                 flexDirection: 'row',
                 backgroundColor: 'white',
+                marginTop: 30,
               }}
             >
               <View
@@ -310,7 +312,7 @@ export default function ItemDetails() {
                 }}
               >
                 <View style={{ marginLeft: 10 }}>
-                  <Skeleton width={100} height={100} />
+                  <Skeleton width={30} height={30} />
                 </View>
 
                 <View style={{}}>
@@ -351,63 +353,71 @@ export default function ItemDetails() {
           <View
             style={{
               flexDirection: 'row',
+              flex: 1,
               alignItems: 'center',
+              justifyContent: 'center',
             }}
           >
-            <TouchableOpacity
-              onPress={removeFromCart}
-              style={{
-                backgroundColor: colorTokens.light.orange.orange9,
-                borderRadius: 20,
-                padding: 3,
-              }}
-            >
-              <AntDesign name="minus" size={20} color="white" />
-            </TouchableOpacity>
-            <Text
-              style={{
-                fontSize: 16,
-                fontWeight: 'bold',
-                // flex: 1,
-                textAlign: 'center',
-                marginHorizontal: 15,
-              }}
-            >
-              {quantity}
-            </Text>
-            <TouchableOpacity
-              onPress={() => setQuantity(quantity + 1)}
-              style={{
-                backgroundColor: colorTokens.light.orange.orange9,
-                borderRadius: 20,
-                padding: 3,
-                marginRight: 10,
-              }}
-            >
-              <Ionicons name="add" size={20} color="white" />
-            </TouchableOpacity>
-
-            <StyledButton
-              style={{
-                // width: 200,
-                flex: 1,
-              }}
-              onPress={addToCart}
-            >
-              {isPending ? (
-                <Spinner size="large" color="white" />
-              ) : (
-                <Text
+            {isPending || loading ? (
+              <ActivityIndicator
+                size="large"
+                color={colorTokens.light.orange.orange9}
+              />
+            ) : (
+              <>
+                <TouchableOpacity
+                  onPress={removeFromCart}
                   style={{
-                    color: 'white',
-                    fontSize: 16,
-                    fontWeight: 'bold',
+                    backgroundColor: colorTokens.light.orange.orange9,
+                    borderRadius: 20,
+                    padding: 3,
                   }}
                 >
-                  Add for {totalPrice}
+                  <AntDesign name="minus" size={20} color="white" />
+                </TouchableOpacity>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    // flex: 1,
+                    textAlign: 'center',
+                    marginHorizontal: 15,
+                  }}
+                >
+                  {quantity}
                 </Text>
-              )}
-            </StyledButton>
+                <TouchableOpacity
+                  onPress={() => setQuantity(quantity + 1)}
+                  style={{
+                    backgroundColor: colorTokens.light.orange.orange9,
+                    borderRadius: 20,
+                    padding: 3,
+                    marginRight: 10,
+                  }}
+                >
+                  <Ionicons name="add" size={20} color="white" />
+                </TouchableOpacity>
+                <StyledButton
+                  style={{
+                    flex: 1,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                  }}
+                  onPress={addToCart}
+                  disabled={isPending || loading}
+                >
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 16,
+                      fontWeight: 'bold',
+                    }}
+                  >
+                    Add for {formatCurrency(totalPrice)}
+                  </Text>
+                </StyledButton>
+              </>
+            )}
           </View>
         </View>
       </View>

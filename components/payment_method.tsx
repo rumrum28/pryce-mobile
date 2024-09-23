@@ -9,6 +9,18 @@ import {
 } from 'tamagui'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
 import { LinearGradient } from 'tamagui/linear-gradient'
+import { Dropdown } from 'react-native-element-dropdown'
+
+type OptionItem = {
+  value: string
+  label: string
+}
+
+interface DropDownProps {
+  data: OptionItem[]
+  placeholder: string
+  onChange: (value: string) => void
+}
 
 export function PaymentMethod({
   paymentMethod,

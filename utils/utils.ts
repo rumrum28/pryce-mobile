@@ -4,6 +4,5 @@ export const formatCurrency = (price: number) => {
     currency: 'PHP',
   }).format(price)
 
-  // return formattedPrice.replace('₱', '₱ ')
-  return formattedPrice
+  return formattedPrice.replace('₱', '₱ ')
 }

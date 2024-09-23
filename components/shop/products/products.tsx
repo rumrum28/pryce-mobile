@@ -21,7 +21,7 @@ export default function Products() {
       <Pressable
         onPress={() =>
           router.push({
-            pathname: '/(drawer)/shop/details',
+            pathname: '/details',
             params: {
               id: item.id,
             },
@@ -74,7 +74,7 @@ export default function Products() {
   }
 
   return (
-    <ScrollView contentContainerStyle={{ padding: 15 }}>
+    <ScrollView>
       <FlatList
         data={productDisplay}
         renderItem={renderItem}

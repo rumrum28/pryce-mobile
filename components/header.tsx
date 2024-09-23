@@ -7,7 +7,7 @@ import {
   Dimensions,
 } from 'react-native'
 import { useEffect, useState } from 'react'
-import { Feather } from '@expo/vector-icons'
+import { Feather, SimpleLineIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
 import { Link, useNavigation } from 'expo-router'
@@ -33,9 +33,9 @@ export default function Header() {
     (state) => state.changeAddressTrigger
   )
 
-  const onToggle = () => {
-    navigation.dispatch(DrawerActions.openDrawer)
-  }
+  // const onToggle = () => {
+  //   navigation.dispatch(DrawerActions.openDrawer)
+  // }
 
   useEffect(() => {
     const findUser = users.find((e) => e.Account_Number__c === selectedUser)
@@ -50,7 +50,7 @@ export default function Header() {
   return (
     <SafeAreaView
       style={{
-        backgroundColor: 'white',
+        backgroundColor: colorTokens.light.orange.orange9,
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
@@ -59,7 +59,7 @@ export default function Header() {
           flexDirection: 'row',
           alignItems: 'center',
           height: 60,
-          backgroundColor: 'white',
+          backgroundColor: colorTokens.light.orange.orange9,
           paddingHorizontal: 20,
         }}
       >
@@ -70,12 +70,8 @@ export default function Header() {
             justifyContent: 'center',
           }}
         >
-          <TouchableOpacity onPress={onToggle}>
-            <Feather
-              name="menu"
-              size={24}
-              color={colorTokens.light.orange.orange9}
-            />
+          <TouchableOpacity>
+            <SimpleLineIcons name="location-pin" size={24} color="white" />
           </TouchableOpacity>
         </View>
 
@@ -87,7 +83,7 @@ export default function Header() {
             style={{
               fontSize: 18,
               fontWeight: 'bold',
-              color: 'black',
+              color: 'white',
             }}
           >
             Home
@@ -95,55 +91,13 @@ export default function Header() {
           <Text
             style={{
               fontSize: 14,
-              color: colorTokens.light.gray.gray9,
+              color: 'white',
               fontWeight: 'bold',
             }}
           >
             {addressText}
           </Text>
         </TouchableOpacity>
-
-        {/* <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-          }}
-        >
-          <Link href="/(drawer)/shop/(modal)/basket" asChild>
-            <TouchableOpacity>
-              {cart.length > 0 ? (
-                <View
-                  style={{
-                    position: 'absolute',
-                    left: 15,
-                    top: 10,
-                    width: 20,
-                    height: 20,
-                    borderRadius: 10,
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    zIndex: 10,
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {cart.length}
-                  </Text>
-                </View>
-              ) : null}
-              <Feather
-                name="shopping-bag"
-                size={24}
-                color={colorTokens.light.orange.orange9}
-              />
-            </TouchableOpacity>
-          </Link>
-        </View> */}
         <View
           style={{
             flexDirection: 'row',
@@ -152,7 +106,7 @@ export default function Header() {
             marginRight: 10,
           }}
         >
-          <Link href="/(drawer)/shop/(modal)/basket" asChild>
+          <Link href="/(modal)/basket" asChild>
             <TouchableOpacity>
               <View
                 style={{
@@ -164,24 +118,20 @@ export default function Header() {
                   borderRadius: 10,
                   alignItems: 'center',
                   justifyContent: 'center',
-                  backgroundColor: colorTokens.light.orange.orange9,
+                  backgroundColor: 'white',
                   zIndex: 10,
                 }}
               >
                 <Text
                   style={{
-                    color: 'white',
+                    color: colorTokens.light.orange.orange9,
                     fontWeight: 'bold',
                   }}
                 >
                   {items}
                 </Text>
               </View>
-              <Feather
-                name="shopping-bag"
-                size={24}
-                color={colorTokens.light.orange.orange9}
-              />
+              <Feather name="shopping-bag" size={24} color="white" />
             </TouchableOpacity>
           </Link>
         </View>

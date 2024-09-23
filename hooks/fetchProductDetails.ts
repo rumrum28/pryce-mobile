@@ -10,7 +10,13 @@ export const useFetchProductsDetails = () => {
         queryKey: ['fetchProductsOnLoad'],
       })
     },
+    // onError: (error) => {
+    //   console.error('Error placing order:', error);
+    // },
   })
 
-  return mutation
+  return {
+    ...mutation,
+    isPending: mutation.isPending,
+  }
 }
