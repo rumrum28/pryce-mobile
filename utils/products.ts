@@ -69,7 +69,7 @@ export const ProductsDetail = [
     id: 'CYL11',
     name: '11kg Cylinder',
     description: ['Cylinder Only'],
-    image: require('~/assets/images/products/CYL11.png'),
+    image: require('~/assets/images/products/CYL11.jpg'),
   },
   {
     id: 'LPG11CCABOD',

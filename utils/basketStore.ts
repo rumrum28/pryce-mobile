@@ -20,7 +20,10 @@ export interface AddOn {
   Id: string
   Name: string
   ProductCode: string
+  Product2Id: string
   UnitPrice: number
+  Pricebook2Id: string
+  RegularPrice: number
 }
 
 export interface BasketProduct extends Product {
@@ -29,7 +32,7 @@ export interface BasketProduct extends Product {
 }
 
 export interface BasketState {
-  products: Array<Product & { quantity: number; addOns?: Array<AddOn> }>
+  products: BasketProduct[]
   addProduct: (
     product: Product,
     quantity?: number,
@@ -56,10 +59,24 @@ const useBasketStore = create<BasketState>()(
           let additionalCost = 0
 
           if (addOns.length > 0) {
-            addOns.forEach((addOn) => {
-              additionalCost += addOn.UnitPrice
-            })
+            additionalCost = addOns.reduce((sum, addOn) => {
+              const addOnUnitPrice = addOn.UnitPrice ?? 0
+              const addOnRegularPrice = addOn.RegularPrice ?? 0
+              const addOnCalculatedPrice =
+                addOnUnitPrice < addOnRegularPrice
+                  ? addOnUnitPrice
+                  : addOnRegularPrice
+
+              return sum + addOnCalculatedPrice
+            }, 0)
           }
+
+          const productUnitPrice = product.UnitPrice ?? 0
+          const productRegularPrice = product.RegularPrice ?? 0
+          const calculatedProductPrice =
+            productUnitPrice < productRegularPrice
+              ? productUnitPrice
+              : productRegularPrice
 
           const existingProductIndex = state.products.findIndex(
             (p) =>
@@ -76,7 +93,9 @@ const useBasketStore = create<BasketState>()(
               products: updatedProducts,
               items: state.items + numQuantity,
               total:
-                state.total + product.UnitPrice * numQuantity + additionalCost,
+                state.total +
+                calculatedProductPrice * numQuantity +
+                additionalCost * numQuantity,
             }
           } else {
             return {
@@ -87,7 +106,8 @@ const useBasketStore = create<BasketState>()(
               items: state.items + numQuantity,
               total:
                 state.total +
-                (product.UnitPrice + additionalCost) * numQuantity,
+                calculatedProductPrice * numQuantity +
+                additionalCost * numQuantity,
             }
           }
         })
@@ -95,12 +115,18 @@ const useBasketStore = create<BasketState>()(
 
       reduceProduct: (product: Product, addOnId?: string) => {
         set((state) => {
+          type ProductWithAddOns = Product & { addOns?: AddOn[] }
+
           const existingProductIndex = state.products.findIndex((p) => {
             const idMatches = p.Id === product.Id
-            const addOnMatches = addOnId
-              ? p.addOns?.some((addOn) => addOn.Id === addOnId)
-              : true
-            return idMatches && addOnMatches
+            const addOnsMatch =
+              (p as ProductWithAddOns).addOns?.length ===
+                (product as ProductWithAddOns).addOns?.length &&
+              (p as ProductWithAddOns).addOns?.every(
+                (addOn, i) =>
+                  addOn.Id === (product as ProductWithAddOns).addOns![i].Id
+              )
+            return idMatches && addOnsMatch
           })
 
           if (existingProductIndex === -1) {
@@ -109,16 +135,29 @@ const useBasketStore = create<BasketState>()(
 
           const existingProduct = state.products[existingProductIndex]
 
-          const productReduction = existingProduct.UnitPrice
-          let addOnsReduction = 0
+          const productUnitPrice = existingProduct.UnitPrice ?? 0
+          const productRegularPrice = existingProduct.RegularPrice ?? 0
+          const productReduction =
+            productUnitPrice < productRegularPrice
+              ? productUnitPrice
+              : productRegularPrice
 
-          if (existingProduct.addOns) {
-            addOnsReduction = existingProduct.addOns.reduce((sum, addOn) => {
-              if (!addOnId || addOn.Id === addOnId) {
-                return sum + addOn.UnitPrice
-              }
-              return sum
-            }, 0)
+          let addOnsReduction = 0
+          const existingProductWithAddOns = existingProduct as ProductWithAddOns
+          if (existingProductWithAddOns.addOns) {
+            addOnsReduction = existingProductWithAddOns.addOns.reduce(
+              (sum, addOn) => {
+                const addOnUnitPrice = addOn.UnitPrice ?? 0
+                const addOnRegularPrice = addOn.RegularPrice ?? 0
+                const addOnCalculatedPrice =
+                  addOnUnitPrice < addOnRegularPrice
+                    ? addOnUnitPrice
+                    : addOnRegularPrice
+
+                return sum + addOnCalculatedPrice
+              },
+              0
+            )
           }
 
           const totalReduction = productReduction + addOnsReduction
@@ -144,48 +183,81 @@ const useBasketStore = create<BasketState>()(
           }
         })
       },
+
       clearCart: () => set({ products: [], items: 0, total: 0 }),
-      updateProducts: (newProducts) =>
+
+      updateProducts: (newProducts: Product[]) =>
         set((state) => {
           const newPricebookId = newProducts[0]?.Pricebook2Id
-
-          console.log('newPricebookId:', newPricebookId)
-
           const currentPricebookId =
             state.products.length > 0 ? state.products[0].Pricebook2Id : null
 
-          console.log('currentPricebookId:', currentPricebookId)
           if (currentPricebookId !== newPricebookId) {
             const newProductsMap = new Map(
               newProducts.map((product) => [product.Product2Id, product])
             )
 
-            console.log('newProductsMap:', newProductsMap)
-
             const updatedProducts = state.products.map((product) => {
               const newProduct = newProductsMap.get(product.Product2Id)
-              return newProduct
-                ? {
-                    ...product,
-                    UnitPrice: newProduct.UnitPrice,
-                    Product2Id: newProduct.Pricebook2Id,
+
+              if (newProduct) {
+                const existingAddOns = product.addOns || []
+                const updatedAddOns = existingAddOns.map((addOn) => {
+                  const newAddOn = newProductsMap.get(addOn.Product2Id)
+                  if (newAddOn) {
+                    const addOnUnitPrice = newAddOn.UnitPrice ?? 0
+                    const addOnRegularPrice = newAddOn.RegularPrice ?? 0
+                    const addOnCalculatedPrice =
+                      addOnUnitPrice < addOnRegularPrice
+                        ? addOnUnitPrice
+                        : addOnRegularPrice
+
+                    return {
+                      ...addOn,
+                      UnitPrice: addOnCalculatedPrice,
+                      RegularPrice: addOn.RegularPrice,
+                    }
                   }
-                : product
+                  return addOn
+                })
+
+                const productUnitPrice = newProduct.UnitPrice ?? 0
+                const productRegularPrice = newProduct.RegularPrice ?? 0
+                const productCalculatedPrice =
+                  productUnitPrice < productRegularPrice
+                    ? productUnitPrice
+                    : productRegularPrice
+
+                return {
+                  ...product,
+                  ...newProduct,
+                  UnitPrice: productCalculatedPrice,
+                  addOns: updatedAddOns,
+                }
+              }
+
+              return product
             })
 
-            const items = updatedProducts.reduce(
+            const allProducts = [...updatedProducts]
+            const items = allProducts.reduce(
               (acc, product) => acc + product.quantity,
               0
             )
-            const total = updatedProducts.reduce(
-              (acc, product) => acc + product.UnitPrice * product.quantity,
-              0
-            )
+            const total = allProducts.reduce((acc, product) => {
+              const productTotal = product.UnitPrice * product.quantity
+              const addOnsTotal = (product.addOns || []).reduce(
+                (addOnAcc, addOn) =>
+                  addOnAcc + addOn.UnitPrice * product.quantity,
+                0
+              )
+              return acc + productTotal + addOnsTotal
+            }, 0)
 
-            return { products: updatedProducts, items, total }
+            return { products: allProducts, items, total }
           }
 
-          return state // No update needed if the Pricebook2Id is the same
+          return state
         }),
     }),
 

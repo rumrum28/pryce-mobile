@@ -48,16 +48,6 @@ export default function DrawerLayout() {
               ),
             }}
           />
-          <Drawer.Screen
-            name="favorites/index"
-            options={{
-              drawerLabel: 'Favorites',
-              title: 'Favorites',
-              drawerIcon: ({ size, color }) => (
-                <Ionicons name="star" size={size} color={color} />
-              ),
-            }}
-          />
         </Drawer>
       </GestureHandlerRootView>
     </>

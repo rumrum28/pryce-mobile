@@ -1,14 +1,26 @@
-// import {
-//   Adapt,
-//   FontSizeTokens,
-//   getFontSize,
-//   Select,
-//   SelectProps,
-//   Sheet,
-//   YStack,
-// } from 'tamagui'
+import {
+  Adapt,
+  FontSizeTokens,
+  getFontSize,
+  Select,
+  SelectProps,
+  Sheet,
+  YStack,
+} from 'tamagui'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-// import { LinearGradient } from 'tamagui/linear-gradient'
+import { LinearGradient } from 'tamagui/linear-gradient'
+import { Dropdown } from 'react-native-element-dropdown'
+
+type OptionItem = {
+  value: string
+  label: string
+}
+
+interface DropDownProps {
+  data: OptionItem[]
+  placeholder: string
+  onChange: (value: string) => void
+}
 
 export function PaymentMethod({
   paymentMethod,
@@ -29,7 +41,7 @@ export function PaymentMethod({
         <Select.Value placeholder="cash-on-delivery" />
       </Select.Trigger>
 
-      <Adapt when="sm" platform="ios">
+      <Adapt platform="touch">
         <Sheet
           native={false}
           modal

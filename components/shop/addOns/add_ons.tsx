@@ -61,64 +61,80 @@ export default function AddOns({
             ></View>
           </View>
         }
-        renderItem={({ item }) => (
-          <View
-            style={{
-              flexDirection: 'row',
-              padding: 15,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
+        renderItem={({ item }) => {
+          const productPrice = filteredData?.find(
+            (e) => e.ProductCode === item.ProductCode
+          )
+          let calculatedPrice = 0
+          if (productPrice) {
+            calculatedPrice =
+              productPrice.UnitPrice < productPrice.RegularPrice
+                ? productPrice.UnitPrice
+                : productPrice.RegularPrice
+          }
+          const formattedPrice = formatCurrency(calculatedPrice)
+          return (
             <View
               style={{
                 flexDirection: 'row',
+                padding: 15,
+                justifyContent: 'space-between',
                 alignItems: 'center',
-                justifyContent: 'center',
-                maxWidth: 250,
               }}
             >
-              <BouncyCheckbox
-                fillColor={colorTokens.light.orange.orange9}
-                unFillColor="#fff"
-                iconStyle={{
-                  borderColor: colorTokens.light.orange.orange9,
-                  borderRadius: 4,
-                  borderWidth: 2,
+              <View
+                style={{
+                  flexDirection: 'row',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  maxWidth: 220,
                 }}
-                innerIconStyle={{
-                  borderColor: colorTokens.light.orange.orange9,
-                  borderRadius: 4,
-                }}
-                onPress={() => handleToggle(item)}
-                isChecked={selectedAddOns.some((ao) => ao.Id === item.Id)}
-              />
-              <Image
-                source={{
-                  uri: ProductsDetail.find((pd) => pd.id === item.ProductCode)
-                    ?.image,
-                  width: 60,
-                  height: 60,
-                }}
-              />
+              >
+                <BouncyCheckbox
+                  fillColor={colorTokens.light.orange.orange9}
+                  unFillColor="#fff"
+                  iconStyle={{
+                    borderColor: colorTokens.light.orange.orange9,
+                    borderRadius: 4,
+                    borderWidth: 2,
+                  }}
+                  innerIconStyle={{
+                    borderColor: colorTokens.light.orange.orange9,
+                    borderRadius: 4,
+                  }}
+                  onPress={() => handleToggle(item)}
+                  isChecked={selectedAddOns.some((ao) => ao.Id === item.Id)}
+                />
+                <Image
+                  source={{
+                    uri: ProductsDetail.find((pd) => pd.id === item.ProductCode)
+                      ?.image,
+                    width: 60,
+                    height: 60,
+                  }}
+                />
 
+                <Text
+                  style={{
+                    fontSize: 13,
+                    flexShrink: 1,
+                    flexWrap: 'wrap',
+                  }}
+                >
+                  {item.Name}
+                </Text>
+              </View>
               <Text
                 style={{
                   fontSize: 13,
-                  flexShrink: 1,
-                  flexWrap: 'wrap',
+                  color: colorTokens.light.orange.orange9,
                 }}
               >
-                {item.Name}
+                +{formattedPrice}
               </Text>
             </View>
-            <Text
-              style={{ fontSize: 13, color: colorTokens.light.orange.orange9 }}
-            >
-              +{formatCurrency(item.UnitPrice)}
-            </Text>
-          </View>
-        )}
+          )
+        }}
       />
     </View>
   )

@@ -64,6 +64,8 @@ const Details = () => {
     }
   }, [addressRef, fetchProductsDetails])
 
+  // console.log(data)
+
   useEffect(() => {
     if (id) {
       const getSingleData = productDisplay.filter((e) => e.id === Number(id))
@@ -100,10 +102,11 @@ const Details = () => {
 
   const renderItem = ({ item, index }: { item: any; index: number }) => {
     const productCode = item
+    const productPrice = data?.find((e) => e.ProductCode === item)
     return (
       <Link
         href={{
-          pathname: '/(drawer)/shop/(modal)/item_details',
+          pathname: '/(modal)/item_details',
           params: { productCode },
         }}
         asChild
@@ -129,21 +132,51 @@ const Details = () => {
             >
               {data?.find((e) => e.ProductCode === item)?.ProductCode}
             </Text>
-            <Text
-              style={{
-                fontSize: 14,
-                fontWeight: 'bold',
-                color: colorTokens.light.gray.gray11,
-              }}
-            >
-              {formatCurrency(
-                data?.find((e) => e.ProductCode === item)?.UnitPrice || 0
+            <View>
+              {productPrice &&
+              productPrice.UnitPrice < productPrice.RegularPrice ? (
+                <>
+                  <Text
+                    style={{
+                      color: colorTokens.light.gray.gray10,
+                      paddingVertical: 2,
+                      textDecorationLine: 'line-through',
+                      fontSize: 12,
+                    }}
+                  >
+                    {formatCurrency(
+                      data?.find((e) => e.ProductCode === item)?.RegularPrice ||
+                        0
+                    )}
+                  </Text>
+                  <Text
+                    style={{
+                      color: '#FF4500',
+                      paddingVertical: 2,
+                    }}
+                  >
+                    {formatCurrency(
+                      data?.find((e) => e.ProductCode === item)?.UnitPrice || 0
+                    )}
+                  </Text>
+                </>
+              ) : (
+                <Text
+                  style={{
+                    color: '#FF4500',
+                    paddingVertical: 2,
+                  }}
+                >
+                  {formatCurrency(
+                    data?.find((e) => e.ProductCode === item)?.RegularPrice || 0
+                  )}
+                </Text>
               )}
-            </Text>
+            </View>
           </View>
           <Image
             source={ProductsDetail.find((e) => e.id === item)?.image}
-            style={{ height: 80, width: 80, borderRadius: 4 }}
+            style={{ height: 120, width: 120, borderRadius: 4 }}
           />
         </TouchableOpacity>
       </Link>
@@ -282,7 +315,7 @@ const Details = () => {
             style={{ flex: 1, backgroundColor: 'white' }}
             edges={['bottom']}
           >
-            <Link href="/(drawer)/shop/(modal)/basket" asChild>
+            <Link href="/(modal)/basket" asChild>
               <StyledButton>
                 <View
                   style={{
