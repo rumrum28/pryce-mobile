@@ -1,154 +1,173 @@
 import {
-  Adapt,
-  FontSizeTokens,
-  getFontSize,
-  Select,
-  SelectProps,
-  Sheet,
-  YStack,
-} from 'tamagui'
-import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import { LinearGradient } from 'tamagui/linear-gradient'
-import { Dropdown } from 'react-native-element-dropdown'
+  Image,
+  ImageSourcePropType,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
+} from 'react-native'
+import { colorTokens } from '@tamagui/themes'
+import { FontAwesome6, MaterialIcons } from '@expo/vector-icons'
 
-type OptionItem = {
-  value: string
-  label: string
-}
+type PaymentMethodType = 'cash-on-delivery' | 'online-payment'
 
-interface DropDownProps {
-  data: OptionItem[]
-  placeholder: string
-  onChange: (value: string) => void
+type PaymentDataProps = {
+  paymentMethod: PaymentMethodType
+  image: string
+  name: string
 }
+const paymentData: PaymentDataProps[] = [
+  {
+    paymentMethod: 'cash-on-delivery',
+    image: require('~/assets/images/cod.png'),
+    name: 'Cash on Delivery',
+  },
+  {
+    paymentMethod: 'online-payment',
+    image: require('~/assets/images/cc.png'),
+    name: 'Online Payment',
+  },
+]
 
 export function PaymentMethod({
-  paymentMethod,
-  setPaymentMethod,
-  ...props
+  selectedPaymentMethod,
+  setSelectedPaymentMethod,
+  paymentAmount,
+  setPaymentAmount,
 }: {
-  paymentMethod: string
-  setPaymentMethod: (pm: string) => void
+  selectedPaymentMethod: string
+  setSelectedPaymentMethod: (paymentMethod: string) => void
+  paymentAmount: string
+  setPaymentAmount: (amount: string) => void
 }) {
+  console.log(selectedPaymentMethod)
   return (
-    <Select
-      value={paymentMethod}
-      onValueChange={setPaymentMethod}
-      disablePreventBodyScroll
-      {...props}
-    >
-      <Select.Trigger width={220} iconAfter={ChevronDown}>
-        <Select.Value placeholder="cash-on-delivery" />
-      </Select.Trigger>
-
-      <Adapt when="sm" platform="ios">
-        <Sheet
-          native={false}
-          modal
-          dismissOnSnapToBottom
-          animationConfig={{
-            type: 'spring',
-            damping: 20,
-            mass: 1.2,
-            stiffness: 250,
+    <View style={{ paddingHorizontal: 15 }}>
+      <View
+        style={{
+          flex: 1,
+          flexDirection: 'row',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          marginTop: 15,
+        }}
+      >
+        <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
           }}
         >
-          <Sheet.Frame>
-            <Sheet.ScrollView>
-              <Adapt.Contents />
-            </Sheet.ScrollView>
-          </Sheet.Frame>
-          <Sheet.Overlay
-            animation="lazy"
-            enterStyle={{ opacity: 0 }}
-            exitStyle={{ opacity: 0 }}
-          />
-        </Sheet>
-      </Adapt>
+          Select Payment Method
+        </Text>
+      </View>
 
-      <Select.Content zIndex={200000}>
-        <Select.ScrollUpButton
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          width="100%"
-          height="$3"
-        >
-          <YStack zIndex={10}>
-            <ChevronUp size={20} />
-          </YStack>
-          <LinearGradient
-            start={[0, 0]}
-            end={[0, 1]}
-            fullscreen
-            colors={['$background', 'transparent']}
-            borderRadius="$4"
-          />
-        </Select.ScrollUpButton>
-
-        <Select.Viewport
-          // to do animations:
-          // animation="quick"
-          // animateOnly={['transform', 'opacity']}
-          // enterStyle={{ o: 0, y: -10 }}
-          // exitStyle={{ o: 0, y: 10 }}
-          minWidth={200}
-        >
-          <Select.Group>
-            <Select.Label>Payment Method</Select.Label>
-
-            <Select.Item index={1} value="cash-on-delivery">
-              <Select.ItemText>Cash on delivery</Select.ItemText>
-              <Select.ItemIndicator marginLeft="auto">
-                <Check size={16} />
-              </Select.ItemIndicator>
-            </Select.Item>
-
-            <Select.Item index={2} value="online-payment">
-              <Select.ItemText>Online payment</Select.ItemText>
-              <Select.ItemIndicator marginLeft="auto">
-                <Check size={16} />
-              </Select.ItemIndicator>
-            </Select.Item>
-          </Select.Group>
-          {/* 
-          {props.native && (
-            <YStack
-              position="absolute"
-              right={0}
-              top={0}
-              bottom={0}
-              alignItems="center"
-              justifyContent="center"
-              width={'$4'}
-              pointerEvents="none"
+      <View style={{ marginBottom: 30 }}>
+        {paymentData.map((item, index) => (
+          <TouchableOpacity
+            key={index}
+            onPress={() => setSelectedPaymentMethod(item.paymentMethod)}
+            style={{
+              flexDirection: 'row',
+              height: 80,
+              alignItems: 'center',
+              marginTop: 20,
+              paddingHorizontal: 20,
+              borderWidth: 2,
+              borderRadius: 10,
+              borderColor:
+                selectedPaymentMethod === item.paymentMethod
+                  ? colorTokens.light.orange.orange9
+                  : colorTokens.light.gray.gray2,
+            }}
+          >
+            <View
+              style={{
+                width: 60,
+                height: 45,
+                alignItems: 'center',
+                justifyContent: 'center',
+                borderWidth: 2,
+                borderRadius: 10,
+                borderColor: colorTokens.light.gray.gray2,
+              }}
             >
-              <ChevronDown
-                size={getFontSize((props.size as FontSizeTokens) ?? '$true')}
+              <Image
+                source={item.image as ImageSourcePropType}
+                resizeMode="center"
+                style={{ width: 35, height: 35 }}
               />
-            </YStack>
-          )} */}
-        </Select.Viewport>
+            </View>
+            <Text style={{ flex: 1, marginLeft: 15, fontWeight: '600' }}>
+              {item.name}
+            </Text>
+            <View style={{ position: 'absolute', top: 23, right: 15 }}>
+              <MaterialIcons
+                name={
+                  selectedPaymentMethod === item.paymentMethod
+                    ? 'radio-button-checked'
+                    : 'radio-button-unchecked'
+                }
+                size={30}
+                color={
+                  selectedPaymentMethod === item.paymentMethod
+                    ? colorTokens.light.orange.orange9
+                    : colorTokens.light.gray.gray2
+                }
+              />
+            </View>
+          </TouchableOpacity>
+        ))}
 
-        <Select.ScrollDownButton
-          alignItems="center"
-          justifyContent="center"
-          position="relative"
-          width="100%"
-          height="$3"
+        <View
+          style={{
+            flexDirection: 'row',
+            borderColor:
+              selectedPaymentMethod === 'cash-on-delivery'
+                ? colorTokens.light.orange.orange9
+                : colorTokens.light.gray.gray2,
+            borderWidth: 1,
+            borderRadius: 5,
+            height: 50,
+            alignItems: 'center',
+            marginBottom: 150,
+            marginTop: 20,
+          }}
         >
-          <YStack zIndex={10}>
-            <ChevronDown size={20} />
-          </YStack>
-          <LinearGradient
-            start={[0, 0]}
-            end={[0, 1]}
-            fullscreen
-            colors={['transparent', '$background']}
-            borderRadius="$4"
+          <View
+            style={{
+              justifyContent: 'center',
+              marginRight: 10,
+              padding: 10,
+            }}
+          >
+            <FontAwesome6
+              name={'money-bill-wave'}
+              size={20}
+              color={
+                selectedPaymentMethod === 'cash-on-delivery'
+                  ? colorTokens.light.orange.orange9
+                  : colorTokens.light.gray.gray7
+              }
+            />
+          </View>
+          <TextInput
+            placeholder="Change For"
+            placeholderTextColor={colorTokens.light.gray.gray8}
+            keyboardType="default"
+            style={{
+              flex: 1,
+              height: 40,
+              fontSize: 14,
+              color: colorTokens.light.gray.gray12,
+              fontWeight: 'regular',
+            }}
+            value={paymentAmount}
+            onChangeText={(value) => setPaymentAmount(value)}
+            editable={selectedPaymentMethod === 'cash-on-delivery'}
           />
-        </Select.ScrollDownButton>
-      </Select.Content>
-    </Select>
+        </View>
+      </View>
+    </View>
   )
 }

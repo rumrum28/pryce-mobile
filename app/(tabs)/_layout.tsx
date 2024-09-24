@@ -101,7 +101,7 @@ export default function TabLayout() {
           elevation: 0,
         },
       }}
-      tabBar={(props) => <CustomTabBar props={props} />}
+      // tabBar={(props) => <CustomTabBar props={props} />}
     >
       <Tabs.Screen
         name="home"
@@ -115,7 +115,7 @@ export default function TabLayout() {
               color={color}
             />
           ),
-          tabBarButton: (props) => <TabBarCustomButton {...props} />,
+          // tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}
       />
       <Tabs.Screen
@@ -126,7 +126,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <MaterialIcons size={26} name="pending-actions" color={color} />
           ),
-          tabBarButton: (props) => <TabBarCustomButton {...props} />,
+          // tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}
       />
       <Tabs.Screen
@@ -137,7 +137,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <FontAwesome name="heart-o" size={26} color={color} />
           ),
-          tabBarButton: (props) => <TabBarCustomButton {...props} />,
+          // tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}
       />
       <Tabs.Screen
@@ -148,7 +148,7 @@ export default function TabLayout() {
           tabBarIcon: ({ color }) => (
             <Octicons size={26} name="person" color={color} />
           ),
-          tabBarButton: (props) => <TabBarCustomButton {...props} />,
+          // tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}
       />
     </Tabs>

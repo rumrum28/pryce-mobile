@@ -6,7 +6,7 @@ import {
   StatusBar,
   Dimensions,
 } from 'react-native'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Feather, SimpleLineIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
@@ -16,6 +16,8 @@ import { SearchBar } from '~/components/search_bar'
 import usePryceStore from '~/hooks/pryceStore'
 import useCartStore from '~/hooks/productsStore'
 import useBasketStore from '~/utils/basketStore'
+import BottomSheet from './bottom_sheet'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 export default function Header() {
   const token = usePryceStore((state) => state.token)
@@ -23,9 +25,10 @@ export default function Header() {
   const cart = useCartStore((state) => state.cart)
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const { items, total } = useBasketStore()
-
   const [addressText, setAddressText] = useState<string>('Select Address')
+  const [cityText, setCityText] = useState<string>('')
   const navigation = useNavigation()
+  const bottomSheetRef = useRef<BottomSheetModal>(null)
   const setChangeAddressTrigger = usePryceStore(
     (state) => state.setChangeAddressTrigger
   )
@@ -39,13 +42,19 @@ export default function Header() {
 
   useEffect(() => {
     const findUser = users.find((e) => e.Account_Number__c === selectedUser)
-    if (findUser)
+    if (findUser) {
       setAddressText(
         `${findUser.Primary_Street__c} ${findUser.Primary_Barangay__c}`
       )
 
+      setCityText(`${findUser?.Primary_City2__c}`)
+    }
     // ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}
   }, [selectedUser])
+
+  const openModal = () => {
+    bottomSheetRef.current?.present()
+  }
 
   return (
     <SafeAreaView
@@ -54,6 +63,7 @@ export default function Header() {
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
+      <BottomSheet ref={bottomSheetRef} />
       <View
         style={{
           flexDirection: 'row',
@@ -76,7 +86,8 @@ export default function Header() {
         </View>
 
         <TouchableOpacity
-          onPress={() => setChangeAddressTrigger(!changeAddressTrigger)}
+          // onPress={() => setChangeAddressTrigger(!changeAddressTrigger)}
+          onPress={openModal}
           style={{ paddingHorizontal: 10, flex: 1 }}
         >
           <Text
@@ -86,7 +97,7 @@ export default function Header() {
               color: 'white',
             }}
           >
-            Home
+            {addressText}
           </Text>
           <Text
             style={{
@@ -95,7 +106,7 @@ export default function Header() {
               fontWeight: 'bold',
             }}
           >
-            {addressText}
+            {cityText}
           </Text>
         </TouchableOpacity>
         <View
