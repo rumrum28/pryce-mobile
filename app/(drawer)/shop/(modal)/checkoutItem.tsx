@@ -11,7 +11,7 @@ import { queryClient } from '~/hooks/queryClient'
 import { useEffect, useState } from 'react'
 import { useToastController } from '@tamagui/toast'
 import SwipeableRow from '~/components/swipeable_row'
-import { Image, Label, Spinner, XStack, YStack } from 'tamagui'
+// import { Image, Label, Spinner, XStack, YStack } from 'tamagui'
 import { formatCurrency } from '~/utils/utils'
 import NonePgcmCheckoutAlert from '~/components/none_pgcm_checkout_alert'
 import { ProductSingle } from '~/types/product'
@@ -23,6 +23,7 @@ import useBasketStore from '~/utils/basketStore'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Skeleton from '~/components/skeleton'
+import * as Progress from 'react-native-progress'
 
 type ProductProps = {
   ProductCode: string
@@ -483,7 +484,7 @@ export default function CheckoutItem() {
 
           <StyledButton onPress={placeOrder}>
             {isPending ? (
-              <Spinner size="large" color="white" />
+              <Progress.CircleSnail color={['red', 'orange', 'brown']} />
             ) : (
               <Text
                 style={{

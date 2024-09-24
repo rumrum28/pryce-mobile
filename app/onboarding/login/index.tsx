@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
-import { Image, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native'
-import { Text, View } from 'tamagui'
+import {
+  Image,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'

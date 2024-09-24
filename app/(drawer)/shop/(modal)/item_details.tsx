@@ -29,12 +29,13 @@ import { fetchProductsQuery, getProductById } from '~/server/api'
 import { queryClient } from '~/hooks/queryClient'
 import usePryceStore from '~/hooks/pryceStore'
 import { exemptedOnProducts, ProductsDetail } from '~/utils/products'
-import { Spinner, YStack } from 'tamagui'
+// import { Spinner, YStack } from 'tamagui'
 import { ProductSingle } from '~/types/product'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import Skeleton from '~/components/skeleton'
 import AddOns from '~/components/shop/addOns/add_ons'
 import { ScrollView } from 'react-native-gesture-handler'
+import * as Progress from 'react-native-progress'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
@@ -395,7 +396,7 @@ export default function ItemDetails() {
               onPress={addToCart}
             >
               {isPending ? (
-                <Spinner size="large" color="white" />
+                <Progress.CircleSnail color={['red', 'orange', 'brown']} />
               ) : (
                 <Text
                   style={{

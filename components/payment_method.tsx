@@ -1,14 +1,14 @@
-import {
-  Adapt,
-  FontSizeTokens,
-  getFontSize,
-  Select,
-  SelectProps,
-  Sheet,
-  YStack,
-} from 'tamagui'
+// import {
+//   Adapt,
+//   FontSizeTokens,
+//   getFontSize,
+//   Select,
+//   SelectProps,
+//   Sheet,
+//   YStack,
+// } from 'tamagui'
 import { Check, ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import { LinearGradient } from 'tamagui/linear-gradient'
+// import { LinearGradient } from 'tamagui/linear-gradient'
 
 export function PaymentMethod({
   paymentMethod,
@@ -65,13 +65,13 @@ export function PaymentMethod({
           <YStack zIndex={10}>
             <ChevronUp size={20} />
           </YStack>
-          <LinearGradient
+          {/* <LinearGradient
             start={[0, 0]}
             end={[0, 1]}
             fullscreen
             colors={['$background', 'transparent']}
             borderRadius="$4"
-          />
+          /> */}
         </Select.ScrollUpButton>
 
         <Select.Viewport

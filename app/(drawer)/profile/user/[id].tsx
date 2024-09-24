@@ -1,7 +1,7 @@
-import { View, Text, useWindowDimensions } from 'react-native'
+import { View, Text, useWindowDimensions, ScrollView } from 'react-native'
 import React from 'react'
 import MainProfile from '~/components/profile/main-profile'
-import { ScrollView } from 'tamagui'
+// import { ScrollView } from 'tamagui'
 import { router, useLocalSearchParams } from 'expo-router'
 import UserDetails from '~/components/user_details'
 
@@ -13,7 +13,7 @@ export default function Page() {
 
   const { width } = useWindowDimensions()
 
-  if (!productCode) return router.push('shop')
+  if (!productCode) return router.push('/shop')
 
   return (
     <View
