@@ -33,6 +33,7 @@ export default function Page() {
   )
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
+  const setAddressRef = usePryceStore((state) => state.setAddressRef)
 
   useEffect(() => {
     if (selectedUser) {
@@ -41,26 +42,24 @@ export default function Page() {
         accountNumber: selectedUser,
       }
 
+      console.log(userData)
+
       fetchProducts(userData)
     }
-
-    // console.log(data?.productsResponse)
-    console.log(token)
   }, [selectedUser, fetchProducts])
 
-  // useEffect(() => {
-  //   if (
-  //     !fetchProducts.isPending &&
-  //     (fetchProducts.data === null || !fetchProducts.data)
-  //   ) {
-  //     setSelectedUser(null)
-  //     setToken('')
-  //     setUsers([])
-  //     setEmail('')
-  //     setChangeAddressTrigger(false)
-  //     setAddressRef('')
-  //     router.push('/onboarding/login')
-  //   }
+  useEffect(() => {
+    // if (!data?.productsResponse) {
+    //   setSelectedUser(null)
+    //   setToken('')
+    //   setUsers([])
+    //   setEmail('')
+    //   setChangeAddressTrigger(false)
+    //   setAddressRef('')
+    //   router.push('/onboarding/login')
+    // }
+    // console.log(data?.productsResponse)
+  }, [data?.productsResponse])
 
   return (
     <SafeAreaView

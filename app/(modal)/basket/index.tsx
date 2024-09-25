@@ -268,7 +268,7 @@ export default function Basket() {
         }
       })
 
-      console.log(orderData)
+      // console.log(orderData)
 
       try {
         const response = await fetch(

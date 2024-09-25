@@ -50,6 +50,10 @@ export default function Header() {
       setCityText(`${findUser?.Primary_City2__c}`)
     }
     // ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}
+
+    if (changeAddressTrigger) {
+      bottomSheetRef.current?.present()
+    }
   }, [selectedUser])
 
   const openModal = () => {
@@ -63,7 +67,11 @@ export default function Header() {
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
-      <BottomSheet ref={bottomSheetRef} />
+      <BottomSheet
+        ref={bottomSheetRef}
+        setChangeAddressTrigger={setChangeAddressTrigger}
+        changeAddressTrigger={changeAddressTrigger}
+      />
       <View
         style={{
           flexDirection: 'row',

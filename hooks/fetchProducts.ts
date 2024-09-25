@@ -13,9 +13,14 @@ export const useFetchProducts = () => {
         queryKey: ['fetchProductsOnLoad'],
       })
 
+      // console.log(data)
+
       if (data?.addressRef) {
         setAddressRef(data.addressRef)
       }
+    },
+    onError: (error) => {
+      console.log(error)
     },
   })
 
