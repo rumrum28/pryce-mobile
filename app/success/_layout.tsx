@@ -19,7 +19,7 @@ export default function _layout() {
           title: '',
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={() => router.push('/(tabs)/home')}
               style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
             >
               <Ionicons

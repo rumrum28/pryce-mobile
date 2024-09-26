@@ -10,14 +10,14 @@ export default function _layout() {
       screenOptions={{
         headerShown: true,
         headerTintColor: 'black',
-        headerShadowVisible: false,
+        headerShadowVisible: true,
       }}
     >
       <Stack.Screen
         name="index"
         options={{
-          title: 'My Cart',
-          // presentation: 'fullScreenModal',
+          title: 'Checkout',
+          presentation: 'fullScreenModal',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}

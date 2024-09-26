@@ -26,9 +26,9 @@ export default function _layout() {
         }}
       />
 
-      <Stack.Screen name="category/category" options={{ headerShown: true }} />
+      {/* <Stack.Screen name="category/category" options={{ headerShown: true }} /> */}
 
-      <Stack.Screen
+      {/* <Stack.Screen
         name="(modal)/address"
         options={{
           presentation: 'fullScreenModal',
@@ -46,7 +46,7 @@ export default function _layout() {
             </TouchableOpacity>
           ),
         }}
-      />
+      /> */}
       {/* <Stack.Screen
         name="(modal)/item_details"
         options={{
@@ -67,7 +67,7 @@ export default function _layout() {
           headerTransparent: true,
         }}
       /> */}
-      <Stack.Screen
+      {/* <Stack.Screen
         name="(modal)/basket"
         options={{
           title: 'My Cart',
@@ -85,7 +85,7 @@ export default function _layout() {
             </TouchableOpacity>
           ),
         }}
-      />
+      /> */}
       <Stack.Screen
         name="(modal)/checkoutItem"
         options={{

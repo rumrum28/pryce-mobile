@@ -278,7 +278,6 @@ export default function ItemDetails() {
               }}
             >
               {ProductsDetail.find((e) => e.id === productCode)?.description}
-              wqe
             </Animated.Text>
           </View>
           <Animated.Text

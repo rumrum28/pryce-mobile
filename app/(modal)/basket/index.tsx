@@ -42,6 +42,8 @@ export default function Basket() {
     useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
   const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
+  const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
+
   const [loading, isLoading] = useState<boolean>(false)
   const [paymentAmount, setPaymentAmount] = useState('')
   const toast = useToastController()
@@ -77,7 +79,7 @@ export default function Basket() {
     const formattedPrice = formatCurrency(calculatedPrice * item.quantity)
 
     return (
-      <View style={{ paddingVertical: 10 }}>
+      <View style={{ paddingVertical: 10, backgroundColor: '#fff' }}>
         <SwipeableRow onDelete={() => reduceProduct(item)}>
           <View
             style={{
@@ -94,7 +96,7 @@ export default function Basket() {
                 color: colorTokens.light.orange.orange9,
                 borderColor: colorTokens.light.gray.gray9,
                 borderWidth: 1,
-                padding: 5,
+                padding: 7,
                 fontWeight: 'bold',
                 borderRadius: 5,
                 // marginBottom: 9,
@@ -103,15 +105,18 @@ export default function Basket() {
               {item.quantity}x
             </Text>
             <View style={{ flex: 1 }}>
-              <Text style={{ fontSize: 16 }}>{item.Name}</Text>
+              <Text style={{ fontSize: 16, fontWeight: '600' }}>
+                {item.Name}
+              </Text>
             </View>
             <Text style={{ fontSize: 16 }}>{formattedPrice}</Text>
           </View>
           <View
             style={{
               flexDirection: 'row',
-              paddingHorizontal: 15,
-              paddingTop: 5,
+              // paddingHorizontal: 15,
+              // paddingTop: 5,
+              paddingLeft: 28,
               gap: 20,
               justifyContent: 'space-between',
               alignItems: 'center',
@@ -145,20 +150,42 @@ export default function Basket() {
                         justifyContent: 'space-between',
                         flex: 1,
                         width: '100%',
+                        alignItems: 'center',
+
+                        // alignItems: 'center',
+                        // justifyContent: 'center',
                       }}
                       key={index}
                     >
-                      <View>
-                        <Text style={{ fontSize: 12, color: '#666' }}>
-                          {addOn.Name} ({item.quantity}x)
-                        </Text>
-                      </View>
-                      <View>
+                      <View
+                        style={{
+                          flexDirection: 'row',
+                          // alignItems: 'center',
+                          // justifyContent: 'center',
+                          paddingLeft: 40,
+                          maxWidth: 220,
+
+                          // paddingHorizontal: 50,
+                        }}
+                      >
                         <Text
                           style={{
-                            fontSize: 12,
+                            fontSize: 16,
+                            flexShrink: 1,
+                            flexWrap: 'wrap',
+                            fontWeight: '300',
+                          }}
+                        >
+                          {addOn.Name}
+                          {/* ({item.quantity}x) */}
+                        </Text>
+                      </View>
+                      {/* <View>
+                        <Text
+                          style={{
+                            fontSize: 14,
                             color: '#666',
-                            fontWeight: 'bold',
+                            // fontWeight: 'bold',
                             justifyContent: 'flex-end',
                             flexDirection: 'row',
                             alignItems: 'flex-end',
@@ -166,7 +193,7 @@ export default function Basket() {
                         >
                           {formattedAddOnPrice}
                         </Text>
-                      </View>
+                      </View> */}
                     </View>
                   )
                 })}
@@ -241,6 +268,8 @@ export default function Basket() {
         }
       })
 
+      // console.log(orderData)
+
       try {
         const response = await fetch(
           `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
@@ -254,13 +283,16 @@ export default function Basket() {
           }
         )
 
-        // const responseText = await response.text()
-        // console.log('Response Text:', responseText)
+        const responseText = await response.text()
+        console.log('Response Text:', responseText)
         if (response.ok) {
           toast.show('Order placed successfully!', {
             message: 'Your order has been placed.',
             native: false,
           })
+          isLoading(false)
+          clearCart()
+          router.push('/success')
         } else {
           toast.show('Order placement failed!', {
             message: 'Please try again.',
@@ -275,13 +307,10 @@ export default function Basket() {
         })
       }
     }
-    isLoading(false)
-    clearCart()
-    router.push('/success')
   }
 
   return (
-    <SafeAreaView style={[styles.area, { minHeight: Math.round(height) }]}>
+    <View style={[styles.area, { minHeight: Math.round(height) }]}>
       {isPending ? (
         <View>
           <ActivityIndicator
@@ -290,9 +319,10 @@ export default function Basket() {
           />
         </View>
       ) : (
-        <View style={{ flex: 1, backgroundColor: 'white' }}>
+        <View style={{ flex: 1 }}>
           <ScrollView
             scrollEventThrottle={16}
+            showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 130 }}
           >
             <FlatList
@@ -303,13 +333,15 @@ export default function Basket() {
                 <View
                   style={{
                     height: 1,
-                    backgroundColor: colorTokens.light.gray.gray5,
+                    backgroundColor: colorTokens.light.gray.gray2,
                     marginHorizontal: 15,
                   }}
                 />
               )}
               ListHeaderComponent={
-                <View style={{ paddingHorizontal: 15 }}>
+                <View
+                  style={{ paddingHorizontal: 15, backgroundColor: '#fff' }}
+                >
                   <View
                     style={{
                       flex: 1,
@@ -321,7 +353,7 @@ export default function Basket() {
                   >
                     <Text
                       style={{
-                        fontSize: 20,
+                        fontSize: 18,
                         fontWeight: 'bold',
                       }}
                     >
@@ -337,21 +369,21 @@ export default function Basket() {
                       Add Items
                     </Text>
                   </View>
-                  <View
-                    style={{
-                      height: 1,
-                      backgroundColor: colorTokens.light.gray.gray5,
-                    }}
-                  ></View>
                 </View>
               }
             />
 
-            <View style={{ paddingHorizontal: 15 }}>
+            <View
+              style={{
+                paddingHorizontal: 15,
+                paddingBottom: 15,
+                backgroundColor: '#fff',
+              }}
+            >
               <View
                 style={{
                   height: 1,
-                  backgroundColor: colorTokens.light.gray.gray5,
+                  backgroundColor: colorTokens.light.gray.gray2,
                 }}
               ></View>
               <View
@@ -391,61 +423,24 @@ export default function Basket() {
                 <Text>{formatCurrency(total)}</Text>
               </View>
             </View>
-            <View>
+
+            <View style={{ marginTop: 10, backgroundColor: '#fff' }}>
               <PaymentMethod
-                paymentMethod={paymentMethod}
-                setPaymentMethod={setPaymentMethod}
-              />
-            </View>
-            <View
-              style={{
-                flexDirection: 'row',
-                borderColor: colorTokens.light.orange.orange9,
-                // borderBottomWidth: 0.5,
-                borderWidth: 1,
-                borderRadius: 5,
-                height: 50,
-                alignItems: 'center',
-                marginHorizontal: 15,
-                marginBottom: 150,
-              }}
-            >
-              <View
-                style={{
-                  justifyContent: 'center',
-                  marginRight: 10,
-                  padding: 10,
-                }}
-              >
-                <FontAwesome6
-                  name={'money-bill-wave'}
-                  size={20}
-                  color={colorTokens.light.gray.gray8}
-                />
-              </View>
-              <TextInput
-                placeholder="Change For"
-                placeholderTextColor={colorTokens.light.gray.gray8}
-                keyboardType="default"
-                style={{
-                  flex: 1,
-                  height: 40,
-                  fontSize: 14,
-                  color: colorTokens.light.gray.gray12,
-                  fontWeight: 'regular',
-                }}
-                value={paymentAmount}
-                onChangeText={(value) => setPaymentAmount(value)}
+                selectedPaymentMethod={selectedPaymentMethod}
+                setSelectedPaymentMethod={setSelectedPaymentMethod}
+                paymentAmount={paymentAmount}
+                setPaymentAmount={setPaymentAmount}
               />
             </View>
           </ScrollView>
+
           <View
             style={{
               position: 'absolute',
               bottom: 0,
               left: 0,
               width: '100%',
-              backgroundColor: 'white',
+              backgroundColor: '#fff',
               padding: 10,
               elevation: 10,
               shadowColor: 'black',
@@ -457,7 +452,7 @@ export default function Basket() {
             }}
           >
             <SafeAreaView
-              style={{ backgroundColor: 'white' }}
+              style={{ backgroundColor: '#fff' }}
               edges={['bottom']}
             >
               <View
@@ -511,7 +506,7 @@ export default function Basket() {
           </View>
         </View>
       )}
-    </SafeAreaView>
+    </View>
   )
 }
 
@@ -520,6 +515,6 @@ const styles = StyleSheet.create({
     flex: 1,
     // alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: 'white',
+    // backgroundColor: '#fff',
   },
 })
