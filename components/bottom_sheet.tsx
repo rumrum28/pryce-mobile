@@ -44,12 +44,14 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
 
   const snapPoints = useMemo(() => ['50%'], [])
   const { dismiss } = useBottomSheetModal()
+
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
         appearsOnIndex={1}
         disappearsOnIndex={-1}
-        pressBehavior={changeAddressTrigger ? 'none' : 'close'}
+        pressBehavior={selectedUser ? 'close' : 'none'}
+        onPress={() => (selectedUser ? setChangeAddressTrigger(false) : {})}
         {...props}
       />
     ),
@@ -57,9 +59,14 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
   )
 
   useEffect(() => {
+    console.log(changeAddressTrigger)
+  }, [changeAddressTrigger])
+
+  useEffect(() => {
     const backAction = () => {
       if (selectedUser) {
-        dismiss()
+        // dismiss()
+        setChangeAddressTrigger(false)
       } else {
         console.log('INVALID_ACTION')
       }
@@ -77,7 +84,8 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
   const selectAddressHandler = (user: Profile) => {
     setSelectedUser(user.Account_Number__c)
     setChangeAddressTrigger(false)
-    dismiss()
+    // dismiss()
+    setChangeAddressTrigger(false)
   }
 
   const renderItem: ListRenderItem<Profile> = ({ item, index }) => (

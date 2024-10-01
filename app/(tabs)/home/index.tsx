@@ -40,6 +40,9 @@ export default function Page() {
   const setAddressRef = usePryceStore((state) => state.setAddressRef)
   const [refreshing, setRefreshing] = useState(false)
   const bottomSheetRef = useRef<BottomSheetModal>(null)
+  const changeAddressTrigger = usePryceStore(
+    (state) => state.changeAddressTrigger
+  )
 
   useEffect(() => {
     if (selectedUser) {
@@ -57,6 +60,14 @@ export default function Page() {
       setRefreshing(false)
     }
   }, [isPending])
+
+  useEffect(() => {
+    if (changeAddressTrigger) {
+      bottomSheetRef.current?.present()
+    } else {
+      bottomSheetRef.current?.dismiss()
+    }
+  }, [changeAddressTrigger])
 
   const refreshPage = useCallback(() => {
     setRefreshing(true)

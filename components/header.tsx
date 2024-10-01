@@ -27,15 +27,9 @@ export default function Header() {
   const { items, total } = useBasketStore()
   const [addressText, setAddressText] = useState<string>('Select Address')
   const [cityText, setCityText] = useState<string>('')
-  const navigation = useNavigation()
-  const bottomSheetRef = useRef<BottomSheetModal>(null)
-  const changeAddressTrigger = usePryceStore(
-    (state) => state.changeAddressTrigger
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
   )
-
-  // const onToggle = () => {
-  //   navigation.dispatch(DrawerActions.openDrawer)
-  // }
 
   useEffect(() => {
     const findUser = users.find((e) => e.Account_Number__c === selectedUser)
@@ -46,14 +40,10 @@ export default function Header() {
 
       setCityText(`${findUser?.Primary_City2__c}`)
     }
-
-    if (changeAddressTrigger) {
-      bottomSheetRef.current?.present()
-    }
   }, [selectedUser])
 
   const openModal = () => {
-    bottomSheetRef.current?.present()
+    setChangeAddressTrigger(true)
   }
 
   return (
@@ -63,7 +53,6 @@ export default function Header() {
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
-      <BottomSheet ref={bottomSheetRef} />
       <View
         style={{
           flexDirection: 'row',
