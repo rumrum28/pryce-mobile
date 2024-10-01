@@ -1,11 +1,12 @@
 import {
   ActivityIndicator,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   Text,
   TouchableOpacity,
 } from 'react-native'
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
 import { colorTokens } from '@tamagui/themes'
@@ -19,6 +20,9 @@ import { Button, Spinner, View, YStack } from 'tamagui'
 import { router } from 'expo-router'
 import ProductGroup from '~/components/productGroup'
 import { useFetchProducts } from '~/hooks/fetchProducts'
+import { logout } from '~/components/logout'
+import BottomSheet from '~/components/bottom_sheet'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
@@ -34,6 +38,8 @@ export default function Page() {
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
   const setAddressRef = usePryceStore((state) => state.setAddressRef)
+  const [refreshing, setRefreshing] = useState(false)
+  const bottomSheetRef = useRef<BottomSheetModal>(null)
 
   useEffect(() => {
     if (selectedUser) {
@@ -42,46 +48,37 @@ export default function Page() {
         accountNumber: selectedUser,
       }
 
-      console.log(userData)
-
       fetchProducts(userData)
     }
   }, [selectedUser, fetchProducts])
 
   useEffect(() => {
-    // if (!data?.productsResponse) {
-    //   setSelectedUser(null)
-    //   setToken('')
-    //   setUsers([])
-    //   setEmail('')
-    //   setChangeAddressTrigger(false)
-    //   setAddressRef('')
-    //   router.push('/onboarding/login')
-    // }
-    // console.log(data?.productsResponse)
-
-    if (
-      data?.productsResponse &&
-      (data?.productsResponse as any).message === 'Unauthenticated.'
-    ) {
-      setSelectedUser(null)
-      setToken('')
-      setUsers([])
-      setEmail('')
-      setChangeAddressTrigger(false)
-      setAddressRef('')
-      router.push('/onboarding/login')
+    if (!isPending) {
+      setRefreshing(false)
     }
-  }, [data?.productsResponse])
+  }, [isPending])
+
+  const refreshPage = useCallback(() => {
+    setRefreshing(true)
+    if (selectedUser) {
+      const userData: { token: string; accountNumber: string } = {
+        token: token,
+        accountNumber: selectedUser,
+      }
+
+      fetchProducts(userData)
+    }
+  }, [])
 
   return (
     <SafeAreaView
       style={{
-        // backgroundColor: 'white',
         flex: 1,
         justifyContent: 'center',
       }}
     >
+      <BottomSheet ref={bottomSheetRef} />
+
       <ToastViewport
         style={{
           width: '100%',
@@ -90,6 +87,7 @@ export default function Page() {
           marginTop: 20,
         }}
       />
+
       {isPending ? (
         <View>
           <ActivityIndicator
@@ -102,6 +100,12 @@ export default function Page() {
           nestedScrollEnabled={true}
           contentContainerStyle={{ paddingBottom: 30, marginHorizontal: 15 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => refreshPage()}
+            />
+          }
         >
           {/* <Text
           style={{

@@ -1,10 +1,4 @@
-import React, {
-  forwardRef,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-} from 'react'
+import React, { forwardRef, useCallback, useEffect, useMemo } from 'react'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
@@ -14,68 +8,60 @@ import {
 import {
   View,
   Text,
-  Button,
-  Touchable,
   TouchableOpacity,
   FlatList,
   ListRenderItem,
-  Modal,
   BackHandler,
 } from 'react-native'
 import { colorTokens } from '@tamagui/themes'
 import { Link } from 'expo-router'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
-import BouncyCheckBox from 'react-native-bouncy-checkbox'
-import { address } from '~/data/mock'
 import usePryceStore from '~/hooks/pryceStore'
-import { Profile, ProfileProps } from '~/types/userStorage'
+import { Profile } from '~/types/userStorage'
 
 export type Ref = BottomSheetModal
 
-interface BottomSheetProps {
-  setChangeAddressTrigger: (value: boolean) => void
-  changeAddressTrigger: boolean
-}
-
-const BottomSheet = forwardRef<Ref, BottomSheetProps>((props, ref) => {
-  const { setChangeAddressTrigger, changeAddressTrigger } = props
+const BottomSheet = forwardRef<Ref>((props, ref) => {
   const users = usePryceStore((state) => state.users)
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
   const token = usePryceStore((state) => state.token)
-
-  const selectUserHandler = (user: Profile) => {
-    setSelectedUser(user.Account_Number__c)
-    setChangeAddressTrigger(false)
-  }
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
+  const changeAddressTrigger = usePryceStore(
+    (state) => state.changeAddressTrigger
+  )
 
   useEffect(() => {
     if (!token) {
       setChangeAddressTrigger(false)
     }
     if (token && !selectedUser) {
-      setChangeAddressTrigger(true) } }, [selectedUser, changeAddressTrigger, token]) const snapPoints = useMemo(() => ['50%'], [])
+      setChangeAddressTrigger(true)
+    }
+  }, [selectedUser, changeAddressTrigger, token])
+
+  const snapPoints = useMemo(() => ['50%'], [])
   const { dismiss } = useBottomSheetModal()
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
         appearsOnIndex={1}
         disappearsOnIndex={-1}
-        // enablePanDownToClose={changeAddressTrigger}
-        // enableTouchOutsideToClose={changeAddressTrigger}
         pressBehavior={changeAddressTrigger ? 'none' : 'close'}
         {...props}
       />
     ),
-    []
+    [changeAddressTrigger]
   )
 
   useEffect(() => {
     const backAction = () => {
       if (selectedUser) {
-        console.log('1')
+        dismiss()
       } else {
-        console.log('2')
+        console.log('INVALID_ACTION')
       }
       return true
     }
@@ -86,15 +72,16 @@ const BottomSheet = forwardRef<Ref, BottomSheetProps>((props, ref) => {
     )
 
     return () => backHandler.remove()
-  }, [])
+  }, [selectedUser])
+
+  const selectAddressHandler = (user: Profile) => {
+    setSelectedUser(user.Account_Number__c)
+    setChangeAddressTrigger(false)
+    dismiss()
+  }
 
   const renderItem: ListRenderItem<Profile> = ({ item, index }) => (
-    <TouchableOpacity
-      onPress={() => {
-        selectUserHandler(item)
-        dismiss()
-      }}
-    >
+    <TouchableOpacity onPress={() => selectAddressHandler(item)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 5 }}>
         <View>
           <MaterialIcons

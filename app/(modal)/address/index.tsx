@@ -88,6 +88,7 @@ export default function Address() {
           onChangeProvinceHandler(item.value)
         }}
       />
+
       <Dropdown
         style={styles.dropdown}
         placeholderStyle={styles.placeholderStyle}

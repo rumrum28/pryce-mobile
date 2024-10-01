@@ -20,7 +20,7 @@ const paymentData: PaymentDataProps[] = [
   {
     paymentMethod: 'cash-on-delivery',
     image: require('~/assets/images/cod.png'),
-    name: 'Cash on Delivery',
+    name: 'Cash On Delivery',
   },
   {
     paymentMethod: 'online-payment',
@@ -37,10 +37,9 @@ export function PaymentMethod({
 }: {
   selectedPaymentMethod: string
   setSelectedPaymentMethod: (paymentMethod: string) => void
-  paymentAmount: string
-  setPaymentAmount: (amount: string) => void
+  paymentAmount: number
+  setPaymentAmount: (amount: number) => void
 }) {
-  console.log(selectedPaymentMethod)
   return (
     <View style={{ paddingHorizontal: 15 }}>
       <View
@@ -154,7 +153,7 @@ export function PaymentMethod({
           <TextInput
             placeholder="Change For"
             placeholderTextColor={colorTokens.light.gray.gray8}
-            keyboardType="default"
+            keyboardType="numeric"
             style={{
               flex: 1,
               height: 40,
@@ -162,8 +161,8 @@ export function PaymentMethod({
               color: colorTokens.light.gray.gray12,
               fontWeight: 'regular',
             }}
-            value={paymentAmount}
-            onChangeText={(value) => setPaymentAmount(value)}
+            value={String(paymentAmount)}
+            onChangeText={(e) => setPaymentAmount(Number(e))}
             editable={selectedPaymentMethod === 'cash-on-delivery'}
           />
         </View>

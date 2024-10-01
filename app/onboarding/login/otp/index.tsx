@@ -43,7 +43,6 @@ export default function OtpVerification() {
         queryKey: ['otp'],
       })
 
-      console.log(data)
       if (data) {
         toast.show('Success', {
           message: data.message,

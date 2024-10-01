@@ -38,14 +38,13 @@ export default function Basket() {
     data,
     isPending,
   } = useFetchProductsDetails()
-  const { products, total, items, reduceProduct, updateProducts, clearCart } =
+  const { products, total, reduceProduct, updateProducts, clearCart } =
     useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
-  const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
 
   const [loading, isLoading] = useState<boolean>(false)
-  const [paymentAmount, setPaymentAmount] = useState('')
+  const [paymentAmount, setPaymentAmount] = useState<number>(0)
   const toast = useToastController()
   const { width, height } = Dimensions.get('window')
 
@@ -212,21 +211,23 @@ export default function Basket() {
         message: 'Please check your orders.',
         native: false,
       })
+      isLoading(false)
       return
     }
 
-    if (!paymentMethod) {
+    if (!selectedPaymentMethod) {
       toast.show('Something is wrong with your order!', {
         message: 'Please select a payment method.',
         native: false,
       })
+      isLoading(false)
       return
     }
 
     const orderData = {
-      payment_method: paymentMethod,
+      payment_method: selectedPaymentMethod,
       line_items: [],
-      payment_amount: parseFloat(paymentAmount),
+      payment_amount: paymentAmount,
     } as any
 
     if (!isPending && data) {
@@ -237,8 +238,8 @@ export default function Basket() {
 
         if (productData) {
           orderData.line_items.push({
+            quantity: item.quantity,
             product_id: productData.Id,
-            product_area_code: productData.Product2Id,
             amount: productData.RegularPrice,
             currency: 'PHP',
             description: productData.Name,
@@ -246,14 +247,13 @@ export default function Basket() {
               `https://prycegas.com/images/product-thumbs/${item.ProductCode}.png`,
             ],
             name: productData.Name,
-            quantity: item.quantity,
           })
 
           if (item.addOns && item.addOns.length > 0) {
             item.addOns.forEach((addOn) => {
               orderData.line_items.push({
+                quantity: item.quantity,
                 product_id: addOn.Id,
-                product_area_code: addOn.Product2Id,
                 amount: addOn.RegularPrice,
                 currency: 'PHP',
                 description: addOn.Name,
@@ -261,14 +261,11 @@ export default function Basket() {
                   `https://prycegas.com/images/product-thumbs/${addOn.ProductCode}.png`,
                 ],
                 name: addOn.Name,
-                quantity: item.quantity,
               })
             })
           }
         }
       })
-
-      // console.log(orderData)
 
       try {
         const response = await fetch(
@@ -283,16 +280,38 @@ export default function Basket() {
           }
         )
 
-        const responseText = await response.text()
-        console.log('Response Text:', responseText)
+        const responseText = await response.json()
+
         if (response.ok) {
-          toast.show('Order placed successfully!', {
-            message: 'Your order has been placed.',
-            native: false,
-          })
-          isLoading(false)
           clearCart()
-          router.push('/success')
+
+          if (selectedPaymentMethod === 'online-payment') {
+            if (responseText?.success && responseText?.checkout_url) {
+              toast.show('Pending payment!', {
+                message: 'Your order has been created.',
+                native: false,
+              })
+
+              router.push({
+                pathname: '/checkout/paymongo_webview',
+                params: {
+                  url: responseText.checkout_url,
+                },
+              })
+            } else {
+              toast.show('Error!', {
+                message: 'Something is wrong with your order.',
+                native: false,
+              })
+            }
+          } else {
+            toast.show('Order placed successfully!', {
+              message: 'Your order has been placed.',
+              native: false,
+            })
+
+            router.push('/success')
+          }
         } else {
           toast.show('Order placement failed!', {
             message: 'Please try again.',
@@ -305,6 +324,8 @@ export default function Basket() {
           message: 'Please try again.',
           native: false,
         })
+      } finally {
+        isLoading(false)
       }
     }
   }
@@ -481,7 +502,6 @@ export default function Basket() {
                   <Text>{formatCurrency(total)}</Text>
                 </Text>
               </View>
-              {/* <Link href="/(modal)/checkout" asChild> */}
               <StyledButton
                 onPress={placeOrder}
                 disabled={isPending || loading}
@@ -501,7 +521,6 @@ export default function Basket() {
                   </Text>
                 )}
               </StyledButton>
-              {/* </Link> */}
             </SafeAreaView>
           </View>
         </View>
@@ -513,8 +532,6 @@ export default function Basket() {
 const styles = StyleSheet.create({
   area: {
     flex: 1,
-    // alignItems: 'center',
     justifyContent: 'center',
-    // backgroundColor: '#fff',
   },
 })

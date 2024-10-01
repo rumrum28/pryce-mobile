@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
+import { logout } from '~/components/logout'
 
 export default function Page() {
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
@@ -19,15 +20,16 @@ export default function Page() {
     >
       <Text style={{ marginBottom: 30 }}>Account</Text>
       <TouchableOpacity
-        onPress={() => {
-          setSelectedUser(null)
-          setToken('')
-          setUsers([])
-          setEmail('')
-          setChangeAddressTrigger(false)
-          setAddressRef('')
-          router.push('/onboarding/login')
-        }}
+        onPress={() =>
+          logout(
+            setSelectedUser,
+            setToken,
+            setUsers,
+            setEmail,
+            setChangeAddressTrigger,
+            setAddressRef
+          )
+        }
       >
         <Text>LOGOUT</Text>
       </TouchableOpacity>

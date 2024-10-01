@@ -12,6 +12,7 @@ import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 // });
 
 export const login = async (userData: UserInputs) => {
+  console.log(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`)
   const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
     method: 'POST',
     headers: {
@@ -97,8 +98,6 @@ export const changeAddressOnLoad = async (data: {
     }
   )
   const changeAddressResponse: Profile = await changeAddress.json()
-
-  // console.log(changeAddressResponse)
 
   if (changeAddressResponse) {
     const addressRef = changeAddressResponse?.ref

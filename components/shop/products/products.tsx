@@ -5,13 +5,9 @@ import {
   Text,
   ScrollView,
   Image,
-  TouchableOpacity,
   Pressable,
   FlatList,
-  ListRenderItem,
-  VirtualizedList,
 } from 'react-native'
-import { categories, filteredProducts } from '~/data/mock'
 import { ProductDisplayProps } from '~/types/product'
 import { productDisplay } from '~/utils/products'
 

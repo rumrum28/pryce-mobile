@@ -35,7 +35,7 @@ const IMG_HEIGHT = 300
 let paddingTop
 
 if (Platform.OS === 'ios') {
-  paddingTop = 45
+  paddingTop = 50
 } else {
   paddingTop = 0
 }

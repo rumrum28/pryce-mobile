@@ -2,4 +2,4 @@
 
 to be fix:
 
-address button should not span close to cart button
+paymongo description fix display from "My checkout session description"

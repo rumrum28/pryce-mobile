@@ -17,6 +17,7 @@ import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { fonts } from '~/utils/fonts'
 import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
+import { env } from '~/types/env'
 
 export default function LoginForm() {
   const [phoneNumber, setPhoneNumber] = useState<string>('')
@@ -52,6 +53,9 @@ export default function LoginForm() {
           native: false,
         })
       }
+    },
+    onError: (err) => {
+      console.log(err)
     },
   })
 
@@ -156,6 +160,7 @@ export default function LoginForm() {
                 ? colorTokens.light.gray.gray9
                 : colorTokens.light.orange.orange9,
             }}
+            disabled={loginResponse?.isPending}
           >
             {loginResponse?.isPending ? (
               <ActivityIndicator size={32} />

@@ -29,9 +29,6 @@ export default function Header() {
   const [cityText, setCityText] = useState<string>('')
   const navigation = useNavigation()
   const bottomSheetRef = useRef<BottomSheetModal>(null)
-  const setChangeAddressTrigger = usePryceStore(
-    (state) => state.setChangeAddressTrigger
-  )
   const changeAddressTrigger = usePryceStore(
     (state) => state.changeAddressTrigger
   )
@@ -49,7 +46,6 @@ export default function Header() {
 
       setCityText(`${findUser?.Primary_City2__c}`)
     }
-    // ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}
 
     if (changeAddressTrigger) {
       bottomSheetRef.current?.present()
@@ -67,11 +63,7 @@ export default function Header() {
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
-      <BottomSheet
-        ref={bottomSheetRef}
-        setChangeAddressTrigger={setChangeAddressTrigger}
-        changeAddressTrigger={changeAddressTrigger}
-      />
+      <BottomSheet ref={bottomSheetRef} />
       <View
         style={{
           flexDirection: 'row',
@@ -81,41 +73,42 @@ export default function Header() {
           paddingHorizontal: 20,
         }}
       >
-        <View
+        <TouchableOpacity
+          onPress={openModal}
           style={{
-            borderRadius: 10,
+            flex: 1,
+            marginRight: 40,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
             alignItems: 'center',
-            justifyContent: 'center',
           }}
         >
-          <TouchableOpacity>
-            <SimpleLineIcons name="location-pin" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-
-        <TouchableOpacity
-          // onPress={() => setChangeAddressTrigger(!changeAddressTrigger)}
-          onPress={openModal}
-          style={{ paddingHorizontal: 10, flex: 1 }}
-        >
-          <Text
+          <SimpleLineIcons name="location-pin" size={24} color="white" />
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: 'white',
+              paddingHorizontal: 10,
+              alignItems: 'flex-start',
             }}
           >
-            {addressText}
-          </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              color: 'white',
-              fontWeight: 'bold',
-            }}
-          >
-            {cityText}
-          </Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: 'white',
+              }}
+            >
+              {addressText}
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              {cityText}
+            </Text>
+          </View>
         </TouchableOpacity>
         <View
           style={{
