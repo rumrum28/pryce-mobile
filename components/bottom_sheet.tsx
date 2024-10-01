@@ -2,6 +2,7 @@ import React, { forwardRef, useCallback, useEffect, useMemo } from 'react'
 import {
   BottomSheetBackdrop,
   BottomSheetModal,
+  BottomSheetScrollView,
   useBottomSheetModal,
 } from '@gorhom/bottom-sheet'
 import {
@@ -33,21 +34,13 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
   //   )
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const addressRef = usePryceStore((state) => state.addressRef)
+
   const token = usePryceStore((state) => state.token)
 
   const selectUserHandler = (user: Profile) => {
     setSelectedUser(user.Account_Number__c)
-    // setChangeAddressTrigger(false)
   }
-
-  //   useEffect(() => {
-  //     if (!token) {
-  //       setChangeAddressTrigger(false)
-  //     }
-  //     if (token && !selectedUser) {
-  //       setChangeAddressTrigger(true)
-  //     }
-  //   }, [selectedUser, changeAddressTrigger, token])
 
   const snapPoints = useMemo(() => ['50%'], [])
   const { dismiss } = useBottomSheetModal()
@@ -131,45 +124,50 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
         <Text style={{ margin: 10, fontSize: 16, fontWeight: 'bold' }}>
           Where should we deliver your order?
         </Text>
-        <View
-          style={{
-            flexDirection: 'row',
-            gap: 8,
-            alignItems: 'center',
-            padding: 10,
-          }}
-        >
-          <FlatList
-            data={users}
-            renderItem={renderItem}
-            keyExtractor={(item) => item.Account_Number__c}
-          />
-        </View>
-        <Link href={'/(drawer)/shop/(modal)/address'} asChild>
-          <TouchableOpacity
+
+        <BottomSheetScrollView showsVerticalScrollIndicator={false}>
+          <View
             style={{
               flexDirection: 'row',
+              gap: 8,
               alignItems: 'center',
-              marginHorizontal: 15,
+              padding: 10,
             }}
           >
-            <Ionicons
-              name="add-outline"
-              size={24}
-              color={colorTokens.light.orange.orange9}
+            <FlatList
+              data={users}
+              renderItem={renderItem}
+              keyExtractor={(item) => item.Account_Number__c}
+              scrollEnabled={false}
             />
-            <Text
+          </View>
+          <Link href={'/(drawer)/shop/(modal)/address'} asChild>
+            <TouchableOpacity
               style={{
-                margin: 10,
-                fontSize: 16,
-                fontWeight: 'bold',
-                color: colorTokens.light.orange.orange9,
+                flexDirection: 'row',
+                alignItems: 'center',
+                marginHorizontal: 15,
               }}
             >
-              Add a new address
-            </Text>
-          </TouchableOpacity>
-        </Link>
+              <Ionicons
+                name="add-outline"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+              <Text
+                style={{
+                  margin: 10,
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  color: colorTokens.light.orange.orange9,
+                }}
+              >
+                Add a new address
+              </Text>
+            </TouchableOpacity>
+          </Link>
+        </BottomSheetScrollView>
+
         {/* <View
           style={{
             position: 'absolute',

@@ -129,3 +129,46 @@ export type Profile = {
 }
 
 export type ProfileProps = Profile[]
+
+export type UserOrderProps = {
+  attributes: {
+    type: string
+    url: string
+  }
+  Id: string
+  Total_Amount_Due__c: number
+  Receipt_Number__c: string | null
+  Name: string | null
+  OrderNumber: string
+  CreatedDateTime__c: string
+  Payment_Option__c: string
+  Paymongo_Reference_ID__c: string | null
+  Dealer_Contact_Name__c: string | null
+  ChangeFor__c: number
+  Total_PGC_Discount__c: number
+  Status: string
+  Deliver_To_Street__c: string
+  Deliver_To_City__c: string
+  Deliver_To_Province__c: string
+  Contact_Number__c: string
+  Total_Items__c: number
+}
+
+export type CompositeBody = {
+  totalSize: number
+  done: boolean
+  records: UserOrderProps[]
+}
+
+// Define the structure of each composite response
+export type CompositeResponse = {
+  body: CompositeBody
+  httpHeaders: any[] // Assuming this is an array, adjust based on actual API response
+  httpStatusCode: number
+  referenceId: string
+}
+
+// Update the response type to reflect the composite response structure
+export type UserOrderResponseProps = {
+  compositeResponse: CompositeResponse[]
+}

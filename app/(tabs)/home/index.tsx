@@ -45,6 +45,7 @@ export default function Page() {
     }
 
     // console.log(data?.productsResponse)
+    console.log('selectedUser:', selectedUser)
     console.log(token)
   }, [selectedUser, fetchProducts])
 

@@ -254,6 +254,8 @@ const useBasketStore = create<BasketState>()(
               return acc + productTotal + addOnsTotal
             }, 0)
 
+            console.log('total:', total)
+            console.log('items:', items)
             return { products: allProducts, items, total }
           }
 

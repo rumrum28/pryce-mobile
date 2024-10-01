@@ -17,6 +17,7 @@ export const useFetchProductsDetails = () => {
 
   return {
     ...mutation,
+    fetchProductsDetails: mutation.mutate,
     isPending: mutation.isPending,
   }
 }

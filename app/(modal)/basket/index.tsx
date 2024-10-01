@@ -7,8 +7,10 @@ import {
   TextInput,
   StyleSheet,
   Dimensions,
+  Image,
+  Pressable,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import useBasketStore, { AddOn, Product } from '~/utils/basketStore'
 import { formatCurrency } from '~/utils/utils'
 import { colorTokens } from '@tamagui/themes'
@@ -23,6 +25,10 @@ import { PaymentMethod } from '~/components/payment_method'
 import { FontAwesome6 } from '@expo/vector-icons'
 import { Toast, useToastController } from '@tamagui/toast'
 import { env } from '~/types/env'
+import { useFetchProducts } from '~/hooks/fetchProducts'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import BottomSheet from '~/components/bottom_sheet'
+import Entypo from '@expo/vector-icons/Entypo'
 
 type ProductProps = {
   ProductCode: string
@@ -36,32 +42,72 @@ export default function Basket() {
   const {
     mutate: fetchProductsDetails,
     data,
-    isPending,
+    isPending: isFetchingDetails,
   } = useFetchProductsDetails()
+
+  const {
+    mutate: fetchProducts,
+    data: allProductsData,
+    isPending: isFetchingProducts,
+  } = useFetchProducts()
+
   const { products, total, items, reduceProduct, updateProducts, clearCart } =
     useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
   const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
-
+  const selectedUser = usePryceStore((state) => state.selectedUser)
+  const users = usePryceStore((state) => state.users)
   const [loading, isLoading] = useState<boolean>(false)
   const [paymentAmount, setPaymentAmount] = useState('')
   const toast = useToastController()
   const { width, height } = Dimensions.get('window')
-
+  const bottomSheetRef = useRef<BottomSheetModal>(null)
+  const [checkoutAddress, setCheckoutAddress] =
+    useState<string>('Select Address')
+  const [checkoutName, setCheckoutName] = useState<string>('')
+  const [checkoutNumber, setCheckoutNumber] = useState<string>('')
   const token = usePryceStore((s) => s.token)
 
-  useEffect(() => {
+  const handleFetchProducts = useCallback(() => {
+    if (selectedUser) {
+      const userData = {
+        token: token,
+        accountNumber: selectedUser,
+      }
+      fetchProducts(userData)
+    }
+  }, [selectedUser, token, fetchProducts])
+
+  const handleFetchProductDetails = useCallback(() => {
     if (addressRef) {
       fetchProductsDetails(addressRef)
     }
   }, [addressRef, fetchProductsDetails])
 
   useEffect(() => {
+    handleFetchProducts()
+    const findUser = users.find((e) => e.Account_Number__c === selectedUser)
+
+    if (findUser) {
+      setCheckoutAddress(
+        `${findUser.Primary_Street__c} ${findUser.Primary_Barangay__c}  ${findUser.Primary_State_Province__c}`
+      )
+
+      setCheckoutName(`${findUser?.Name}`)
+      setCheckoutNumber(` ${findUser?.Mobile_Number__c}`)
+    }
+  }, [handleFetchProducts])
+
+  useEffect(() => {
+    handleFetchProductDetails()
+  }, [handleFetchProductDetails])
+
+  useEffect(() => {
     if (data && total > 1) {
       updateProducts(data)
     }
-  }, [data, updateProducts])
+  }, [data, total, updateProducts])
 
   const renderItem = ({
     item,
@@ -180,7 +226,7 @@ export default function Basket() {
                           {/* ({item.quantity}x) */}
                         </Text>
                       </View>
-                      {/* <View>
+                      <View>
                         <Text
                           style={{
                             fontSize: 14,
@@ -193,7 +239,7 @@ export default function Basket() {
                         >
                           {formattedAddOnPrice}
                         </Text>
-                      </View> */}
+                      </View>
                     </View>
                   )
                 })}
@@ -229,7 +275,7 @@ export default function Basket() {
       payment_amount: parseFloat(paymentAmount),
     } as any
 
-    if (!isPending && data) {
+    if (!isFetchingDetails && data) {
       products.forEach((item) => {
         const productData = data.find(
           (e: ProductProps) => e.ProductCode === item.ProductCode
@@ -268,7 +314,7 @@ export default function Basket() {
         }
       })
 
-      console.log(orderData)
+      console.log('orderData:', JSON.stringify(orderData, null, 2))
 
       try {
         const response = await fetch(
@@ -309,9 +355,106 @@ export default function Basket() {
     }
   }
 
+  const openModal = () => {
+    bottomSheetRef.current?.present()
+  }
+
+  const RenderAddress = () => {
+    return (
+      <Pressable
+        onPress={openModal}
+        style={{
+          paddingHorizontal: 10,
+          backgroundColor: '#fff',
+          marginBottom: 10,
+        }}
+      >
+        {/* <Text
+          style={{
+            fontSize: 18,
+            fontWeight: 'bold',
+          }}
+        >
+          Delivery Address
+        </Text> */}
+        <View
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'space-between',
+            paddingVertical: 20,
+            paddingHorizontal: 10,
+          }}
+        >
+          <View style={{ flexDirection: 'row', flex: 1 }}>
+            <View style={{ height: 30, width: 30 }}>
+              <Image
+                source={require('~/assets/images/maps.png')}
+                style={{
+                  height: '100%',
+                  width: '100%',
+                  borderRadius: 5,
+                }}
+                resizeMode="contain"
+              />
+            </View>
+            <View
+              style={{
+                flexDirection: 'column',
+                width: '100%',
+                paddingLeft: 10,
+              }}
+            >
+              <View
+                style={{
+                  flexDirection: 'row',
+                  gap: 5,
+                  paddingBottom: 5,
+                  alignItems: 'center',
+                  flex: 1,
+                }}
+              >
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: 'bold',
+                    color: '#000',
+                  }}
+                >
+                  {checkoutName}
+                </Text>
+                <Text
+                  style={{
+                    fontSize: 16,
+                    fontWeight: '400',
+                    color: colorTokens.light.gray.gray9,
+                  }}
+                >
+                  {checkoutNumber}
+                </Text>
+              </View>
+              <Text
+                style={{
+                  fontSize: 14,
+                  color: '#000',
+                  fontWeight: '300',
+                }}
+              >
+                {checkoutAddress}
+              </Text>
+            </View>
+          </View>
+          <View>
+            <Entypo name="chevron-small-right" size={24} color="black" />
+          </View>
+        </View>
+      </Pressable>
+    )
+  }
+
   return (
     <View style={[styles.area, { minHeight: Math.round(height) }]}>
-      {isPending ? (
+      {isFetchingProducts || isFetchingDetails ? (
         <View>
           <ActivityIndicator
             size="large"
@@ -320,11 +463,13 @@ export default function Basket() {
         </View>
       ) : (
         <View style={{ flex: 1 }}>
+          <BottomSheet ref={bottomSheetRef} />
           <ScrollView
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 130 }}
           >
+            <RenderAddress />
             <FlatList
               data={products}
               scrollEnabled={false}
@@ -484,9 +629,9 @@ export default function Basket() {
               {/* <Link href="/(modal)/checkout" asChild> */}
               <StyledButton
                 onPress={placeOrder}
-                disabled={isPending || loading}
+                disabled={isFetchingDetails || loading}
               >
-                {isPending || loading ? (
+                {isFetchingDetails || loading ? (
                   <ActivityIndicator size="large" color="white" />
                 ) : (
                   <Text

@@ -3,6 +3,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
   FontAwesome,
+  Feather,
 } from '@expo/vector-icons'
 import {
   BottomTabBarProps,
@@ -130,12 +131,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="favorites"
+        name="search"
         options={{
-          title: 'Favorites',
+          title: 'Search',
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="heart-o" size={26} color={color} />
+            <Feather name="search" size={26} color={color} />
           ),
           // tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}

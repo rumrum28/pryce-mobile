@@ -40,7 +40,6 @@ export function PaymentMethod({
   paymentAmount: string
   setPaymentAmount: (amount: string) => void
 }) {
-  console.log(selectedPaymentMethod)
   return (
     <View style={{ paddingHorizontal: 15 }}>
       <View

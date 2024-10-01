@@ -10,7 +10,7 @@ function FavoritesList() {
       {favorites.length > 0 ? (
         favorites.map((fav, i) => <Text key={i}>{fav.productCode}</Text>)
       ) : (
-        <Text>Empty</Text>
+        <Text>Search</Text>
       )}
     </View>
   )

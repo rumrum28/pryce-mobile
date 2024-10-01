@@ -86,7 +86,6 @@ export default function Header() {
         </View>
 
         <TouchableOpacity
-          // onPress={() => setChangeAddressTrigger(!changeAddressTrigger)}
           onPress={openModal}
           style={{ paddingHorizontal: 10, flex: 1 }}
         >

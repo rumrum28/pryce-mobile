@@ -1,7 +1,12 @@
 import { OTPInputs, OTPResponse, UserInputs } from '~/types/apiresults'
 import { env } from '~/types/env'
 import { ProductSingle, ProductsProps } from '~/types/product'
-import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
+import {
+  LoginResponse,
+  Profile,
+  ProfileProps,
+  UserOrderResponseProps,
+} from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
 // const [favorites, setFavorites] = useMMKVObject<Favorites[]>('favorites'); // get all favorites
@@ -167,6 +172,32 @@ export const getProductById = async (
   )
   // console.log(foundProduct)
   return foundProduct
+}
+
+export const fetchOrderByUser = async (token: string, type: string) => {
+  try {
+    const response = await fetch(
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/status?type=${type}`,
+      {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    )
+
+    if (!response.ok) {
+      throw new Error('Failed to fetch orders')
+    }
+
+    const orderResponse: UserOrderResponseProps = await response.json()
+
+    return orderResponse
+  } catch (error) {
+    console.error('Error fetching orders:', error)
+    throw error
+  }
 }
 
 // export const getSearchResults = async (

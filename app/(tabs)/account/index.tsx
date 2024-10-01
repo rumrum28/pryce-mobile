@@ -1,7 +1,9 @@
 import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
+import UserDetails from '~/components/account/user_details'
+import { Profile } from '~/types/userStorage'
 
 export default function Page() {
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
@@ -12,13 +14,33 @@ export default function Page() {
   )
   const setUsers = usePryceStore((state) => state.setUsers)
   const setEmail = usePryceStore((state) => state.setEmail)
+  const users = usePryceStore((state) => state.users)
+  const selectedUser = usePryceStore((state) => state.selectedUser)
+  const [userDetails, setUserDetails] = useState<Profile | undefined>()
+
+  useEffect(() => {
+    const findUser = users.find((e) => e.Account_Number__c === selectedUser)
+
+    setUserDetails(findUser)
+    console.log('findUser:', findUser)
+  }, [selectedUser])
+
+  // console.log(users)
 
   return (
     <View
-      style={{ flex: 1, backgroundColor: 'white', justifyContent: 'center' }}
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+        justifyContent: 'center',
+        paddingHorizontal: 15,
+      }}
     >
-      <Text style={{ marginBottom: 30 }}>Account</Text>
-      <TouchableOpacity
+      <View>
+        <UserDetails userDetails={userDetails} />
+      </View>
+
+      {/* <TouchableOpacity
         onPress={() => {
           setSelectedUser(null)
           setToken('')
@@ -30,7 +52,7 @@ export default function Page() {
         }}
       >
         <Text>LOGOUT</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
     </View>
   )
 }

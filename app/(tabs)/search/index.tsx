@@ -11,7 +11,8 @@ export default function Page() {
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
-      <FavoritesList />
+      <Text>SEARCH</Text>
+      {/* <FavoritesList /> */}
     </SafeAreaView>
   )
 }

@@ -447,12 +447,12 @@ export default function CheckoutItem() {
                 </View>
               }
             />
-            <View>
+            {/* <View>
               <PaymentMethod
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
               />
-            </View>
+            </View> */}
             <View
               style={{
                 flexDirection: 'row',
