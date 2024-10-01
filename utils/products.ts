@@ -23,31 +23,31 @@ export const ProductsDetail = [
     id: 'MO2105C',
     name: '105lbs Refill',
     description: ['Content only'],
-    image: require('~/assets/images/products/MO2105C.png'),
+    image: require('~/assets/images/products/MO2105C.jpg'),
   },
   {
     id: 'MO220C',
     name: '20lbs Refill',
     description: ['Content only'],
-    image: require('~/assets/images/products/MO220C.png'),
+    image: require('~/assets/images/products/MO220C.jpg'),
   },
   {
     id: 'LPG50C',
     name: '50kg Refill',
     description: ['Content only'],
-    image: require('~/assets/images/products/LPG50C.png'),
+    image: require('~/assets/images/products/LPG50C.jpg'),
   },
   {
     id: 'CYL50',
     name: '50kg Cylinder',
     description: ['Cylinder Only'],
-    image: require('~/assets/images/products/CYL50.png'),
+    image: require('~/assets/images/products/CYL50.jpg'),
   },
   {
     id: 'LPG22C',
     name: '22kg Refill',
     description: ['Content only'],
-    image: require('~/assets/images/products/LPG22C.png'),
+    image: require('~/assets/images/products/LPG22C.jpg'),
   },
   {
     id: 'LPG22CCOD',
@@ -57,19 +57,19 @@ export const ProductsDetail = [
     id: 'CYL22',
     name: '22kg Cylinder',
     description: ['Cylinder Only'],
-    image: require('~/assets/images/products/CYL22.png'),
+    image: require('~/assets/images/products/CYL22.jpg'),
   },
   {
     id: 'LPG11C',
     name: '11kg Refill',
     description: ['Content only'],
-    image: require('~/assets/images/products/LPG11C.png'),
+    image: require('~/assets/images/products/LPG11C.jpg'),
   },
   {
     id: 'CYL11',
     name: '11kg Cylinder',
     description: ['Cylinder Only'],
-    image: require('~/assets/images/products/CYL11.png'),
+    image: require('~/assets/images/products/CYL11.jpg'),
   },
   {
     id: 'LPG11CCABOD',
@@ -83,19 +83,19 @@ export const ProductsDetail = [
     id: 'CYL2.7',
     name: '2.7kg Cylinder',
     description: ['Cylinder Only'],
-    image: require('~/assets/images/products/CYL2.7.png'),
+    image: require('~/assets/images/products/CYL2.7.jpg'),
   },
   {
     id: 'LPG2.7CCPK',
     name: '2.7kg Cylinder with Content & Power Burner',
     description: ['Cylinder', 'Content', 'Power Burner'],
-    image: require('~/assets/images/products/LPG2.7CCPK.png'),
+    image: require('~/assets/images/products/LPG2.7CCPK.jpg'),
   },
   {
     id: 'LPG2.7C',
     name: '2.7kg Refill',
     description: ['Content only'],
-    image: require('~/assets/images/products/LPG2.7C.png'),
+    image: require('~/assets/images/products/LPG2.7C.jpg'),
   },
   {
     id: 'LPG2.7CCPKOD',
@@ -109,9 +109,9 @@ export const ProductsDetail = [
   },
   {
     id: 'ACCHRCB',
-    name: 'Add-ons (Hose, Regulator, Clamp)',
+    name: 'Hose, Regulator, Clamp',
     description: [
-      'Add-ons (Hose, Regulator, Clamp). You can only order this product if you purchase a refill or a cylinder with content.',
+      'Hose, Regulator, Clamp. You can only order this product if you purchase a refill or a cylinder with content.',
     ],
     image: require('~/assets/images/products/ACCHRCB.png'),
   },
@@ -142,7 +142,7 @@ export const ProductsDetail = [
     id: 'MO2TST',
     name: '105lbs Cylinder',
     description: ['Cylinder with Content'],
-    image: require('~/assets/images/products/MO2TST.png'),
+    image: require('~/assets/images/products/MO2TST.jpg'),
   },
   {
     id: 'ACCPKB',
@@ -156,14 +156,14 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 1,
     productCode: ['PGCM'],
-    image: require('~/assets/images/products/PGCM.png'),
+    image: require('~/assets/images/products/PGC.jpg'),
     name: 'Membership',
     description: 'PRYCEGAS club membership, lorem ipsum',
   },
   {
     id: 2,
     productCode: ['LPG11C', 'CYL11'], //'ACCPGS', 'ACCHRCB'
-    image: require('~/assets/images/products-with-bg/11kg-bundle.jpg'),
+    image: require('~/assets/images/products/11kg.jpg'),
     name: '11KG',
     description:
       '11kg petroleum gas cylinder, often referred to as an LPG (liquefied petroleum gas) cylinder, is commonly used for residential and commercial cooking, heating, and other applications.',
@@ -171,7 +171,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 3,
     productCode: ['CYL2.7', 'LPG2.7CCPK', 'LPG2.7C'], //'ACCPKB', 'ACCPGS', 'ACCHRCB',
-    image: require('~/assets/images/products-with-bg/2.7kg.jpg'),
+    image: require('~/assets/images/products/2.7KG.jpg'),
     name: '2.7KG',
     description:
       'A 2.7kg LPG (liquefied petroleum gas) cylinder is a compact and portable energy source commonly used for small-scale applications. Suitable for single-burner gas stoves, making it a convenient option for small households or temporary setups.',
@@ -179,7 +179,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 4,
     productCode: ['CYL22', 'LPG22C'], //'ACCPGS', 'ACCHRCB'
-    image: require('~/assets/images/products-with-bg/22kg.jpg'),
+    image: require('~/assets/images/products/22kg.jpg'),
     name: '22KG',
     description:
       'Commercial Cooking: Suitable for restaurants, catering businesses, and food trucks using multiple-burner stoves, ovens, and grills.',
@@ -187,7 +187,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 5,
     productCode: ['LPG50C', 'CYL50'], //'ACCPGS', 'ACCHRCB'
-    image: require('~/assets/images/products-with-bg/50kg.jpg'),
+    image: require('~/assets/images/products/50kg.jpg'),
     name: '50KG',
     description:
       'Large-Scale Industrial Applications: Suitable for manufacturing processes, large-scale heating, and other industrial uses requiring significant energy output.',
@@ -195,7 +195,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 6,
     productCode: ['MO220C', 'MO2TFT'], //'MEDREG'
-    image: require('~/assets/images/products-with-bg/20lbs.jpg'),
+    image: require('~/assets/images/products/20LBS.jpg'),
     name: 'Medical Oxygen 20lbs',
     description:
       'A 20lbs medical oxygen cylinder is a common source of oxygen therapy used in various medical settings. Used by patients with respiratory conditions such as COPD, asthma, or pneumonia who require supplemental oxygen at home.',
@@ -203,7 +203,7 @@ export const productDisplay: ProductDisplayProps[] = [
   {
     id: 7,
     productCode: ['MO2105C', 'MO2TST'], //'MEDREG'
-    image: require('~/assets/images/products-with-bg/105lbs.jpg'),
+    image: require('~/assets/images/products/105LBS.jpg'),
     name: 'Medical Oxygen 105lbs',
     description:
       'A 105lbs medical oxygen cylinder is a substantial source of oxygen therapy, primarily used in medical settings where a high volume of oxygen is required. Provides a reliable and large supply of oxygen for patients in intensive care units, during surgeries, and in emergency rooms.',

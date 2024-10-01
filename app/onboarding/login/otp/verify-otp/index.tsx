@@ -7,6 +7,7 @@ import {
   View,
   Text,
   Platform,
+  Button,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Dimensions } from 'react-native'
@@ -20,7 +21,7 @@ import usePryceStore from '~/hooks/pryceStore'
 import { router, useLocalSearchParams } from 'expo-router'
 import { color, colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
-import { Form } from 'tamagui'
+// import { Form } from 'tamagui'
 import OtpInput from '~/components/login/otp-input'
 import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors'
 import {
@@ -54,7 +55,7 @@ export default function VerifyOtp() {
         if (data.loginResponse.success && data.profileResponse) {
           setToken(data.loginResponse?.access_token)
           setUsers(data.profileResponse)
-          router.push('/(drawer)/shop')
+          router.push('/(tabs)/index')
         }
       } else {
         isLoading(false)
@@ -153,34 +154,31 @@ export default function VerifyOtp() {
           </TouchableOpacity>
         </View> */}
 
-        <Form onSubmit={checkOtpHandler}>
-          <View style={{ marginTop: 50, alignItems: 'center' }}>
-            <Form.Trigger asChild disabled={invalidNumber}>
-              <TouchableOpacity
-                style={{
-                  paddingVertical: 10,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: invalidNumber
-                    ? colorTokens.dark.gray.gray8
-                    : colorTokens.light.orange.orange9,
-                  width: width - 32,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontFamily: fonts.SemiBold,
-                    color: 'white',
-                  }}
-                >
-                  Submit
-                </Text>
-              </TouchableOpacity>
-            </Form.Trigger>
-          </View>
-        </Form>
+        <View style={{ marginTop: 50, alignItems: 'center' }}>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 10,
+              borderRadius: 12,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: invalidNumber
+                ? colorTokens.dark.gray.gray8
+                : colorTokens.light.orange.orange9,
+              width: width - 32,
+            }}
+            onPress={checkOtpHandler}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.SemiBold,
+                color: 'white',
+              }}
+            >
+              Submit
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   )

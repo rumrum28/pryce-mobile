@@ -1,6 +1,12 @@
 import { useEffect } from 'react'
-import { Image, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native'
-import { Text, View } from 'tamagui'
+import {
+  Image,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
@@ -75,11 +81,12 @@ export default function Page() {
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
+            marginBottom: 20,
           }}
         >
           <Text style={{ color: 'white' }}>Sign in with Password</Text>
         </TouchableOpacity>
-        <Text style={{ color: 'black' }}>or</Text>
+        <Text style={{ color: 'black', marginBottom: 20 }}>or</Text>
         <TouchableOpacity
           onPress={() => router.push('/onboarding/login/otp')}
           style={{
@@ -90,6 +97,7 @@ export default function Page() {
             width: '100%',
             alignItems: 'center',
             justifyContent: 'center',
+            marginBottom: 20,
           }}
         >
           <Text style={{ color: 'black' }}>Sign in with OTP</Text>

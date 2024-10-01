@@ -12,6 +12,7 @@ import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 // });
 
 export const login = async (userData: UserInputs) => {
+  console.log(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`)
   const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
     method: 'POST',
     headers: {
@@ -148,12 +149,23 @@ export const fetchProductsQuery = async (addressRef: string) => {
       headers: {
         'Content-Type': 'application/json',
       },
-      cache: 'no-store',
     }
   )
   const getProductResponse: ProductSingle[] = await getProducts.json()
 
   return getProductResponse
+}
+
+export const getProductById = async (
+  addressRef: string,
+  productCodeString: string
+) => {
+  const products = await fetchProductsQuery(addressRef)
+  const foundProduct = products.find(
+    (product) => product.ProductCode === productCodeString
+  )
+  // console.log(foundProduct)
+  return foundProduct
 }
 
 // export const getSearchResults = async (

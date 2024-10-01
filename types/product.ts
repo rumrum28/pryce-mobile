@@ -23,10 +23,7 @@ export type ProductSingle = {
   ProductCode: string
   UnitPrice: number
   RegularPrice: number
-}
-
-type addressReference = {
-  addressRef?: string
+  message?: string
 }
 
 export type ProductsProps = ProductSingle[]

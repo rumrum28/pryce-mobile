@@ -25,6 +25,25 @@ export default class SwipeableRow extends Component<
     )
   }
 
+  // private renderLeftActions = (
+  //   _progress: Animated.AnimatedInterpolation<number>,
+  //   dragX: Animated.AnimatedInterpolation<number>
+  // ) => {
+  //   return (
+  //     <RectButton
+  //       style={styles.leftAction}
+  //       onPress={() => alert('Left Action')}
+  //     >
+  //       <Ionicons
+  //         name="add-circle-outline"
+  //         size={24}
+  //         color="white"
+  //         style={{ marginLeft: 10 }}
+  //       />
+  //     </RectButton>
+  //   )
+  // }
+
   private swipeableRow?: Swipeable
 
   private updateRef = (ref: Swipeable) => {
@@ -43,6 +62,7 @@ export default class SwipeableRow extends Component<
         leftThreshold={80}
         enableTrackpadTwoFingerGesture
         rightThreshold={40}
+        // renderLeftActions={this.renderLeftActions}
         renderRightActions={this.renderRightActions}
       >
         {children}
@@ -59,4 +79,11 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'flex-end',
   },
+  // leftAction: {
+  //   alignItems: 'center',
+  //   flexDirection: I18nManager.isRTL ? 'row-reverse' : 'row',
+  //   backgroundColor: '#4CAF50',
+  //   flex: 1,
+  //   justifyContent: 'flex-start', // Aligns content to the start (left)
+  // },
 })

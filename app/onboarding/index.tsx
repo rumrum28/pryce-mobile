@@ -73,7 +73,7 @@ const OnboardingScreen = () => {
     }
 
     if (token && users.length > 0) {
-      router.push('/(drawer)/shop')
+      router.push('/(tabs)/home')
     }
   }, [getStarted, email, token, users])
 

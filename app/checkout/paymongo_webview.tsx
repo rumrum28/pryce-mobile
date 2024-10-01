@@ -1,43 +1,43 @@
-import { WebView } from 'react-native-webview'
 import {
   Platform,
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
+  Text,
+  SafeAreaView,
   View,
 } from 'react-native'
-import { router, Stack, useLocalSearchParams } from 'expo-router'
-import { Text } from 'tamagui'
-import { useRef, useState } from 'react'
+import { router, useLocalSearchParams } from 'expo-router'
+import { useRef } from 'react'
 import { colorTokens } from '@tamagui/themes'
 import { Ionicons } from '@expo/vector-icons'
+import { WebView } from 'react-native-webview'
 
-/* <button class="button full-width button--secondary" type="button"><div class="button__content"><span>Back</span></div></button> */
+type SearchParams = {
+  url?: string
+}
 
-export default function PaymongoWebview({ navigation }: any) {
-  const { url } = useLocalSearchParams() as any
-  const [webViewVisible, setWebViewVisible] = useState(true)
-  const webViewRef = useRef(null)
+export default function PaymongoWebview() {
+  const { url } = useLocalSearchParams<SearchParams>()
+  const webViewRef = useRef<WebView>(null)
   const { width, height } = useWindowDimensions()
 
   const injectedJavaScript = `
     document.getElementById('backButton').addEventListener('click', function() {
-      window.ReactNativeWebView.postMessage('goBack');
+      window.ReactNativeWebView.postMessage('backButton');
     });
   `
 
   const handleMessage = (event: any) => {
-    if (event.nativeEvent.data === 'goBack') {
+    if (event.nativeEvent.data === 'backButton') {
       // Trigger back navigation or other action
+      console.log('test')
       router.back()
     }
   }
 
   return (
-    <>
-      {Platform.OS !== 'android' && (
+    <SafeAreaView style={{ flex: 1, paddingTop: 50 }}>
+      {Platform.OS === 'ios' && (
         <TouchableOpacity
           onPress={() => router.back()}
           style={{
@@ -58,7 +58,7 @@ export default function PaymongoWebview({ navigation }: any) {
         </TouchableOpacity>
       )}
 
-      {webViewVisible && (
+      {url && (
         <WebView
           style={{
             flex: 1,
@@ -76,7 +76,6 @@ export default function PaymongoWebview({ navigation }: any) {
           javaScriptEnabled={true}
           domStorageEnabled={true}
           allowFileAccessFromFileURLs={true}
-          // overScrollMode={'never'}
           removeClippedSubviews={true}
           // scrollEnabled={false}
           nestedScrollEnabled
@@ -85,6 +84,6 @@ export default function PaymongoWebview({ navigation }: any) {
           onMessage={handleMessage}
         />
       )}
-    </>
+    </SafeAreaView>
   )
 }

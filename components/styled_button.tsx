@@ -15,7 +15,7 @@ type ButtonProps = {
   style?: StyleProp<ViewStyle>
   textStyle?: StyleProp<TextStyle>
   onPress?: ((event: GestureResponderEvent) => void) | undefined
-  loading?: boolean
+  disabled?: boolean // Add the disabled prop
 }
 
 const ButtonView = styled(TouchableOpacity)`
@@ -33,11 +33,11 @@ type StyledButtonRef = TouchableOpacity
 
 const StyledButton: FunctionComponent<ButtonProps> = forwardRef(
   (
-    { children, style, textStyle, onPress, loading },
+    { children, style, textStyle, onPress, disabled = false },
     ref: Ref<StyledButtonRef>
   ) => {
     return (
-      <ButtonView ref={ref} onPress={onPress} style={style} disabled={loading}>
+      <ButtonView ref={ref} onPress={onPress} style={style} disabled={disabled}>
         {children}
       </ButtonView>
     )

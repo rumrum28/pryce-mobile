@@ -4,10 +4,9 @@ import { ProductsDetail } from '~/utils/products'
 export const getProductById = (id: number) => {
   return allProducts.find((product) => product.id === id)
 }
-export const getFilteredProductById = (id: string) => {
-  return ProductsDetail.find((fp) => fp.id === id)
+export const getFilteredProductById = (id: number) => {
+  return filteredProducts.find((filtered_product) => filtered_product.id === id) 
 }
-
 export const getFilteredProductByCategory = (id: number) => {
   return categories.find((product) => product.id === id)
 }
