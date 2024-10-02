@@ -32,7 +32,6 @@ export default function Layout() {
           <BottomSheetModalProvider>
             <ToastProvider>
               <CurrentToast />
-              {/* <SelectAddressModal /> */}
 
               <Slot />
             </ToastProvider>

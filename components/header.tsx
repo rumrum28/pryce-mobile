@@ -18,6 +18,7 @@ import useCartStore from '~/hooks/productsStore'
 import useBasketStore from '~/utils/basketStore'
 import BottomSheet from './bottom_sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import NetworkStatus from './network_status'
 
 export default function Header() {
   const token = usePryceStore((state) => state.token)
@@ -139,6 +140,8 @@ export default function Header() {
       </View>
 
       <SearchBar />
+
+      <NetworkStatus customStyle={1} />
     </SafeAreaView>
   )
 }

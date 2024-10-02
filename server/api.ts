@@ -3,14 +3,6 @@ import { env } from '~/types/env'
 import { ProductSingle, ProductsProps } from '~/types/product'
 import { LoginResponse, Profile, ProfileProps } from '~/types/userStorage'
 
-// const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
-// const [favorites, setFavorites] = useMMKVObject<Favorites[]>('favorites'); // get all favorites
-
-// const movieDetails = useQuery({
-//   queryKey: ['user', id],
-//   queryFn: () => getMovieDetails(id, mediaType)
-// });
-
 export const login = async (userData: UserInputs) => {
   console.log(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`)
   const response = await fetch(`${env.EXPO_PUBLIC_LOCAL_URL}/api/login`, {
