@@ -20,7 +20,7 @@ const NetworkStatus = ({ customStyle }: { customStyle: number }) => {
   return (
     <>
       {customStyle === 1 ? (
-        <>
+        <View>
           {isConnected === null ? (
             'Checking connection...'
           ) : isConnected ? null : (
@@ -42,7 +42,7 @@ const NetworkStatus = ({ customStyle }: { customStyle: number }) => {
               </Text>
             </View>
           )}
-        </>
+        </View>
       ) : null}
     </>
   )
