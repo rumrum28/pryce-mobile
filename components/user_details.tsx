@@ -214,7 +214,7 @@ const UserDetails = ({ productCode }: { productCode: string }) => {
             style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 10 }}
             edges={['bottom']}
           >
-            <Link href="/(drawer)/shop/(modal)/basket" asChild>
+            {/* <Link href="/(drawer)/shop/(modal)/basket" asChild>
               <StyledButton>
                 <View
                   style={{
@@ -255,7 +255,7 @@ const UserDetails = ({ productCode }: { productCode: string }) => {
                   </Text>
                 </View>
               </StyledButton>
-            </Link>
+            </Link> */}
           </SafeAreaView>
         </View>
       )}

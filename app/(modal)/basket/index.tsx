@@ -19,7 +19,7 @@ import StyledButton from '~/components/styled_button'
 import { ScrollView } from 'react-native-gesture-handler'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
-import { PaymentMethod } from '~/components/payment_method'
+import { PaymentMethodComponent } from '~/components/payment_method'
 import { FontAwesome6 } from '@expo/vector-icons'
 import { Toast, useToastController } from '@tamagui/toast'
 import { env } from '~/types/env'
@@ -446,9 +446,9 @@ export default function Basket() {
             </View>
 
             <View style={{ marginTop: 10, backgroundColor: '#fff' }}>
-              <PaymentMethod
-                selectedPaymentMethod={selectedPaymentMethod}
-                setSelectedPaymentMethod={setSelectedPaymentMethod}
+              <PaymentMethodComponent
+                paymentMethod={selectedPaymentMethod}
+                setPaymentMethod={setSelectedPaymentMethod}
                 paymentAmount={paymentAmount}
                 setPaymentAmount={setPaymentAmount}
               />

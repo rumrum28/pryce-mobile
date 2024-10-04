@@ -29,14 +29,14 @@ const paymentData: PaymentDataProps[] = [
   },
 ]
 
-export function PaymentMethod({
-  selectedPaymentMethod,
-  setSelectedPaymentMethod,
+export function PaymentMethodComponent({
+  paymentMethod,
+  setPaymentMethod,
   paymentAmount,
   setPaymentAmount,
 }: {
-  selectedPaymentMethod: string
-  setSelectedPaymentMethod: (paymentMethod: string) => void
+  paymentMethod: string
+  setPaymentMethod: (paymentMethod: string) => void
   paymentAmount: number
   setPaymentAmount: (amount: number) => void
 }) {
@@ -65,7 +65,7 @@ export function PaymentMethod({
         {paymentData.map((item, index) => (
           <TouchableOpacity
             key={index}
-            onPress={() => setSelectedPaymentMethod(item.paymentMethod)}
+            onPress={() => setPaymentMethod(item.paymentMethod)}
             style={{
               flexDirection: 'row',
               height: 80,
@@ -75,7 +75,7 @@ export function PaymentMethod({
               borderWidth: 2,
               borderRadius: 10,
               borderColor:
-                selectedPaymentMethod === item.paymentMethod
+                paymentMethod === item.paymentMethod
                   ? colorTokens.light.orange.orange9
                   : colorTokens.light.gray.gray2,
             }}
@@ -103,13 +103,13 @@ export function PaymentMethod({
             <View style={{ position: 'absolute', top: 23, right: 15 }}>
               <MaterialIcons
                 name={
-                  selectedPaymentMethod === item.paymentMethod
+                  paymentMethod === item.paymentMethod
                     ? 'radio-button-checked'
                     : 'radio-button-unchecked'
                 }
                 size={30}
                 color={
-                  selectedPaymentMethod === item.paymentMethod
+                  paymentMethod === item.paymentMethod
                     ? colorTokens.light.orange.orange9
                     : colorTokens.light.gray.gray2
                 }
@@ -122,7 +122,7 @@ export function PaymentMethod({
           style={{
             flexDirection: 'row',
             borderColor:
-              selectedPaymentMethod === 'cash-on-delivery'
+              paymentMethod === 'cash-on-delivery'
                 ? colorTokens.light.orange.orange9
                 : colorTokens.light.gray.gray2,
             borderWidth: 1,
@@ -144,7 +144,7 @@ export function PaymentMethod({
               name={'money-bill-wave'}
               size={20}
               color={
-                selectedPaymentMethod === 'cash-on-delivery'
+                paymentMethod === 'cash-on-delivery'
                   ? colorTokens.light.orange.orange9
                   : colorTokens.light.gray.gray7
               }
@@ -163,7 +163,7 @@ export function PaymentMethod({
             }}
             value={String(paymentAmount)}
             onChangeText={(e) => setPaymentAmount(Number(e))}
-            editable={selectedPaymentMethod === 'cash-on-delivery'}
+            editable={paymentMethod === 'cash-on-delivery'}
           />
         </View>
       </View>

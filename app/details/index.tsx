@@ -315,7 +315,7 @@ const Details = () => {
             style={{ flex: 1, backgroundColor: 'white' }}
             edges={['bottom']}
           >
-            <Link href="/(modal)/basket" asChild>
+            {/* <Link href="/(modal)/basket" asChild>
               <StyledButton>
                 <View
                   style={{
@@ -356,7 +356,7 @@ const Details = () => {
                   </Text>
                 </View>
               </StyledButton>
-            </Link>
+            </Link> */}
           </SafeAreaView>
         </View>
       )}

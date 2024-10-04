@@ -20,10 +20,26 @@ const NetworkStatus = ({ customStyle }: { customStyle: number }) => {
   return (
     <>
       {customStyle === 1 ? (
-        <View>
-          {isConnected === null ? (
-            'Checking connection...'
-          ) : isConnected ? null : (
+        <View
+          style={{
+            backgroundColor: 'white',
+            alignItems: 'center',
+            padding: isConnected ? 0 : 10,
+          }}
+        >
+          {isConnected ? (
+            <>
+              {/* <Text
+              style={{
+                color: 'orangered',
+                fontWeight: '800',
+                fontSize: 20,
+              }}
+            >
+              You are online
+            </Text> */}
+            </>
+          ) : (
             <View
               style={{
                 backgroundColor: 'white',

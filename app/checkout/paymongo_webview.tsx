@@ -21,26 +21,24 @@ export default function PaymongoWebview() {
   const webViewRef = useRef<WebView>(null)
   const { width, height } = useWindowDimensions()
 
-  // Improved injected JS with fallback to ensure postMessage works as expected
-  const injectedJavaScript = `
-    (function() {
+  const injectedJavaScript = `(function() {
+    setTimeout(function() {
       document.getElementById('backButton')?.addEventListener('click', function() {
         window.ReactNativeWebView.postMessage('backButton');
       });
-    })();
-  `
+    }, 100); // Adding a 100ms delay to ensure the DOM is ready
+  })();`
 
   // Using useCallback to prevent unnecessary re-renders
   const handleMessage = useCallback((event: any) => {
     const message = event?.nativeEvent?.data
     if (message === 'backButton') {
-      router.back() // Navigate back
+      router.back()
     } else {
       console.log('Message received from WebView:', message)
     }
   }, [])
 
-  // Ensure url is valid
   if (!url) {
     return (
       <SafeAreaView
@@ -104,16 +102,10 @@ export default function PaymongoWebview() {
         source={{ uri: url }}
         originWhitelist={['*']}
         ref={webViewRef}
-        allowFileAccess
-        allowUniversalAccessFromFileURLs
-        allowsInlineMediaPlayback
-        mediaPlaybackRequiresUserAction={false} // Updated for better iOS compatibility
-        startInLoadingState
-        javaScriptEnabled
-        domStorageEnabled
-        removeClippedSubviews
+        mediaPlaybackRequiresUserAction={false}
         injectedJavaScript={injectedJavaScript}
-        onMessage={handleMessage} // Correctly handle messages
+        onMessage={handleMessage}
+        javaScriptEnabled={true}
       />
     </SafeAreaView>
   )
