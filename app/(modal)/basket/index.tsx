@@ -449,7 +449,7 @@ export default function Basket() {
               <PaymentMethodComponent
                 paymentMethod={selectedPaymentMethod}
                 setPaymentMethod={setSelectedPaymentMethod}
-                paymentAmount={paymentAmount}
+                paymentAmount={String(paymentAmount)}
                 setPaymentAmount={setPaymentAmount}
               />
             </View>

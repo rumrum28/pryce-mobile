@@ -106,53 +106,60 @@ export default function ItemDetails() {
   }
 
   const addToCart = async () => {
-    isLoading(true)
-    if (addressRef && productCode) {
-      const productCodeString = Array.isArray(productCode)
-        ? productCode[0]
-        : productCode
+    if (addressRef && productCode &&) {
+      isLoading(true)
+      try {
+        const dataproductcode = data?.find((e) => e.ProductCode === productCode)?.UnitPrice * quantity
 
-      const selectedProduct = await getProductById(
-        addressRef,
-        productCodeString
-      )
+        const productCodeString = Array.isArray(productCode)
+          ? productCode[0]
+          : productCode
 
-      if (selectedProduct) {
-        const unitPrice = selectedProduct.UnitPrice ?? 0
-        const regularPrice = selectedProduct.RegularPrice ?? 0
-        const numQuantity = quantity ?? 1
+        const selectedProduct = await getProductById(
+          addressRef,
+          productCodeString
+        )
 
-        const calculatedPrice =
-          unitPrice < regularPrice ? unitPrice : regularPrice
+        if (selectedProduct) {
+          const unitPrice = selectedProduct.UnitPrice ?? 0
+          const regularPrice = selectedProduct.RegularPrice ?? 0
+          const numQuantity = quantity ?? 1
 
-        const totalProductPrice = calculatedPrice * numQuantity
+          const calculatedPrice =
+            unitPrice < regularPrice ? unitPrice : regularPrice
 
-        const totalAddOnsPrice = selectedAddOns.reduce((sum, addOn) => {
-          const addOnUnitPrice = addOn.UnitPrice ?? 0
-          const addOnRegularPrice = addOn.RegularPrice ?? 0
+          const totalProductPrice = calculatedPrice * numQuantity
 
-          const effectiveAddOnPrice =
-            addOnUnitPrice < addOnRegularPrice
-              ? addOnUnitPrice
-              : addOnRegularPrice
+          const totalAddOnsPrice = selectedAddOns.reduce((sum, addOn) => {
+            const addOnUnitPrice = addOn.UnitPrice ?? 0
+            const addOnRegularPrice = addOn.RegularPrice ?? 0
 
-          return sum + effectiveAddOnPrice * numQuantity
-        }, 0)
+            const effectiveAddOnPrice =
+              addOnUnitPrice < addOnRegularPrice
+                ? addOnUnitPrice
+                : addOnRegularPrice
 
-        const priceToAdd = totalProductPrice + totalAddOnsPrice
+            return sum + effectiveAddOnPrice * numQuantity
+          }, 0)
 
-        addProduct(selectedProduct, numQuantity, selectedAddOns)
+          const priceToAdd = totalProductPrice + totalAddOnsPrice
 
-        setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
-        setItems((prevItems) => prevItems + numQuantity)
+          addProduct(selectedProduct, numQuantity, selectedAddOns)
 
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-        router.back()
-      } else {
-        console.error('Product not found for code:', productCodeString)
+          setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
+          setItems((prevItems) => prevItems + numQuantity)
+
+          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+          router.back()
+        } else {
+          console.error('Product not found for code:', productCodeString)
+        }
+      } catch (error) {
+        console.log(error)
+      } finally {
+        isLoading(false)
       }
     }
-    isLoading(false)
   }
 
   const removeFromCart = () => {
@@ -290,6 +297,7 @@ export default function ItemDetails() {
           >
             Add-ons
           </Animated.Text>
+
           <TouchableOpacity onPress={clearCart}>
             <Text>Clear</Text>
           </TouchableOpacity>
@@ -323,14 +331,12 @@ export default function ItemDetails() {
               </View>
             </View>
           ) : productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
-            <>
-              <AddOns
-                productCodeMap={exemptedOnProducts}
-                realTimeProductData={data}
-                selectedAddOns={selectedAddOns}
-                onToggleAddOn={handleToggleAddOn}
-              />
-            </>
+            <AddOns
+              productCodeMap={exemptedOnProducts}
+              realTimeProductData={data}
+              selectedAddOns={selectedAddOns}
+              onToggleAddOn={handleToggleAddOn}
+            />
           )}
         </Animated.ScrollView>
         <View

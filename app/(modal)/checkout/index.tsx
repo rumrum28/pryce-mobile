@@ -444,7 +444,7 @@ export default function CheckoutItem() {
               <PaymentMethodComponent
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
-                paymentAmount={paymentAmount}
+                paymentAmount={String(paymentAmount)}
                 setPaymentAmount={setPaymentAmount}
               />
             </View>

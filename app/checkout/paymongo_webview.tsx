@@ -33,6 +33,7 @@ export default function PaymongoWebview() {
   const handleMessage = useCallback((event: any) => {
     const message = event?.nativeEvent?.data
     if (message === 'backButton') {
+      console.log('back click')
       router.back()
     } else {
       console.log('Message received from WebView:', message)

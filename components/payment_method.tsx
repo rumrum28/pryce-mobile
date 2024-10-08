@@ -37,7 +37,7 @@ export function PaymentMethodComponent({
 }: {
   paymentMethod: string
   setPaymentMethod: (paymentMethod: string) => void
-  paymentAmount: number
+  paymentAmount: string
   setPaymentAmount: (amount: number) => void
 }) {
   return (
@@ -48,7 +48,7 @@ export function PaymentMethodComponent({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginTop: 15,
+          marginVertical: 15,
         }}
       >
         <Text
@@ -70,14 +70,14 @@ export function PaymentMethodComponent({
               flexDirection: 'row',
               height: 80,
               alignItems: 'center',
-              marginTop: 20,
+              // marginTop: 10,
               paddingHorizontal: 20,
               borderWidth: 2,
               borderRadius: 10,
               borderColor:
                 paymentMethod === item.paymentMethod
-                  ? colorTokens.light.orange.orange9
-                  : colorTokens.light.gray.gray2,
+                  ? colorTokens.light.orange.orange6
+                  : colorTokens.light.gray.gray1,
             }}
           >
             <View
@@ -100,7 +100,7 @@ export function PaymentMethodComponent({
             <Text style={{ flex: 1, marginLeft: 15, fontWeight: '600' }}>
               {item.name}
             </Text>
-            <View style={{ position: 'absolute', top: 23, right: 15 }}>
+            {/* <View style={{ position: 'absolute', top: 23, right: 15 }}>
               <MaterialIcons
                 name={
                   paymentMethod === item.paymentMethod
@@ -114,7 +114,7 @@ export function PaymentMethodComponent({
                     : colorTokens.light.gray.gray2
                 }
               />
-            </View>
+            </View> */}
           </TouchableOpacity>
         ))}
 
@@ -123,7 +123,7 @@ export function PaymentMethodComponent({
             flexDirection: 'row',
             borderColor:
               paymentMethod === 'cash-on-delivery'
-                ? colorTokens.light.orange.orange9
+                ? colorTokens.dark.red.red1
                 : colorTokens.light.gray.gray2,
             borderWidth: 1,
             borderRadius: 5,
@@ -161,8 +161,8 @@ export function PaymentMethodComponent({
               color: colorTokens.light.gray.gray12,
               fontWeight: 'regular',
             }}
-            value={String(paymentAmount)}
-            onChangeText={(e) => setPaymentAmount(Number(e))}
+            value={paymentAmount}
+            onChangeText={(amount) => setPaymentAmount(Number(amount))}
             editable={paymentMethod === 'cash-on-delivery'}
           />
         </View>

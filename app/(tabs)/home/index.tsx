@@ -23,6 +23,7 @@ import { useFetchProducts } from '~/hooks/fetchProducts'
 import { logout } from '~/components/logout'
 import BottomSheet from '~/components/bottom_sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import useBasketStore from '~/utils/basketStore'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
@@ -43,6 +44,7 @@ export default function Page() {
   const changeAddressTrigger = usePryceStore(
     (state) => state.changeAddressTrigger
   )
+  const { products, total, updateProducts, clearCart } = useBasketStore()
 
   useEffect(() => {
     if (selectedUser) {
@@ -54,6 +56,12 @@ export default function Page() {
       fetchProducts(userData)
     }
   }, [selectedUser, fetchProducts])
+
+  //useEffecttestonly
+  useEffect(() => {
+    console.log(products)
+    console.log(total)
+  }, [])
 
   useEffect(() => {
     if (!isPending) {

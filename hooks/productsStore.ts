@@ -63,27 +63,6 @@ const useCartStore = create<CartState>()(
         }),
       decreaseQuantity: (productCode: string) =>
         set((state) => {
-          // return {
-          //   cart: state.cart.find((p) => {
-          //     if (p.productCode === productCode && p.quantity < 2) {
-          //       const hasProduct = state.cart.find(
-          //         (p: Product) => p.productCode !== productCode
-          //       )
-
-          //       return [...state.cart, hasProduct]
-          //     } else {
-          //       if (p.productCode === productCode) {
-          //         return {
-          //           ...p,
-          //           quantity: p.quantity - 1,
-          //         }
-          //       }
-
-          //       return p
-          //     }
-          //   })
-          // }
-
           return {
             cart: state.cart.map((p) => {
               if (p.productCode === productCode) {

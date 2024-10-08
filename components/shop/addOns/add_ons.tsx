@@ -1,4 +1,4 @@
-import { FlatList, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ProductSingle } from '~/types/product'
 import { Image } from 'tamagui'
@@ -10,6 +10,7 @@ import { Ionicons } from '@expo/vector-icons'
 import useCartStore from '~/hooks/productsStore'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { AddOn } from '~/utils/basketStore'
+import AddOnsQuantityButtons from './add_ons_quantity_buttons'
 
 export default function AddOns({
   productCodeMap,
@@ -29,6 +30,7 @@ export default function AddOns({
       const filtered = realTimeProductData.filter((fp) =>
         productCodeMap.includes(fp.ProductCode)
       )
+
       setFilteredData(filtered)
     }
   }, [productCodeMap, realTimeProductData])
@@ -38,7 +40,12 @@ export default function AddOns({
   }
 
   return (
-    <View style={styles.container}>
+    <View
+      style={{
+        padding: 10,
+        flex: 1,
+      }}
+    >
       <FlatList
         data={filteredData}
         scrollEnabled={false}
@@ -52,7 +59,11 @@ export default function AddOns({
           />
         )}
         ListHeaderComponent={
-          <View style={{ marginHorizontal: 16 }}>
+          <View
+            style={{
+              marginHorizontal: 16,
+            }}
+          >
             <View
               style={{
                 height: 1,
@@ -77,17 +88,18 @@ export default function AddOns({
             <View
               style={{
                 flexDirection: 'row',
-                padding: 15,
-                justifyContent: 'space-between',
+                padding: 10,
+                justifyContent: 'flex-start',
                 alignItems: 'center',
               }}
             >
-              <View
+              <Pressable
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
-                  maxWidth: 220,
+                  justifyContent: 'flex-start',
+                  flex: 1,
+                  paddingVertical: 10,
                 }}
               >
                 <BouncyCheckbox
@@ -104,26 +116,36 @@ export default function AddOns({
                   }}
                   onPress={() => handleToggle(item)}
                   isChecked={selectedAddOns.some((ao) => ao.Id === item.Id)}
+                  style={{
+                    width: 28,
+                  }}
                 />
-                <Image
+                {/* <Image
                   source={{
                     uri: ProductsDetail.find((pd) => pd.id === item.ProductCode)
                       ?.image,
-                    width: 60,
-                    height: 60,
                   }}
-                />
-
+                  style={{
+                    width: 50,
+                    height: 30,
+                  }}
+                /> */}
                 <Text
                   style={{
+                    paddingLeft: 8,
                     fontSize: 13,
-                    flexShrink: 1,
-                    flexWrap: 'wrap',
+                    width: '80%',
                   }}
+                  numberOfLines={1}
                 >
                   {item.Name}
                 </Text>
-              </View>
+              </Pressable>
+
+              {selectedAddOns.some((ao) => ao.Id === item.Id) ? (
+                <AddOnsQuantityButtons />
+              ) : null}
+
               <Text
                 style={{
                   fontSize: 13,
@@ -139,13 +161,3 @@ export default function AddOns({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-})
