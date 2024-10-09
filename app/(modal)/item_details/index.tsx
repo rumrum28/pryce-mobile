@@ -67,6 +67,7 @@ export default function ItemDetails() {
   const scrollOfset = useScrollViewOffset(scrollRef)
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
   const cart = useCartStore((state) => state.cart)
+  const addProduct = useCartStore((state) => state.addProduct)
   const increaseQuantity = useCartStore((state) => state.increaseQuantity)
   const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
   const removeProduct = useCartStore((state) => state.removeProduct)
@@ -152,6 +153,33 @@ export default function ItemDetails() {
     }
   }
 
+  const plusHandler = () => {
+    if (productCode) {
+      const singleProductData = data?.find((e) => e.ProductCode === productCode)
+      if (singleProductData) {
+        const activePrice =
+          singleProductData.UnitPrice < singleProductData.RegularPrice
+            ? singleProductData.UnitPrice
+            : singleProductData.RegularPrice
+
+        if (quantity > 1) {
+          const singelProductInfo = {
+            quantity,
+            productCode,
+          }
+
+          setQuantity(quantity + 1)
+          addProduct(singelProductInfo)
+          setTotalPrice(quantity + 1 * activePrice)
+        } else if (quantity === 1) {
+          removeProduct(String(productCode))
+        }
+      }
+    } else {
+      Toast.error(`Cannot add item from cart`)
+    }
+  }
+
   const minusHandler = () => {
     if (productCode) {
       const singleProductData = data?.find((e) => e.ProductCode === productCode)
@@ -171,28 +199,6 @@ export default function ItemDetails() {
       }
     } else {
       Toast.error(`Cannot remove item from cart`)
-    }
-  }
-
-  const plusHandler = () => {
-    if (productCode) {
-      const singleProductData = data?.find((e) => e.ProductCode === productCode)
-      if (singleProductData) {
-        const activePrice =
-          singleProductData.UnitPrice < singleProductData.RegularPrice
-            ? singleProductData.UnitPrice
-            : singleProductData.RegularPrice
-
-        if (quantity > 1) {
-          setQuantity(quantity + 1)
-          increaseQuantity(String(productCode))
-          setTotalPrice(quantity + 1 * activePrice)
-        } else if (quantity === 1) {
-          removeProduct(String(productCode))
-        }
-      }
-    } else {
-      Toast.error(`Cannot add item from cart`)
     }
   }
 
