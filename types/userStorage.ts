@@ -130,11 +130,32 @@ export type Profile = {
 
 export type ProfileProps = Profile[]
 
-export type UserOrderProps = {
-  attributes: {
-    type: string
-    url: string
-  }
+// Define the attributes structure
+export type Attributes = {
+  type: string
+  url: string
+}
+
+// Define the OrderItem structure
+export type OrderItem = {
+  attributes: Attributes
+  OrderId: string
+  Product2Id: string
+  Quantity: number
+  UnitPrice: number
+  TotalPrice: number
+  OrderItemNumber: string
+  OriginalOrderItemId: string | null
+}
+
+export type OrderItems = {
+  totalSize: number
+  done: boolean
+  records: OrderItem[]
+}
+
+export type Record = {
+  attributes: Attributes
   Id: string
   Total_Amount_Due__c: number
   Receipt_Number__c: string | null
@@ -147,28 +168,18 @@ export type UserOrderProps = {
   ChangeFor__c: number
   Total_PGC_Discount__c: number
   Status: string
+  Order_Delivered_Date_Time__c: string
   Deliver_To_Street__c: string
   Deliver_To_City__c: string
   Deliver_To_Province__c: string
+  Phone_Order_Deadline__c: string
   Contact_Number__c: string
   Total_Items__c: number
+  OrderItems: OrderItems
 }
 
-export type CompositeBody = {
+export type UserOrderResponseProps = {
   totalSize: number
   done: boolean
-  records: UserOrderProps[]
-}
-
-// Define the structure of each composite response
-export type CompositeResponse = {
-  body: CompositeBody
-  httpHeaders: any[] // Assuming this is an array, adjust based on actual API response
-  httpStatusCode: number
-  referenceId: string
-}
-
-// Update the response type to reflect the composite response structure
-export type UserOrderResponseProps = {
-  compositeResponse: CompositeResponse[]
+  records: Record[]
 }

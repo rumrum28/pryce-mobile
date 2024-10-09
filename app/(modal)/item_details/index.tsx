@@ -215,209 +215,208 @@ export default function ItemDetails() {
       style={{ flex: 1, backgroundColor: 'white' }}
       edges={['bottom']}
     >
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <Stack.Screen
-          options={{
-            headerTitle: '',
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: 20,
-                  padding: 3,
-                }}
-              >
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={colorTokens.light.orange.orange9}
-                />
-              </TouchableOpacity>
-            ),
-            headerTransparent: true,
-            headerBackground: () => (
-              <Animated.View style={[styles.header, headerAnimatedStyle]}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                  {data &&
-                    data.find((e) => e.ProductCode === productCode)?.Name}
-                </Text>
-              </Animated.View>
-            ),
-          }}
+      <Stack.Screen
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 20,
+                padding: 3,
+              }}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          ),
+          headerTransparent: true,
+          headerBackground: () => (
+            <Animated.View style={[styles.header, headerAnimatedStyle]}>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                {data && data.find((e) => e.ProductCode === productCode)?.Name}
+              </Text>
+            </Animated.View>
+          ),
+        }}
+      />
+      <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.Image
+          source={ProductsDetail.find((e) => e.id === productCode)?.image}
+          style={[styles.image, imageAnimatedStyle]}
+          entering={FadeIn.duration(400).delay(200)}
         />
-        <Animated.ScrollView
-          ref={scrollRef}
-          scrollEventThrottle={16}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <Animated.Image
-            source={ProductsDetail.find((e) => e.id === productCode)?.image}
-            style={[styles.image, imageAnimatedStyle]}
-            entering={FadeIn.duration(400).delay(200)}
-          />
 
-          <View style={{ margin: 16 }}>
-            <Animated.Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                paddingBottom: 10,
-              }}
-              entering={FadeInLeft.duration(400).delay(200)}
-            >
-              {data && data.find((e) => e.ProductCode === productCode)?.Name}
-            </Animated.Text>
-            <Animated.Text
-              entering={FadeInLeft.duration(400).delay(400)}
-              style={{
-                fontSize: 16,
-                // marginBottom: 8,
-                color: colorTokens.light.gray.gray11,
-              }}
-            >
-              {ProductsDetail.find((e) => e.id === productCode)?.description}
-            </Animated.Text>
-          </View>
+        <View style={{ height: 130, backgroundColor: 'white' }}>
           <Animated.Text
             style={{
-              fontSize: 16,
+              fontSize: 20,
               fontWeight: 'bold',
               margin: 16,
             }}
             entering={FadeInLeft.duration(400).delay(200)}
           >
-            Add-ons
+            {data && data.find((e) => e.ProductCode === productCode)?.Name}
           </Animated.Text>
-          <TouchableOpacity onPress={clearCart}>
-            <Text>Clear</Text>
-          </TouchableOpacity>
-
-          {isPending ? (
-            <View
-              style={{
-                flexDirection: 'row',
-                backgroundColor: 'white',
-                marginTop: 30,
-              }}
-            >
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <View style={{ marginLeft: 10 }}>
-                  <Skeleton width={30} height={30} />
-                </View>
-
-                <View style={{}}>
-                  <Skeleton width={120} height={20} />
-                </View>
-                <View style={{ marginRight: 10 }}>
-                  <Skeleton width={90} height={20} />
-                </View>
-              </View>
-            </View>
-          ) : productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
-            <>
-              <AddOns
-                productCodeMap={exemptedOnProducts}
-                realTimeProductData={data}
-                selectedAddOns={selectedAddOns}
-                onToggleAddOn={handleToggleAddOn}
-              />
-            </>
-          )}
-        </Animated.ScrollView>
-        <View
+          <Animated.Text
+            entering={FadeInLeft.duration(400).delay(400)}
+            style={{
+              fontSize: 16,
+              marginHorizontal: 16,
+              lineHeight: 22,
+              textAlign: 'justify',
+              color: colorTokens.light.gray.gray11,
+            }}
+          >
+            {ProductsDetail.find((e) => e.id === productCode)?.description}
+          </Animated.Text>
+        </View>
+        {/* <Animated.Text
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            width: '100%',
-            backgroundColor: 'white',
-            padding: 10,
-            elevation: 10,
-            shadowColor: 'black',
-            shadowOffset: { width: 0, height: -10 },
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-            paddingTop: 20,
+            fontSize: 16,
+            fontWeight: 'bold',
+            margin: 16,
           }}
+          entering={FadeInLeft.duration(400).delay(200)}
         >
+          Add-ons
+        </Animated.Text> */}
+        <TouchableOpacity onPress={clearCart}>
+          <Text>Clear</Text>
+        </TouchableOpacity>
+
+        {isPending ? (
           <View
             style={{
               flexDirection: 'row',
-              flex: 1,
-              alignItems: 'center',
-              justifyContent: 'center',
+              backgroundColor: 'white',
+              marginTop: 30,
             }}
           >
-            {isPending || loading ? (
-              <ActivityIndicator
-                size="large"
-                color={colorTokens.light.orange.orange9}
-              />
-            ) : (
-              <>
-                <TouchableOpacity
-                  onPress={removeFromCart}
-                  style={{
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    borderRadius: 20,
-                    padding: 3,
-                  }}
-                >
-                  <AntDesign name="minus" size={20} color="white" />
-                </TouchableOpacity>
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <View style={{ marginLeft: 10 }}>
+                <Skeleton width={30} height={30} />
+              </View>
+
+              <View style={{}}>
+                <Skeleton width={120} height={20} />
+              </View>
+              <View style={{ marginRight: 10 }}>
+                <Skeleton width={90} height={20} />
+              </View>
+            </View>
+          </View>
+        ) : productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
+          <>
+            <AddOns
+              productCodeMap={exemptedOnProducts}
+              realTimeProductData={data}
+              selectedAddOns={selectedAddOns}
+              onToggleAddOn={handleToggleAddOn}
+            />
+          </>
+        )}
+      </Animated.ScrollView>
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          backgroundColor: 'white',
+          padding: 10,
+          elevation: 10,
+          shadowColor: 'black',
+          shadowOffset: { width: 0, height: -10 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          paddingTop: 20,
+        }}
+      >
+        <View
+          style={{
+            flexDirection: 'row',
+            flex: 1,
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+        >
+          {isPending || loading ? (
+            <ActivityIndicator
+              size="large"
+              color={colorTokens.light.orange.orange9}
+            />
+          ) : (
+            <>
+              <TouchableOpacity
+                onPress={removeFromCart}
+                style={{
+                  backgroundColor: colorTokens.light.orange.orange9,
+                  borderRadius: 20,
+                  padding: 3,
+                }}
+              >
+                <AntDesign name="minus" size={20} color="white" />
+              </TouchableOpacity>
+              <Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  // flex: 1,
+                  textAlign: 'center',
+                  marginHorizontal: 15,
+                }}
+              >
+                {quantity}
+              </Text>
+              <TouchableOpacity
+                onPress={() => setQuantity(quantity + 1)}
+                style={{
+                  backgroundColor: colorTokens.light.orange.orange9,
+                  borderRadius: 20,
+                  padding: 3,
+                  marginRight: 10,
+                }}
+              >
+                <Ionicons name="add" size={20} color="white" />
+              </TouchableOpacity>
+              <StyledButton
+                style={{
+                  flex: 1,
+                  justifyContent: 'center',
+                  alignItems: 'center',
+                }}
+                onPress={addToCart}
+                disabled={isPending || loading}
+              >
                 <Text
                   style={{
+                    color: 'white',
                     fontSize: 16,
                     fontWeight: 'bold',
-                    // flex: 1,
-                    textAlign: 'center',
-                    marginHorizontal: 15,
                   }}
                 >
-                  {quantity}
+                  Add for {formatCurrency(totalPrice)}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => setQuantity(quantity + 1)}
-                  style={{
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    borderRadius: 20,
-                    padding: 3,
-                    marginRight: 10,
-                  }}
-                >
-                  <Ionicons name="add" size={20} color="white" />
-                </TouchableOpacity>
-                <StyledButton
-                  style={{
-                    flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
-                  }}
-                  onPress={addToCart}
-                  disabled={isPending || loading}
-                >
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    Add for {formatCurrency(totalPrice)}
-                  </Text>
-                </StyledButton>
-              </>
-            )}
-          </View>
+              </StyledButton>
+            </>
+          )}
         </View>
       </View>
     </SafeAreaView>

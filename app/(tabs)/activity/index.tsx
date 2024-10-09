@@ -1,9 +1,10 @@
-import { View, Text } from 'react-native'
-import React, { useEffect, useState } from 'react'
-import DeliveryInfo from '~/components/activity/delivery_info'
+import { View, Text, ActivityIndicator } from 'react-native'
+import React, { useCallback, useEffect, useState } from 'react'
 import TrackOrder from '~/components/activity/track_order'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchOrderDetails } from '~/hooks/fetchOrderDetails'
+import { colorTokens } from '@tamagui/themes'
+import { useFocusEffect } from '@react-navigation/native'
 
 const orderStatuses = [
   'Order Created',
@@ -19,41 +20,75 @@ export default function Page() {
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const token = usePryceStore((state) => state.token)
 
-  const fetchDynamicOrderStatus = () => {
-    if (data && data?.compositeResponse?.[0]?.body?.records?.length > 0) {
-      const latestOrder = data.compositeResponse[0].body.records[0]
-      console.log('latestOrder:', latestOrder)
-      const currentStatus = latestOrder.Status
+  // useEffect(() => {
+  //   if (token && selectedUser) {
+  //     fetchOrdersDetails({ token })
+  //     console.log(
+  //       'Fetching orders with token:',
+  //       token,
+  //       'and address:',
+  //       selectedUser
+  //     )
+  //   }
+  // }, [token, selectedUser, fetchOrdersDetails])
 
-      console.log('currentStatus:', currentStatus)
-
-      if (orderStatuses.includes(currentStatus)) {
-        console.log('currentStatus:', currentStatus)
-        setOrderStatus(currentStatus)
-      } else {
-        setOrderStatus('Order Confirmed')
+  useFocusEffect(
+    useCallback(() => {
+      if (token) {
+        fetchOrdersDetails({ token })
+        console.log('Fetching orders with token:', token)
       }
-    } else {
-      setOrderStatus('Order Confirmed')
-    }
-  }
+    }, [token, fetchOrdersDetails])
+  )
 
   useEffect(() => {
-    if (token && orderStatus) {
-      fetchOrdersDetails({ token, type: orderStatus })
-      console.log('Fetching orders with status:', orderStatus)
-    }
-  }, [token, orderStatus, fetchOrdersDetails])
-
-  useEffect(() => {
-    fetchDynamicOrderStatus()
+    console.log('fetch data activity:', JSON.stringify(data), null, 2)
   }, [data])
 
   return (
-    <View style={{ flex: 1, backgroundColor: 'white', paddingHorizontal: 15 }}>
-      <DeliveryInfo />
-      {data && (
-        <TrackOrder records={data?.compositeResponse?.[0]?.body?.records} />
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: 'white',
+        paddingHorizontal: 15,
+
+        // justifyContent: 'center',
+      }}
+    >
+      {isPending ? (
+        <View style={{ flex: 1, justifyContent: 'center' }}>
+          <ActivityIndicator
+            size="large"
+            color={colorTokens.light.orange.orange9}
+          />
+        </View>
+      ) : (
+        <>
+          {data && data.records && data.records.length > 0 ? (
+            <TrackOrder
+              totalSize={data.totalSize}
+              done={data.done}
+              records={data.records}
+            />
+          ) : (
+            <View
+              style={{
+                alignItems: 'center',
+                justifyContent: 'center',
+                flex: 1,
+              }}
+            >
+              <Text
+                style={{
+                  fontSize: 18,
+                  color: colorTokens.light.gray.gray9,
+                }}
+              >
+                No Activity
+              </Text>
+            </View>
+          )}
+        </>
       )}
     </View>
   )

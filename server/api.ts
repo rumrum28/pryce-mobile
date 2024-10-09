@@ -174,10 +174,10 @@ export const getProductById = async (
   return foundProduct
 }
 
-export const fetchOrderByUser = async (token: string, type: string) => {
+export const fetchOrderByUser = async (token: string) => {
   try {
     const response = await fetch(
-      `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/status?type=${type}`,
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/status?type=current`,
       {
         method: 'GET',
         headers: {
@@ -192,6 +192,8 @@ export const fetchOrderByUser = async (token: string, type: string) => {
     }
 
     const orderResponse: UserOrderResponseProps = await response.json()
+
+    // console.log('orderResponse:', JSON.stringify(orderResponse, null, 0))
 
     return orderResponse
   } catch (error) {

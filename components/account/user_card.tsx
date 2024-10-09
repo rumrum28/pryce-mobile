@@ -38,11 +38,12 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     flex: 1, // Ensures equal width for all cards
-    borderRadius: 5,
+    borderRadius: 10,
     borderColor: colorTokens.light.gray.gray9,
     borderWidth: 1,
     padding: 10,
     alignItems: 'center',
+    backgroundColor: '#fff',
   },
   cardTitle: {
     // fontWeight: 'bold',

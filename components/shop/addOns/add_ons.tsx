@@ -38,7 +38,7 @@ export default function AddOns({
   }
 
   return (
-    <View style={styles.container}>
+    <View>
       <FlatList
         data={filteredData}
         scrollEnabled={false}
@@ -86,11 +86,12 @@ export default function AddOns({
                 style={{
                   flexDirection: 'row',
                   alignItems: 'center',
-                  justifyContent: 'center',
+                  // justifyContent: 'center',
                   maxWidth: 220,
                 }}
               >
                 <BouncyCheckbox
+                  style={{ maxWidth: 30 }}
                   fillColor={colorTokens.light.orange.orange9}
                   unFillColor="#fff"
                   iconStyle={{
