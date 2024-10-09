@@ -36,11 +36,13 @@ import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import Skeleton from '~/components/skeleton'
 import AddOns from '~/components/shop/addOns/add_ons'
 import { ScrollView } from 'react-native-gesture-handler'
+import { Toast } from 'toastify-react-native'
+import useCartStore from '~/hooks/productsStore'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
 
-let paddingTop
+let paddingTop = 25 as number
 
 if (Platform.OS === 'ios') {
   paddingTop = 45
@@ -64,10 +66,15 @@ export default function ItemDetails() {
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
-  const productPrice = data?.find((e) => e.ProductCode === productCode)
+  const cart = useCartStore((state) => state.cart)
+  const increaseQuantity = useCartStore((state) => state.increaseQuantity)
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
+  const removeProduct = useCartStore((state) => state.removeProduct)
+  const clearCart = useCartStore((state) => state.clearCart)
   const [loading, isLoading] = useState<boolean>(false)
+  const [totalPrice, setTotalPrice] = useState<number>(0)
 
-  const { addProduct, reduceProduct, clearCart } = useBasketStore()
+  // const { addProduct, reduceProduct, clearCart } = useBasketStore()
 
   useEffect(() => {
     if (addressRef) {
@@ -76,15 +83,31 @@ export default function ItemDetails() {
   }, [addressRef, fetchProductsDetails])
 
   useEffect(() => {
+    if (data) {
+      const singleProductData = data?.find((e) => e.ProductCode === productCode)
+
+      if (singleProductData) {
+        const activePrice =
+          singleProductData.UnitPrice < singleProductData.RegularPrice
+            ? singleProductData.UnitPrice
+            : singleProductData.RegularPrice
+
+        setTotalPrice(activePrice)
+      }
+    }
+  }, [data])
+
+  useEffect(() => {
     const productDetails = async () => {
       if (addressRef && productCode) {
         const productCodeString = Array.isArray(productCode)
           ? productCode[0]
           : productCode
 
-        const item = await getProductById(addressRef, productCodeString)
-        if (item) {
-          setItem(item)
+        const dataItem = await getProductById(addressRef, productCodeString)
+
+        if (dataItem) {
+          setItem(dataItem)
         } else {
           console.error('Product not found for code:', productCodeString)
         }
@@ -105,86 +128,84 @@ export default function ItemDetails() {
     })
   }
 
+  useEffect(() => {
+    console.log(cart)
+  }, [cart])
+
   const addToCart = async () => {
-    if (addressRef && productCode &&) {
-      isLoading(true)
-      try {
-        const dataproductcode = data?.find((e) => e.ProductCode === productCode)?.UnitPrice * quantity
+    isLoading(true)
 
-        const productCodeString = Array.isArray(productCode)
-          ? productCode[0]
-          : productCode
+    if (productCode) {
+      const singleProductData = data?.find((e) => e.ProductCode === productCode)
 
-        const selectedProduct = await getProductById(
-          addressRef,
-          productCodeString
-        )
+      if (singleProductData) {
+        const activePrice =
+          singleProductData.UnitPrice < singleProductData.RegularPrice
+            ? singleProductData.UnitPrice
+            : singleProductData.RegularPrice
 
-        if (selectedProduct) {
-          const unitPrice = selectedProduct.UnitPrice ?? 0
-          const regularPrice = selectedProduct.RegularPrice ?? 0
-          const numQuantity = quantity ?? 1
-
-          const calculatedPrice =
-            unitPrice < regularPrice ? unitPrice : regularPrice
-
-          const totalProductPrice = calculatedPrice * numQuantity
-
-          const totalAddOnsPrice = selectedAddOns.reduce((sum, addOn) => {
-            const addOnUnitPrice = addOn.UnitPrice ?? 0
-            const addOnRegularPrice = addOn.RegularPrice ?? 0
-
-            const effectiveAddOnPrice =
-              addOnUnitPrice < addOnRegularPrice
-                ? addOnUnitPrice
-                : addOnRegularPrice
-
-            return sum + effectiveAddOnPrice * numQuantity
-          }, 0)
-
-          const priceToAdd = totalProductPrice + totalAddOnsPrice
-
-          addProduct(selectedProduct, numQuantity, selectedAddOns)
-
-          setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
-          setItems((prevItems) => prevItems + numQuantity)
-
-          Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-          router.back()
-        } else {
-          console.error('Product not found for code:', productCodeString)
-        }
-      } catch (error) {
-        console.log(error)
-      } finally {
-        isLoading(false)
+        console.log(activePrice * quantity)
       }
+      isLoading(false)
+    } else {
+      Toast.error(`Missing product code`)
     }
   }
 
-  const removeFromCart = () => {
-    if (item) {
-      if (quantity > 1) {
-        setQuantity(quantity - 1)
-        reduceProduct(item)
-      } else if (quantity === 1) {
-        reduceProduct(item)
+  const minusHandler = () => {
+    if (productCode) {
+      const singleProductData = data?.find((e) => e.ProductCode === productCode)
+      if (singleProductData) {
+        const activePrice =
+          singleProductData.UnitPrice < singleProductData.RegularPrice
+            ? singleProductData.UnitPrice
+            : singleProductData.RegularPrice
+
+        if (quantity > 1) {
+          setQuantity(quantity - 1)
+          setTotalPrice(quantity - 1 * activePrice)
+          decreaseQuantity(String(productCode))
+        } else if (quantity === 1) {
+          removeProduct(String(productCode))
+        }
       }
     } else {
-      console.error('Cannot remove item from cart: item is null')
+      Toast.error(`Cannot remove item from cart`)
     }
   }
 
-  let calculatedPrice = 0
+  const plusHandler = () => {
+    if (productCode) {
+      const singleProductData = data?.find((e) => e.ProductCode === productCode)
+      if (singleProductData) {
+        const activePrice =
+          singleProductData.UnitPrice < singleProductData.RegularPrice
+            ? singleProductData.UnitPrice
+            : singleProductData.RegularPrice
 
-  if (productPrice) {
-    calculatedPrice =
-      productPrice.UnitPrice < productPrice.RegularPrice
-        ? productPrice.UnitPrice
-        : productPrice.RegularPrice
+        if (quantity > 1) {
+          setQuantity(quantity + 1)
+          increaseQuantity(String(productCode))
+          setTotalPrice(quantity + 1 * activePrice)
+        } else if (quantity === 1) {
+          removeProduct(String(productCode))
+        }
+      }
+    } else {
+      Toast.error(`Cannot add item from cart`)
+    }
   }
 
-  const totalPrice = quantity * (calculatedPrice || 0)
+  // let calculatedPrice = 0
+
+  // if (productPrice) {
+  //   calculatedPrice =
+  // productPrice.UnitPrice < productPrice.RegularPrice
+  //   ? productPrice.UnitPrice
+  //   : productPrice.RegularPrice
+  // }
+
+  // const totalPrice = quantity * (calculatedPrice || 0)
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -371,7 +392,7 @@ export default function ItemDetails() {
             ) : (
               <>
                 <TouchableOpacity
-                  onPress={removeFromCart}
+                  onPress={minusHandler}
                   style={{
                     backgroundColor: colorTokens.light.orange.orange9,
                     borderRadius: 20,
@@ -392,7 +413,7 @@ export default function ItemDetails() {
                   {quantity}
                 </Text>
                 <TouchableOpacity
-                  onPress={() => setQuantity(quantity + 1)}
+                  onPress={plusHandler}
                   style={{
                     backgroundColor: colorTokens.light.orange.orange9,
                     borderRadius: 20,
@@ -418,7 +439,7 @@ export default function ItemDetails() {
                       fontWeight: 'bold',
                     }}
                   >
-                    Add for {formatCurrency(totalPrice)}
+                    Add for {totalPrice && formatCurrency(totalPrice)}
                   </Text>
                 </StyledButton>
               </>

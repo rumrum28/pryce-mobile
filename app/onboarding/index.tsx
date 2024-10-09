@@ -18,7 +18,6 @@ import CustomButton from '~/components/onboarding/custom-button'
 import { useEffect, useState } from 'react'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
-import { ToastViewport } from '@tamagui/toast'
 
 const useInitialURL = () => {
   const [url, setUrl] = useState<string | null>(null)

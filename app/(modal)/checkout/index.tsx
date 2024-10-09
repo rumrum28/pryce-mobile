@@ -12,7 +12,6 @@ import { colorTokens } from '@tamagui/themes'
 import StyledButton from '~/components/styled_button'
 import usePryceStore from '~/hooks/pryceStore'
 import { useEffect, useState } from 'react'
-import { useToastController } from '@tamagui/toast'
 import { formatCurrency } from '~/utils/utils'
 import { PaymentMethodComponent } from '~/components/payment_method'
 import { env } from '~/types/env'
@@ -23,6 +22,7 @@ import { SafeAreaView } from 'react-native-safe-area-context'
 import Skeleton from '~/components/skeleton'
 import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { router } from 'expo-router'
+import { Toast } from 'toastify-react-native'
 
 type ProductProps = {
   ProductCode: string
@@ -40,7 +40,6 @@ export default function CheckoutItem() {
   } = useFetchProductsDetails()
   const { products, total, updateProducts, clearCart } = useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
-  const toast = useToastController()
   const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
   const [loading, isLoading] = useState<boolean>(false)
   const { width, height } = Dimensions.get('window')
@@ -63,18 +62,14 @@ export default function CheckoutItem() {
   const placeOrder = async () => {
     isLoading(true)
     if (products.length < 1) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please check your orders.',
-        native: false,
-      })
+      Toast.error('Please check your orders')
+
       return
     }
 
     if (!paymentMethod) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please select a payment method.',
-        native: false,
-      })
+      Toast.error('Please select a payment method')
+
       return
     }
 
@@ -140,23 +135,14 @@ export default function CheckoutItem() {
         console.log('Response Text:', responseText)
 
         if (response.ok) {
-          toast.show('Order placed successfully!', {
-            message: 'Your order has been placed.',
-            native: false,
-          })
+          Toast.error('Your order has been placed')
         } else {
-          toast.show('Order placement failed!', {
-            message: 'Please try again.',
-            native: false,
-          })
+          Toast.error('Order placement failed')
         }
       } catch (error) {
         console.error('Order Error:', error)
 
-        toast.show('Order placement failed!', {
-          message: 'Please try again.',
-          native: false,
-        })
+        Toast.error('Order placement failed')
       }
     }
     isLoading(false)

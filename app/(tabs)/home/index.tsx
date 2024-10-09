@@ -11,7 +11,6 @@ import Products from '~/components/shop/products/products'
 import Categories from '~/components/shop/category/categories'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
-import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { useMutation } from '@tanstack/react-query'
 import { changeAddressOnLoad } from '~/server/api'
@@ -97,15 +96,6 @@ export default function Page() {
       }}
     >
       <BottomSheet ref={bottomSheetRef} />
-
-      <ToastViewport
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 20,
-        }}
-      />
 
       {isPending ? (
         <View>

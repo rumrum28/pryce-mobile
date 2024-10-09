@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
@@ -33,14 +32,6 @@ export default function Page() {
       }}
     >
       {/* <StatusBar hidden /> */}
-      <ToastViewport
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 20,
-        }}
-      />
 
       <View
         style={{

@@ -21,8 +21,8 @@ import usePryceStore from '~/hooks/pryceStore'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import { PaymentMethodComponent } from '~/components/payment_method'
 import { FontAwesome6 } from '@expo/vector-icons'
-import { Toast, useToastController } from '@tamagui/toast'
 import { env } from '~/types/env'
+import { Toast } from 'toastify-react-native'
 
 type ProductProps = {
   ProductCode: string
@@ -45,7 +45,6 @@ export default function Basket() {
 
   const [loading, isLoading] = useState<boolean>(false)
   const [paymentAmount, setPaymentAmount] = useState<number>(0)
-  const toast = useToastController()
   const { width, height } = Dimensions.get('window')
 
   const token = usePryceStore((s) => s.token)
@@ -207,19 +206,13 @@ export default function Basket() {
   const placeOrder = async () => {
     isLoading(true)
     if (products.length < 1) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please check your orders.',
-        native: false,
-      })
+      Toast.error('Please check your orders')
       isLoading(false)
       return
     }
 
     if (!selectedPaymentMethod) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please select a payment method.',
-        native: false,
-      })
+      Toast.error('Please select a payment method')
       isLoading(false)
       return
     }
@@ -287,10 +280,7 @@ export default function Basket() {
 
           if (selectedPaymentMethod === 'online-payment') {
             if (responseText?.success && responseText?.checkout_url) {
-              toast.show('Pending payment!', {
-                message: 'Your order has been created.',
-                native: false,
-              })
+              Toast.success('Your order has been created')
 
               router.push({
                 pathname: '/checkout/paymongo_webview',
@@ -299,31 +289,19 @@ export default function Basket() {
                 },
               })
             } else {
-              toast.show('Error!', {
-                message: 'Something is wrong with your order.',
-                native: false,
-              })
+              Toast.error('Something is wrong with your order')
             }
           } else {
-            toast.show('Order placed successfully!', {
-              message: 'Your order has been placed.',
-              native: false,
-            })
+            Toast.success('Your order has been placed')
 
             router.push('/success')
           }
         } else {
-          toast.show('Order placement failed!', {
-            message: 'Please try again.',
-            native: false,
-          })
+          Toast.error('Order placement failed')
         }
       } catch (error) {
         console.error('Order Error:', error)
-        toast.show('Order placement failed!', {
-          message: 'Please try again.',
-          native: false,
-        })
+        Toast.error('Order placement failed')
       } finally {
         isLoading(false)
       }

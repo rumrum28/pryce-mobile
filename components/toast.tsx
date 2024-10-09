@@ -1,30 +1,30 @@
-import { Toast, useToastState } from '@tamagui/toast'
+// import { Toast, useToastState } from '@tamagui/toast'
 
-import { YStack } from 'tamagui'
+// import { YStack } from 'tamagui'
 
-export const CurrentToast = () => {
-  const currentToast = useToastState()
-  if (!currentToast || currentToast.isHandledNatively) return null
+// export const CurrentToast = () => {
+//   const currentToast = useToastState()
+//   if (!currentToast || currentToast.isHandledNatively) return null
 
-  return (
-    <Toast
-      key={currentToast.id}
-      duration={currentToast.duration}
-      enterStyle={{ opacity: 0, scale: 0.5, y: -25 }}
-      exitStyle={{ opacity: 0, scale: 1, y: -20 }}
-      y={0}
-      opacity={1}
-      scale={1}
-      animation="quick"
-      viewportName={currentToast.viewportName}
-    >
-      <YStack>
-        <Toast.Title textAlign="center">{currentToast.title}</Toast.Title>
+//   return (
+//     <Toast
+//       key={currentToast.id}
+//       duration={currentToast.duration}
+//       enterStyle={{ opacity: 0, scale: 0.5, y: -25 }}
+//       exitStyle={{ opacity: 0, scale: 1, y: -20 }}
+//       y={0}
+//       opacity={1}
+//       scale={1}
+//       animation="quick"
+//       viewportName={currentToast.viewportName}
+//     >
+//       <YStack>
+//         <Toast.Title textAlign="center">{currentToast.title}</Toast.Title>
 
-        {!!currentToast.message && (
-          <Toast.Description>{currentToast.message}</Toast.Description>
-        )}
-      </YStack>
-    </Toast>
-  )
-}
+//         {!!currentToast.message && (
+//           <Toast.Description>{currentToast.message}</Toast.Description>
+//         )}
+//       </YStack>
+//     </Toast>
+//   )
+// }
