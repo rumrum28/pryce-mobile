@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { cartStorage } from '~/server/mmkv'
 
-type Product = {
+export type Product = {
   productCode: string
   quantity: number
 }

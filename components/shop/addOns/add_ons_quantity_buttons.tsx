@@ -21,7 +21,6 @@ export default function AddOnsQuantityButtons() {
       alignItems: 'center',
       justifyContent: 'space-between',
       width: 120,
-      // padding: 10,
       backgroundColor: '#f0f0f0',
       borderRadius: 10,
     },

@@ -4,46 +4,26 @@ import {
   SafeAreaView,
   ScrollView,
   Text,
-  TouchableOpacity,
 } from 'react-native'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Products from '~/components/shop/products/products'
-import Categories from '~/components/shop/category/categories'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
 import usePryceStore from '~/hooks/pryceStore'
-import { useMutation } from '@tanstack/react-query'
-import { changeAddressOnLoad } from '~/server/api'
-import { queryClient } from '~/hooks/queryClient'
-import { Button, Spinner, View, YStack } from 'tamagui'
-import { router } from 'expo-router'
-import ProductGroup from '~/components/productGroup'
+import { View } from 'tamagui'
 import { useFetchProducts } from '~/hooks/fetchProducts'
-import { logout } from '~/components/logout'
 import BottomSheet from '~/components/bottom_sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import useBasketStore from '~/utils/basketStore'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const addressRef = usePryceStore((state) => state.addressRef)
-  const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
-  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
-  const setToken = usePryceStore((state) => state.setToken)
-  const setChangeAddressTrigger = usePryceStore(
-    (state) => state.setChangeAddressTrigger
-  )
-  const setUsers = usePryceStore((state) => state.setUsers)
-  const setEmail = usePryceStore((state) => state.setEmail)
-  const setAddressRef = usePryceStore((state) => state.setAddressRef)
   const [refreshing, setRefreshing] = useState(false)
   const bottomSheetRef = useRef<BottomSheetModal>(null)
   const changeAddressTrigger = usePryceStore(
     (state) => state.changeAddressTrigger
   )
-  const { products, total, updateProducts, clearCart } = useBasketStore()
 
   useEffect(() => {
     if (selectedUser) {
@@ -54,13 +34,7 @@ export default function Page() {
 
       fetchProducts(userData)
     }
-  }, [selectedUser, fetchProducts])
-
-  //useEffecttestonly
-  useEffect(() => {
-    console.log(products)
-    console.log(total)
-  }, [])
+  }, [selectedUser])
 
   useEffect(() => {
     if (!isPending) {

@@ -1,13 +1,10 @@
-import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native'
+import { FlatList, Pressable, Text, View } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { ProductSingle } from '~/types/product'
 import { Image } from 'tamagui'
 import { ProductsDetail } from '~/utils/products'
 import { colorTokens } from '@tamagui/themes'
 import { formatCurrency } from '~/utils/utils'
-import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler'
-import { Ionicons } from '@expo/vector-icons'
-import useCartStore from '~/hooks/productsStore'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { AddOn } from '~/utils/basketStore'
 import AddOnsQuantityButtons from './add_ons_quantity_buttons'
@@ -24,19 +21,38 @@ export default function AddOns({
   onToggleAddOn: (addOn: AddOn) => void
 }) {
   const [filteredData, setFilteredData] = useState<ProductSingle[]>([])
+  const [buttonVisibility, setButtonVisibility] = useState<{
+    [key: string]: boolean
+  }>({})
+  const timeouts: { [key: string]: NodeJS.Timeout } = {}
 
   useEffect(() => {
     if (realTimeProductData) {
       const filtered = realTimeProductData.filter((fp) =>
         productCodeMap.includes(fp.ProductCode)
       )
-
       setFilteredData(filtered)
     }
   }, [productCodeMap, realTimeProductData])
 
   const handleToggle = (addOn: AddOn) => {
     onToggleAddOn(addOn)
+
+    setButtonVisibility((prevState) => ({
+      ...prevState,
+      [addOn.Id]: true,
+    }))
+
+    if (timeouts[addOn.Id]) {
+      clearTimeout(timeouts[addOn.Id]) // Clear previous timeout to avoid premature hiding
+    }
+
+    timeouts[addOn.Id] = setTimeout(() => {
+      setButtonVisibility((prevState) => ({
+        ...prevState,
+        [addOn.Id]: false,
+      }))
+    }, 5000)
   }
 
   return (
@@ -120,7 +136,7 @@ export default function AddOns({
                     width: 28,
                   }}
                 />
-                {/* <Image
+                <Image
                   source={{
                     uri: ProductsDetail.find((pd) => pd.id === item.ProductCode)
                       ?.image,
@@ -129,7 +145,7 @@ export default function AddOns({
                     width: 50,
                     height: 30,
                   }}
-                /> */}
+                />
                 <Text
                   style={{
                     paddingLeft: 8,
@@ -142,7 +158,8 @@ export default function AddOns({
                 </Text>
               </Pressable>
 
-              {selectedAddOns.some((ao) => ao.Id === item.Id) ? (
+              {selectedAddOns.some((ao) => ao.Id === item.Id) &&
+              buttonVisibility[item.Id] ? (
                 <AddOnsQuantityButtons />
               ) : null}
 
@@ -152,8 +169,29 @@ export default function AddOns({
                   color: colorTokens.light.orange.orange9,
                 }}
               >
-                +{formattedPrice}
+                {formattedPrice}
               </Text>
+
+              <Pressable
+                style={{
+                  backgroundColor: 'black',
+                  padding: 2,
+                  borderRadius: 50,
+                  width: 23,
+                  alignItems: 'center',
+                  marginLeft: 5,
+                }}
+                onPress={() => handleToggle(item)}
+              >
+                <Text
+                  style={{
+                    color: 'white',
+                    fontWeight: '800',
+                  }}
+                >
+                  1
+                </Text>
+              </Pressable>
             </View>
           )
         }}

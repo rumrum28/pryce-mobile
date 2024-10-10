@@ -134,20 +134,14 @@ export default function ItemDetails() {
   }, [cart])
 
   const addToCart = async () => {
-    isLoading(true)
-
     if (productCode) {
-      const singleProductData = data?.find((e) => e.ProductCode === productCode)
-
-      if (singleProductData) {
-        const activePrice =
-          singleProductData.UnitPrice < singleProductData.RegularPrice
-            ? singleProductData.UnitPrice
-            : singleProductData.RegularPrice
-
-        console.log(activePrice * quantity)
+      const singleDataInfo = {
+        productCode: String(productCode),
+        quantity,
       }
-      isLoading(false)
+
+      addProduct(singleDataInfo)
+      router.back()
     } else {
       Toast.error(`Missing product code`)
     }
@@ -162,18 +156,15 @@ export default function ItemDetails() {
             ? singleProductData.UnitPrice
             : singleProductData.RegularPrice
 
-        if (quantity > 1) {
-          const singelProductInfo = {
-            quantity,
-            productCode,
-          }
+        console.log(quantity)
 
+        if (quantity > 0) {
           setQuantity(quantity + 1)
-          addProduct(singelProductInfo)
-          setTotalPrice(quantity + 1 * activePrice)
-        } else if (quantity === 1) {
-          removeProduct(String(productCode))
+          setTotalPrice((quantity + 1) * activePrice)
         }
+        // else if (quantity === 1) {
+        //   removeProduct(String(productCode))
+        // }
       }
     } else {
       Toast.error(`Cannot add item from cart`)
@@ -191,11 +182,12 @@ export default function ItemDetails() {
 
         if (quantity > 1) {
           setQuantity(quantity - 1)
-          setTotalPrice(quantity - 1 * activePrice)
-          decreaseQuantity(String(productCode))
-        } else if (quantity === 1) {
-          removeProduct(String(productCode))
+          setTotalPrice((quantity - 1) * activePrice)
+          // decreaseQuantity(String(productCode))
         }
+        //  else if (quantity === 1) {
+        //   removeProduct(String(productCode))
+        // }
       }
     } else {
       Toast.error(`Cannot remove item from cart`)

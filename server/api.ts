@@ -86,7 +86,6 @@ export const changeAddressOnLoad = async (data: {
       body: JSON.stringify({
         account_number: data.accountNumber,
       }),
-      cache: 'no-store',
     }
   )
   const changeAddressResponse: Profile = await changeAddress.json()
