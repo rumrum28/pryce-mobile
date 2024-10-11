@@ -30,12 +30,16 @@ const useCartStore = create<CartState>()(
             return {
               cart: state.cart.map((p: Product) => {
                 if (p.productCode === product.productCode) {
+                  // return {
+                  //   ...p,
+                  //   quantity:
+                  //     product.quantity > 1
+                  //       ? p.quantity + product.quantity
+                  //       : p.quantity + 1,
+                  // }
                   return {
                     ...p,
-                    quantity:
-                      product.quantity > 1
-                        ? p.quantity + product.quantity
-                        : p.quantity + 1,
+                    quantity: product.quantity,
                   }
                 }
                 return p

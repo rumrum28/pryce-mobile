@@ -1,18 +1,22 @@
 import { colorTokens } from '@tamagui/themes'
-import React, { useState } from 'react'
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native'
+import useCartStore from '~/hooks/productsStore'
 
-export default function AddOnsQuantityButtons() {
-  const [quantity, setQuantity] = useState<number>(1)
+export default function AddOnsQuantityButtons({
+  productCode,
+}: {
+  productCode: string
+}) {
+  const increaseQuantity = useCartStore((s) => s.increaseQuantity)
+  const decreaseQuantity = useCartStore((s) => s.decreaseQuantity)
+  const cart = useCartStore((s) => s.cart)
 
   const incrementQuantity = () => {
-    setQuantity((prevQuantity) => prevQuantity + 1)
+    increaseQuantity(productCode)
   }
 
   const decrementQuantity = () => {
-    if (quantity > 1) {
-      setQuantity((prevQuantity) => prevQuantity - 1)
-    }
+    decreaseQuantity(productCode)
   }
 
   const styles = StyleSheet.create({
@@ -22,23 +26,27 @@ export default function AddOnsQuantityButtons() {
       justifyContent: 'space-between',
       width: 120,
       backgroundColor: '#f0f0f0',
-      borderRadius: 10,
+      borderRadius: 25,
+      borderWidth: 1,
+      borderColor: colorTokens.light.gray.gray7,
     },
     button: {
-      width: 40,
-      height: 40,
+      width: 30,
+      height: 30,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: colorTokens.light.orange.orange9,
-      borderRadius: 5,
+      backgroundColor: 'white', //colorTokens.light.orange.orange9
+      borderRadius: 25,
+      borderWidth: 1,
+      borderColor: colorTokens.light.gray.gray9,
     },
     buttonText: {
-      color: '#fff',
+      color: 'black',
       fontSize: 20,
       fontWeight: 'bold',
     },
     quantityText: {
-      fontSize: 18,
+      fontSize: 14,
       fontWeight: '500',
     },
   })
@@ -49,7 +57,9 @@ export default function AddOnsQuantityButtons() {
         <Text style={styles.buttonText}>-</Text>
       </TouchableOpacity>
 
-      <Text style={styles.quantityText}>{quantity}</Text>
+      <Text style={styles.quantityText}>
+        {cart.find((c) => c.productCode === productCode)?.quantity}
+      </Text>
 
       <TouchableOpacity style={styles.button} onPress={incrementQuantity}>
         <Text style={styles.buttonText}>+</Text>

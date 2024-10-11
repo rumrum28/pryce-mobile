@@ -6,26 +6,21 @@ import {
   StatusBar,
   Dimensions,
 } from 'react-native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Feather, SimpleLineIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
-import { Link, useNavigation } from 'expo-router'
-import { DrawerActions } from '@react-navigation/native'
+import { Link } from 'expo-router'
 import { SearchBar } from '~/components/search_bar'
 import usePryceStore from '~/hooks/pryceStore'
 import useCartStore from '~/hooks/productsStore'
 import useBasketStore from '~/utils/basketStore'
-import BottomSheet from './bottom_sheet'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import NetworkStatus from './network_status'
 
 export default function Header() {
-  const token = usePryceStore((state) => state.token)
   const users = usePryceStore((state) => state.users)
   const cart = useCartStore((state) => state.cart)
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const { items, total } = useBasketStore()
   const [addressText, setAddressText] = useState<string>('Select Address')
   const [cityText, setCityText] = useState<string>('')
   const setChangeAddressTrigger = usePryceStore(
@@ -130,7 +125,7 @@ export default function Header() {
                     fontWeight: 'bold',
                   }}
                 >
-                  {items}
+                  {cart.length}
                 </Text>
               </View>
               <Feather name="shopping-bag" size={24} color="white" />

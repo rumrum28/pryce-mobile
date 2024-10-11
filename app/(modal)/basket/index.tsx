@@ -6,29 +6,26 @@ import {
   StyleSheet,
   Dimensions,
   Pressable,
+  ScrollView,
+  findNodeHandle,
 } from 'react-native'
-import React, { useEffect, useState } from 'react'
-// import useBasketStore, { AddOn, Product } from '~/utils/basketStore'
+import React, { useEffect, useRef, useState } from 'react'
 import { formatCurrency } from '~/utils/utils'
 import { colorTokens } from '@tamagui/themes'
-import { Link, router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import SwipeableRow from '~/components/swipeable_row'
 import StyledButton from '~/components/styled_button'
-import { ScrollView } from 'react-native-gesture-handler'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import { PaymentMethodComponent } from '~/components/payment_method'
 import { FontAwesome6 } from '@expo/vector-icons'
-import { env } from '~/types/env'
-import { Toast } from 'toastify-react-native'
 import useCartStore, { Product } from '~/hooks/productsStore'
-import { ProductSingle } from '~/types/product'
-import useBasketStore, { AddOn } from '~/utils/basketStore'
 import Skeleton from '~/components/skeleton'
 import AddOns from '~/components/shop/addOns/add_ons'
 import { exemptedOnProducts } from '~/utils/products'
 import { ShakingEmoticonArrow } from '~/components/shaking_animation_arrow'
+import { AddOn } from '~/types/product'
+import { router } from 'expo-router'
 
 export default function Basket() {
   const {
@@ -36,9 +33,9 @@ export default function Basket() {
     data,
     isPending,
   } = useFetchProductsDetails()
-  const { products, total, reduceProduct, updateProducts, clearCart } =
-    useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
+  const scrollViewRef = useRef<ScrollView>(null)
+  const viewRef = useRef<Text>(null)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
   const increaseQuantity = useCartStore((state) => state.increaseQuantity)
   const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
@@ -46,6 +43,7 @@ export default function Basket() {
   const removeProduct = useCartStore((state) => state.removeProduct)
   const [loading, isLoading] = useState<boolean>(false)
   const [paymentAmount, setPaymentAmount] = useState<number>(0)
+  const [totalAmount, setTotalAmount] = useState<number>(0)
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
   const [viewAddOns, isViewAddOns] = useState<boolean>(false)
   const { width, height } = Dimensions.get('window')
@@ -63,6 +61,26 @@ export default function Basket() {
   //     updateProducts(data)
   //   }
   // }, [data, updateProducts])
+
+  const focusView = () => {
+    if (viewRef.current && scrollViewRef.current) {
+      // Use findNodeHandle to get the native handle for ScrollView
+      const scrollViewNodeHandle = findNodeHandle(scrollViewRef.current)
+
+      if (scrollViewNodeHandle) {
+        viewRef.current.measureLayout(
+          scrollViewNodeHandle,
+          (x, y, width, height) => {
+            // Scroll to the position of the view
+            scrollViewRef.current?.scrollTo({ y, animated: false })
+          },
+          () => {
+            console.log('Measurement failed')
+          }
+        )
+      }
+    }
+  }
 
   const renderItem = ({ item }: { item: Product }) => {
     const singleProductData = data?.find(
@@ -308,7 +326,7 @@ export default function Basket() {
         return accumulator
       }, 0)
 
-      setPaymentAmount(totalPrice)
+      setTotalAmount(totalPrice)
     }
   }, [data, cart])
 
@@ -335,6 +353,7 @@ export default function Basket() {
       ) : (
         <View style={{ flex: 1 }}>
           <ScrollView
+            ref={scrollViewRef}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 130 }}
@@ -373,15 +392,17 @@ export default function Basket() {
                     >
                       Order Summary
                     </Text>
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 'bold',
-                        color: colorTokens.light.orange.orange9,
-                      }}
-                    >
-                      Add Items
-                    </Text>
+                    <Pressable onPress={() => router.push('/(tabs)/home')}>
+                      <Text
+                        style={{
+                          fontSize: 14,
+                          fontWeight: 'bold',
+                          color: colorTokens.light.orange.orange9,
+                        }}
+                      >
+                        Add Items
+                      </Text>
+                    </Pressable>
                   </View>
                 </View>
               }
@@ -403,12 +424,13 @@ export default function Basket() {
                 onPress={() => isViewAddOns(!viewAddOns)}
               >
                 <Text
+                  ref={viewRef}
                   style={{
                     color: colorTokens.light.orange.orange9,
                     flex: 1,
                   }}
                 >
-                  Manage Add Ons
+                  Manage Add-ons
                 </Text>
 
                 <View
@@ -465,6 +487,7 @@ export default function Basket() {
                       realTimeProductData={data}
                       selectedAddOns={selectedAddOns}
                       onToggleAddOn={handleToggleAddOn}
+                      focusView={focusView}
                     />
                   )}
                 </>
@@ -490,7 +513,7 @@ export default function Basket() {
                 <Text style={{ color: colorTokens.light.gray.gray9 }}>
                   Subtotal
                 </Text>
-                <Text>{formatCurrency(paymentAmount)}</Text>
+                <Text>{formatCurrency(totalAmount)}</Text>
               </View>
 
               <View
@@ -529,7 +552,7 @@ export default function Basket() {
                 <Text style={{ color: colorTokens.light.gray.gray9 }}>
                   Order Total
                 </Text>
-                <Text>{formatCurrency(paymentAmount)}</Text>
+                <Text>{formatCurrency(totalAmount)}</Text>
               </View>
             </View>
 
@@ -539,6 +562,7 @@ export default function Basket() {
                 setPaymentMethod={setSelectedPaymentMethod}
                 paymentAmount={String(paymentAmount)}
                 setPaymentAmount={setPaymentAmount}
+                totalAmount={totalAmount}
               />
             </View>
           </ScrollView>
@@ -587,7 +611,7 @@ export default function Basket() {
                     padding: 8,
                   }}
                 >
-                  <Text>{formatCurrency(paymentAmount)}</Text>
+                  <Text>{formatCurrency(totalAmount)}</Text>
                 </Text>
               </View>
               <StyledButton

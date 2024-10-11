@@ -355,6 +355,7 @@ export default function ItemDetails() {
               realTimeProductData={data}
               selectedAddOns={selectedAddOns}
               onToggleAddOn={handleToggleAddOn}
+              focusView={() => {}}
             />
           )}
         </Animated.ScrollView>

@@ -1,5 +1,5 @@
 import { FlatList, Pressable, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import React, { forwardRef, useEffect, useState } from 'react'
 import { ProductSingle } from '~/types/product'
 import { Image } from 'tamagui'
 import { ProductsDetail } from '~/utils/products'
@@ -8,23 +8,27 @@ import { formatCurrency } from '~/utils/utils'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import { AddOn } from '~/utils/basketStore'
 import AddOnsQuantityButtons from './add_ons_quantity_buttons'
+import useCartStore from '~/hooks/productsStore'
 
-export default function AddOns({
-  productCodeMap,
-  realTimeProductData,
-  selectedAddOns,
-  onToggleAddOn,
-}: {
+type AddOnsProps = {
   productCodeMap: string[]
   realTimeProductData: ProductSingle[] | undefined
   selectedAddOns: Array<AddOn>
   onToggleAddOn: (addOn: AddOn) => void
-}) {
+  focusView: () => void
+}
+
+const AddOns = ({
+  productCodeMap,
+  realTimeProductData,
+  selectedAddOns,
+  onToggleAddOn,
+  focusView,
+}: AddOnsProps) => {
   const [filteredData, setFilteredData] = useState<ProductSingle[]>([])
-  const [buttonVisibility, setButtonVisibility] = useState<{
-    [key: string]: boolean
-  }>({})
-  const timeouts: { [key: string]: NodeJS.Timeout } = {}
+  const addProduct = useCartStore((s) => s.addProduct)
+  const cart = useCartStore((s) => s.cart)
+  const removeProduct = useCartStore((s) => s.removeProduct)
 
   useEffect(() => {
     if (realTimeProductData) {
@@ -37,22 +41,15 @@ export default function AddOns({
 
   const handleToggle = (addOn: AddOn) => {
     onToggleAddOn(addOn)
-
-    setButtonVisibility((prevState) => ({
-      ...prevState,
-      [addOn.Id]: true,
-    }))
-
-    if (timeouts[addOn.Id]) {
-      clearTimeout(timeouts[addOn.Id]) // Clear previous timeout to avoid premature hiding
+    focusView()
+    const checkProduct = cart.some((c) => c.productCode === addOn.ProductCode)
+    if (checkProduct) return removeProduct(addOn.ProductCode)
+    const singleProductDataInfo = {
+      productCode: addOn.ProductCode,
+      quantity: 1,
     }
 
-    timeouts[addOn.Id] = setTimeout(() => {
-      setButtonVisibility((prevState) => ({
-        ...prevState,
-        [addOn.Id]: false,
-      }))
-    }, 5000)
+    addProduct(singleProductDataInfo)
   }
 
   return (
@@ -100,6 +97,7 @@ export default function AddOns({
                 : productPrice.RegularPrice
           }
           const formattedPrice = formatCurrency(calculatedPrice)
+
           return (
             <View
               style={{
@@ -109,13 +107,12 @@ export default function AddOns({
                 alignItems: 'center',
               }}
             >
-              <Pressable
+              <View
                 style={{
                   flexDirection: 'row',
-                  alignItems: 'center',
-                  justifyContent: 'flex-start',
                   flex: 1,
                   paddingVertical: 10,
+                  height: 60,
                 }}
               >
                 <BouncyCheckbox
@@ -136,32 +133,51 @@ export default function AddOns({
                     width: 28,
                   }}
                 />
-                <Image
-                  source={{
-                    uri: ProductsDetail.find((pd) => pd.id === item.ProductCode)
-                      ?.image,
-                  }}
+                <View
                   style={{
-                    width: 50,
-                    height: 30,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'flex-start',
+                    columnGap: 10,
                   }}
-                />
-                <Text
-                  style={{
-                    paddingLeft: 8,
-                    fontSize: 13,
-                    width: '80%',
-                  }}
-                  numberOfLines={1}
                 >
-                  {item.Name}
-                </Text>
-              </Pressable>
+                  <Image
+                    source={{
+                      uri: ProductsDetail.find(
+                        (pd) => pd.id === item.ProductCode
+                      )?.image,
+                    }}
+                    style={{
+                      width: 50,
+                      height: 30,
+                    }}
+                  />
 
-              {selectedAddOns.some((ao) => ao.Id === item.Id) &&
-              buttonVisibility[item.Id] ? (
-                <AddOnsQuantityButtons />
-              ) : null}
+                  <View
+                    style={{
+                      alignItems: 'flex-start',
+                      justifyContent: 'flex-start',
+                      width: '75%',
+                      rowGap: 10,
+                    }}
+                  >
+                    <Text
+                      style={{
+                        paddingLeft: 8,
+                        fontSize: 13,
+                        width: '90%',
+                      }}
+                      numberOfLines={1}
+                    >
+                      {item.Name}
+                    </Text>
+
+                    {selectedAddOns.some((ao) => ao.Id === item.Id) ? (
+                      <AddOnsQuantityButtons productCode={item.ProductCode} />
+                    ) : null}
+                  </View>
+                </View>
+              </View>
 
               <Text
                 style={{
@@ -171,27 +187,6 @@ export default function AddOns({
               >
                 {formattedPrice}
               </Text>
-
-              <Pressable
-                style={{
-                  backgroundColor: 'black',
-                  padding: 2,
-                  borderRadius: 50,
-                  width: 23,
-                  alignItems: 'center',
-                  marginLeft: 5,
-                }}
-                onPress={() => handleToggle(item)}
-              >
-                <Text
-                  style={{
-                    color: 'white',
-                    fontWeight: '800',
-                  }}
-                >
-                  1
-                </Text>
-              </Pressable>
             </View>
           )
         }}
@@ -199,3 +194,5 @@ export default function AddOns({
     </View>
   )
 }
+
+export default AddOns

@@ -35,3 +35,13 @@ export type ProductDisplayProps = {
   name: string
   description: string
 }
+
+export interface AddOn {
+  Id: string
+  Name: string
+  ProductCode: string
+  Product2Id: string
+  UnitPrice: number
+  Pricebook2Id: string
+  RegularPrice: number
+}
