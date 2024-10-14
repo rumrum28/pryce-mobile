@@ -1,7 +1,6 @@
 import {
   View,
   Text,
-  Image,
   TouchableOpacity,
   Dimensions,
   Platform,
@@ -21,23 +20,16 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from 'react-native-reanimated'
-import * as Haptics from 'expo-haptics'
-import useBasketStore, { AddOn } from '~/utils/basketStore'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import StyledButton from '~/components/styled_button'
-import { useMutation } from '@tanstack/react-query'
-import { fetchProductsQuery, getProductById } from '~/server/api'
-import { queryClient } from '~/hooks/queryClient'
 import usePryceStore from '~/hooks/pryceStore'
 import { exemptedOnProducts, ProductsDetail } from '~/utils/products'
-import { Spinner, YStack } from 'tamagui'
-import { ProductSingle } from '~/types/product'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import Skeleton from '~/components/skeleton'
 import AddOns from '~/components/shop/addOns/add_ons'
-import { ScrollView } from 'react-native-gesture-handler'
 import { Toast } from 'toastify-react-native'
 import useCartStore from '~/hooks/productsStore'
+import { AddOn } from '~/types/product'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
@@ -59,23 +51,13 @@ export default function ItemDetails() {
   } = useFetchProductsDetails()
 
   const [quantity, setQuantity] = useState(1)
-  const [totalPriceNumber, setTotalPriceNumber] = useState(0)
-  const [items, setItems] = useState(0)
   const addressRef = usePryceStore((set) => set.addressRef)
-  const [item, setItem] = useState<ProductSingle | null>(null)
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
   const cart = useCartStore((state) => state.cart)
   const addProduct = useCartStore((state) => state.addProduct)
-  const increaseQuantity = useCartStore((state) => state.increaseQuantity)
-  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
-  const removeProduct = useCartStore((state) => state.removeProduct)
-  const clearCart = useCartStore((state) => state.clearCart)
-  const [loading, isLoading] = useState<boolean>(false)
   const [totalPrice, setTotalPrice] = useState<number>(0)
-
-  // const { addProduct, reduceProduct, clearCart } = useBasketStore()
 
   useEffect(() => {
     if (addressRef) {
@@ -97,26 +79,6 @@ export default function ItemDetails() {
       }
     }
   }, [data])
-
-  useEffect(() => {
-    const productDetails = async () => {
-      if (addressRef && productCode) {
-        const productCodeString = Array.isArray(productCode)
-          ? productCode[0]
-          : productCode
-
-        const dataItem = await getProductById(addressRef, productCodeString)
-
-        if (dataItem) {
-          setItem(dataItem)
-        } else {
-          console.error('Product not found for code:', productCodeString)
-        }
-      }
-    }
-
-    productDetails()
-  }, [addressRef, productCode, data])
 
   const handleToggleAddOn = (addOn: AddOn) => {
     setSelectedAddOns((prevSelectedAddOns) => {
@@ -162,9 +124,6 @@ export default function ItemDetails() {
           setQuantity(quantity + 1)
           setTotalPrice((quantity + 1) * activePrice)
         }
-        // else if (quantity === 1) {
-        //   removeProduct(String(productCode))
-        // }
       }
     } else {
       Toast.error(`Cannot add item from cart`)
@@ -183,27 +142,12 @@ export default function ItemDetails() {
         if (quantity > 1) {
           setQuantity(quantity - 1)
           setTotalPrice((quantity - 1) * activePrice)
-          // decreaseQuantity(String(productCode))
         }
-        //  else if (quantity === 1) {
-        //   removeProduct(String(productCode))
-        // }
       }
     } else {
       Toast.error(`Cannot remove item from cart`)
     }
   }
-
-  // let calculatedPrice = 0
-
-  // if (productPrice) {
-  //   calculatedPrice =
-  // productPrice.UnitPrice < productPrice.RegularPrice
-  //   ? productPrice.UnitPrice
-  //   : productPrice.RegularPrice
-  // }
-
-  // const totalPrice = quantity * (calculatedPrice || 0)
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -231,10 +175,6 @@ export default function ItemDetails() {
       opacity: interpolate(scrollOfset.value, [0, IMG_HEIGHT / 1.5], [0, 1]),
     }
   })
-
-  const handleClear = () => {
-    clearCart()
-  }
 
   return (
     <SafeAreaView
@@ -306,20 +246,6 @@ export default function ItemDetails() {
               {ProductsDetail.find((e) => e.id === productCode)?.description}
             </Animated.Text>
           </View>
-          <Animated.Text
-            style={{
-              fontSize: 16,
-              fontWeight: 'bold',
-              margin: 16,
-            }}
-            entering={FadeInLeft.duration(400).delay(200)}
-          >
-            Add-ons
-          </Animated.Text>
-
-          <TouchableOpacity onPress={clearCart}>
-            <Text>Clear</Text>
-          </TouchableOpacity>
 
           {isPending ? (
             <View
@@ -350,13 +276,25 @@ export default function ItemDetails() {
               </View>
             </View>
           ) : productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
-            <AddOns
-              productCodeMap={exemptedOnProducts}
-              realTimeProductData={data}
-              selectedAddOns={selectedAddOns}
-              onToggleAddOn={handleToggleAddOn}
-              focusView={() => {}}
-            />
+            <>
+              <Animated.Text
+                style={{
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  margin: 16,
+                }}
+                entering={FadeInLeft.duration(400).delay(200)}
+              >
+                Add-ons
+              </Animated.Text>
+
+              <AddOns
+                productCodeMap={exemptedOnProducts}
+                realTimeProductData={data}
+                selectedAddOns={selectedAddOns}
+                onToggleAddOn={handleToggleAddOn}
+              />
+            </>
           )}
         </Animated.ScrollView>
         <View
@@ -383,7 +321,7 @@ export default function ItemDetails() {
               justifyContent: 'center',
             }}
           >
-            {isPending || loading ? (
+            {isPending ? (
               <ActivityIndicator
                 size="large"
                 color={colorTokens.light.orange.orange9}
@@ -429,7 +367,7 @@ export default function ItemDetails() {
                     alignItems: 'center',
                   }}
                   onPress={addToCart}
-                  disabled={isPending || loading}
+                  disabled={isPending}
                 >
                   <Text
                     style={{

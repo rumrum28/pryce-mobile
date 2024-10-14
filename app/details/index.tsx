@@ -28,6 +28,8 @@ import { ProductDisplayProps } from '~/types/product'
 import { productDisplay, ProductsDetail } from '~/utils/products'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import Skeleton from '~/components/skeleton'
+import useCartStore from '~/hooks/productsStore'
+import PGCM from '~/components/pgcm'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
@@ -49,14 +51,11 @@ const Details = () => {
 
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
-  const { items, total } = useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
   const { id } = useLocalSearchParams()
   const [itemProducts, setItemProducts] = useState<ProductDisplayProps | null>(
     null
   )
-
-  const formattedPrice = formatCurrency(Number(total))
 
   useEffect(() => {
     if (addressRef) {
@@ -64,9 +63,8 @@ const Details = () => {
     }
   }, [addressRef, fetchProductsDetails])
 
-  // console.log(data)
-
   useEffect(() => {
+    console.log(id)
     if (id) {
       const getSingleData = productDisplay.filter((e) => e.id === Number(id))
       setItemProducts(getSingleData[0])
@@ -228,7 +226,9 @@ const Details = () => {
           }
           style={[styles.image, imageAnimatedStyle]}
         />
-        <View style={{ height: 200, backgroundColor: 'white' }}>
+        <View
+          style={{ height: 'auto', backgroundColor: 'white', marginBottom: 20 }}
+        >
           <Text
             style={{
               fontSize: 20,
@@ -250,6 +250,7 @@ const Details = () => {
             {itemProducts?.description}
           </Text>
         </View>
+
         {isPending && itemProducts ? (
           <View
             style={{
@@ -293,8 +294,14 @@ const Details = () => {
             )}
           />
         )}
+
+        {itemProducts?.productCode.some(
+          (e) => e === 'PGCM' || e === 'PGCMV'
+        ) ? (
+          <PGCM />
+        ) : null}
       </Animated.ScrollView>
-      {items > 0 && (
+      {/* {items > 0 && (
         <View
           style={{
             position: 'absolute',
@@ -314,52 +321,9 @@ const Details = () => {
           <SafeAreaView
             style={{ flex: 1, backgroundColor: 'white' }}
             edges={['bottom']}
-          >
-            {/* <Link href="/(modal)/basket" asChild>
-              <StyledButton>
-                <View
-                  style={{
-                    justifyContent: 'space-between',
-                    flexDirection: 'row',
-                    flex: 1,
-                    alignItems: 'center',
-                  }}
-                >
-                  <Text
-                    style={{
-                      color: colorTokens.light.orange.orange9,
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      padding: 8,
-                      backgroundColor: 'white',
-                    }}
-                  >
-                    {items}
-                  </Text>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    View Basket
-                  </Text>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                    }}
-                  >
-                    {formattedPrice}
-                  </Text>
-                </View>
-              </StyledButton>
-            </Link> */}
-          </SafeAreaView>
+          ></SafeAreaView>
         </View>
-      )}
+      )} */}
     </View>
   )
 }

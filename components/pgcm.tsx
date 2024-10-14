@@ -7,6 +7,7 @@ export default function PGCM() {
         flex: 1,
         flexDirection: 'column',
         alignContent: 'flex-start',
+        paddingHorizontal: 10,
       }}
     >
       <Text

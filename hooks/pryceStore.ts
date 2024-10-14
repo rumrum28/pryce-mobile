@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { pryceStorage } from '~/server/mmkv'
 import { ProfileProps } from '~/types/userStorage'
-import { FavoriteProps, FavoritesList } from '~/types/product'
+import { FavoriteProps, FavoritesList, ProductSingle } from '~/types/product'
 
 type PryceState = {
   getStarted: boolean
@@ -13,6 +13,8 @@ type PryceState = {
   changeAddressTrigger: boolean
   addressRef: string
   favorites: FavoriteProps | []
+  searchData: ProductSingle[] | []
+  searchKeyword: string
   setFavorites: (fav: string) => void
   setAddressRef: (e: string) => void
   setChangeAddressTrigger: (e: boolean) => void
@@ -21,6 +23,8 @@ type PryceState = {
   setToken: (token: string) => void
   setSelectedUser: (selectedUser: string | null) => void
   setUsers: (userRecords: ProfileProps) => void
+  setSearchData: (data: ProductSingle[]) => void
+  setSearchKeyword: (value: string) => void
 }
 
 const usePryceStore = create<PryceState>()(
@@ -34,6 +38,8 @@ const usePryceStore = create<PryceState>()(
       changeAddressTrigger: false,
       addressRef: '',
       favorites: [],
+      searchData: [],
+      searchKeyword: '',
       setFavorites: (fav: string) =>
         set((state) => {
           const checkFavoriteIfExists = state.favorites.filter(
@@ -82,6 +88,16 @@ const usePryceStore = create<PryceState>()(
       setUsers: (userRecords: ProfileProps) => {
         set(() => ({
           users: userRecords,
+        }))
+      },
+      setSearchData: (data: ProductSingle[]) => {
+        set(() => ({
+          searchData: data,
+        }))
+      },
+      setSearchKeyword: (value: string) => {
+        set(() => ({
+          searchKeyword: value,
         }))
       },
     }),

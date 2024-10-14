@@ -153,11 +153,6 @@ export default function AllProducts({
           {matchedDisplay ? (
             <Text key={item.Id}>{matchedDisplay.name}</Text>
           ) : null}
-          {/* <Entypo
-            name="dot-single"
-            size={18}
-            color={colorTokens.light.gray.gray11}
-          /> */}
         </View>
       </TouchableOpacity>
     )

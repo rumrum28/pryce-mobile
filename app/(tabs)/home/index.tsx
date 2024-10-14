@@ -104,7 +104,6 @@ export default function Page() {
 
           <Text
             style={{
-              // paddingHorizontal: 10,
               fontWeight: 'bold',
               marginTop: 16,
               fontSize: 18,
@@ -119,9 +118,7 @@ export default function Page() {
 
           <Text
             style={{
-              // paddingHorizontal: 10,
               fontWeight: 'bold',
-              // marginVertical: 16,
               marginBottom: 10,
               fontSize: 18,
             }}

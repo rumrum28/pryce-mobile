@@ -20,7 +20,6 @@ import useBasketStore, { AddOn, Product } from '~/utils/basketStore'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Skeleton from '~/components/skeleton'
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { router } from 'expo-router'
 import { Toast } from 'toastify-react-native'
 
@@ -432,6 +431,7 @@ export default function CheckoutItem() {
                 setPaymentMethod={setPaymentMethod}
                 paymentAmount={String(paymentAmount)}
                 setPaymentAmount={setPaymentAmount}
+                totalAmount={total}
               />
             </View>
             {/* <View
