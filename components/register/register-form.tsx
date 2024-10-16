@@ -214,11 +214,11 @@ export default function RegisterForm() {
           />
         </View>
         <View style={styles.inputContainer}>
-          <DropdownComponent
+          {/* <DropdownComponent
             data={formattedCountries}
             onChange={console.log}
             placeholder="Select country"
-          />
+          /> */}
         </View>
         {/* <View style={styles.inputContainer}>
           <DropdownComponent />
