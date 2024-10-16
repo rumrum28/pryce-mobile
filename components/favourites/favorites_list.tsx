@@ -171,7 +171,7 @@ export default function FavoritesList({
             }}
           >
             <View>
-              <Skeleton width={300} height={180} />
+              <Skeleton width={400} height={180} />
             </View>
             <View style={{ marginVertical: 10 }}>
               <Skeleton width={150} height={20} />

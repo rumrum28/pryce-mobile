@@ -63,6 +63,7 @@ export default function Header() {
           style={{
             flex: 1,
             marginRight: 40,
+
             flexDirection: 'row',
             justifyContent: 'flex-start',
             alignItems: 'center',

@@ -10,7 +10,7 @@ interface SkeletonProps {
 export default function Skeleton({ width, height, variant }: SkeletonProps) {
   const opacity = useRef(new Animated.Value(0.2))
 
-  let borderRadius = 0
+  let borderRadius = 10
 
   if (variant === 'circle') {
     borderRadius =

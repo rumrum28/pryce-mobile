@@ -169,6 +169,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
             flexDirection: 'row',
             alignItems: 'center',
             marginHorizontal: 15,
+            marginBottom: 30,
           }}
         >
           <Ionicons

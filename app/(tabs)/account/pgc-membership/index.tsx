@@ -12,18 +12,15 @@ import {
 import React from 'react'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
+import Animated from 'react-native-reanimated'
 
 export default function Page() {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        barStyle="default"
-        translucent
-        // backgroundColor={colorTokens.light.orange.orange9}
-      />
-
-      <View style={styles.backgroundCurvedContainer} />
+      <Animated.View style={styles.backgroundCurvedContainer} />
       {/* <View style={styles.headerContainer}></View> */}
+
+      <Text>WARREN</Text>
     </SafeAreaView>
   )
 }

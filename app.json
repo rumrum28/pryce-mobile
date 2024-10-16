@@ -9,7 +9,10 @@
       "output": "static",
       "favicon": "./assets/favicon.png"
     },
-    "plugins": ["expo-router", "expo-font"],
+    "plugins": [
+      "expo-router",
+      "expo-font"
+    ],
     "experiments": {
       "typedRoutes": true,
       "tsconfigPaths": true
@@ -22,7 +25,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.crspyfry.prycegas"
@@ -32,7 +37,6 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-
       "package": "com.crspyfry.prycegas"
     },
     "extra": {
@@ -40,8 +44,9 @@
         "origin": false
       },
       "eas": {
-        "projectId": "4e0b6a55-1594-46fa-9acb-be9dcbd2fb78"
+        "projectId": "696b507e-956c-452f-8245-e11dbd9405b7"
       }
-    }
+    },
+    "owner": "mgaankol"
   }
 }
