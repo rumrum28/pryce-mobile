@@ -1,28 +1,20 @@
-import { FlatList, Pressable, Text, View } from 'react-native'
-import React, { forwardRef, useEffect, useState } from 'react'
-import { ProductSingle } from '~/types/product'
+import { FlatList, Text, View } from 'react-native'
+import React, { useEffect, useState } from 'react'
+import { AddOn, ProductSingle } from '~/types/product'
 import { Image } from 'tamagui'
 import { ProductsDetail } from '~/utils/products'
 import { colorTokens } from '@tamagui/themes'
 import { formatCurrency } from '~/utils/utils'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
-import { AddOn } from '~/utils/basketStore'
 import AddOnsQuantityButtons from './add_ons_quantity_buttons'
 import useCartStore from '~/hooks/productsStore'
 
 type AddOnsProps = {
   productCodeMap: string[]
   realTimeProductData: ProductSingle[] | undefined
-  selectedAddOns: Array<AddOn>
-  onToggleAddOn: (addOn: AddOn) => void
 }
 
-const AddOns = ({
-  productCodeMap,
-  realTimeProductData,
-  selectedAddOns,
-  onToggleAddOn,
-}: AddOnsProps) => {
+const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
   const [filteredData, setFilteredData] = useState<ProductSingle[]>([])
   const addProduct = useCartStore((s) => s.addProduct)
   const cart = useCartStore((s) => s.cart)
@@ -38,9 +30,6 @@ const AddOns = ({
   }, [productCodeMap, realTimeProductData])
 
   const handleToggle = (addOn: AddOn) => {
-    onToggleAddOn(addOn)
-
-    // focusView()
     const checkProduct = cart.some((c) => c.productCode === addOn.ProductCode)
     if (checkProduct) return removeProduct(addOn.ProductCode)
     const singleProductDataInfo = {
@@ -94,10 +83,7 @@ const AddOns = ({
               borderRadius: 4,
             }}
             onPress={() => handleToggle(item)}
-            isChecked={
-              selectedAddOns.some((ao) => ao.Id === item.Id) ||
-              cart.some((e) => e.productCode === item.ProductCode)
-            }
+            isChecked={cart.some((e) => e.productCode === item.ProductCode)}
             style={{
               width: 28,
             }}
@@ -140,9 +126,14 @@ const AddOns = ({
                 {item.Name}
               </Text>
 
-              {selectedAddOns.some((ao) => ao.Id === item.Id) ||
-              cart.some((e) => e.productCode === item.ProductCode) ? (
-                <AddOnsQuantityButtons productCode={item.ProductCode} />
+              {cart.some((e) => e.productCode === item.ProductCode) ? (
+                <AddOnsQuantityButtons
+                  productCode={item.ProductCode}
+                  quantity={Number(
+                    cart.find((c) => c.productCode === item.ProductCode)
+                      ?.quantity
+                  )}
+                />
               ) : null}
             </View>
           </View>

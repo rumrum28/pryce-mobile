@@ -4,8 +4,10 @@ import useCartStore from '~/hooks/productsStore'
 
 export default function AddOnsQuantityButtons({
   productCode,
+  quantity,
 }: {
   productCode: string
+  quantity: number
 }) {
   const increaseQuantity = useCartStore((s) => s.increaseQuantity)
   const decreaseQuantity = useCartStore((s) => s.decreaseQuantity)
@@ -57,9 +59,7 @@ export default function AddOnsQuantityButtons({
         <Text style={styles.buttonText}>-</Text>
       </TouchableOpacity>
 
-      <Text style={styles.quantityText}>
-        {cart.find((c) => c.productCode === productCode)?.quantity}
-      </Text>
+      <Text style={styles.quantityText}>{quantity}</Text>
 
       <TouchableOpacity style={styles.button} onPress={incrementQuantity}>
         <Text style={styles.buttonText}>+</Text>

@@ -1,11 +1,19 @@
 import { Feather } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Dimensions, TextInput } from 'react-native'
-import { Form, View } from 'tamagui'
+import { View } from 'tamagui'
+import usePryceStore from '~/hooks/pryceStore'
 
 const { width } = Dimensions.get('window')
 
 export const SearchBar = () => {
+  const searchKeyword = usePryceStore((s) => s.searchKeyword)
+  const setSearchKeyword = usePryceStore((s) => s.setSearchKeyword)
+
+  const onChangeTextSearch = (value: string) => {
+    setSearchKeyword(value)
+  }
+
   return (
     <View
       style={{
@@ -45,8 +53,11 @@ export const SearchBar = () => {
             style={{
               padding: 10,
               color: colorTokens.light.gray.gray11,
+              width: '100%',
             }}
             placeholder="LPG, Accessories, Medical and Industrial Gases"
+            value={searchKeyword}
+            onChangeText={onChangeTextSearch}
           />
         </View>
       </View>

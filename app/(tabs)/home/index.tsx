@@ -14,6 +14,7 @@ import { View } from 'tamagui'
 import { useFetchProducts } from '~/hooks/fetchProducts'
 import BottomSheet from '~/components/bottom_sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import { ProductSingle } from '~/types/product'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
@@ -24,6 +25,11 @@ export default function Page() {
   const changeAddressTrigger = usePryceStore(
     (state) => state.changeAddressTrigger
   )
+  // const searchData = usePryceStore((s) => s.searchData)
+  // const setSearchData = usePryceStore((s) => s.setSearchData)
+  const searchKeyword = usePryceStore((s) => s.searchKeyword)
+  const [dataFiltered, setDataFiltered] = useState<ProductSingle[]>([])
+  const debounceTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   useEffect(() => {
     if (selectedUser) {
@@ -35,6 +41,32 @@ export default function Page() {
       fetchProducts(userData)
     }
   }, [selectedUser])
+
+  useEffect(() => {
+    if (data && !isPending) {
+      if (searchKeyword === '' || searchKeyword === null || !searchKeyword)
+        return setDataFiltered(data.productsResponse)
+
+      if (searchKeyword) {
+        if (debounceTimeoutRef.current) {
+          clearTimeout(debounceTimeoutRef.current)
+        }
+
+        debounceTimeoutRef.current = setTimeout(() => {
+          const filteredData = data.productsResponse.filter((item) => {
+            return (
+              item.Name.toLowerCase().includes(searchKeyword.toLowerCase()) ||
+              item.ProductCode.toLowerCase().includes(
+                searchKeyword.toLowerCase()
+              )
+            )
+          })
+
+          setDataFiltered(filteredData)
+        }, 800)
+      }
+    }
+  }, [searchKeyword, data])
 
   useEffect(() => {
     if (!isPending) {
@@ -102,31 +134,40 @@ export default function Page() {
         </Text>
         <Products products={fetchProducts.data?.productsResponse} /> */}
 
-          <Text
-            style={{
-              fontWeight: 'bold',
-              marginTop: 16,
-              fontSize: 18,
-            }}
-          >
-            Top picks in your neighborhood
-          </Text>
-
           {/* <ProductGroup /> */}
 
-          <Products />
+          {!searchKeyword && (
+            <>
+              <Text
+                style={{
+                  fontWeight: 'bold',
+                  marginVertical: 16,
+                  fontSize: 18,
+                }}
+              >
+                Top picks in your neighborhood
+              </Text>
+
+              <Products />
+            </>
+          )}
 
           <Text
             style={{
               fontWeight: 'bold',
-              marginBottom: 10,
+              marginTop: 25,
+              marginBottom: 16,
               fontSize: 18,
             }}
           >
             All products
           </Text>
 
-          <AllProducts products={data?.productsResponse} />
+          <AllProducts products={dataFiltered} />
+
+          {searchKeyword && dataFiltered.length < 1 && (
+            <Text>No products found!</Text>
+          )}
         </ScrollView>
       )}
     </SafeAreaView>

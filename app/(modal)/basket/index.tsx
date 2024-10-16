@@ -23,7 +23,6 @@ import Skeleton from '~/components/skeleton'
 import AddOns from '~/components/shop/addOns/add_ons'
 import { exemptedOnProducts } from '~/utils/products'
 import { ShakingEmoticonArrow } from '~/components/shaking_animation_arrow'
-import { AddOn } from '~/types/product'
 import { router } from 'expo-router'
 
 export default function Basket() {
@@ -43,7 +42,6 @@ export default function Basket() {
   const [loading, isLoading] = useState<boolean>(false)
   const [paymentAmount, setPaymentAmount] = useState<number>(0)
   const [totalAmount, setTotalAmount] = useState<number>(0)
-  const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
   const [viewAddOns, isViewAddOns] = useState<boolean>(false)
   const { width, height } = Dimensions.get('window')
 
@@ -54,32 +52,6 @@ export default function Basket() {
       fetchProductsDetails(addressRef)
     }
   }, [addressRef, fetchProductsDetails])
-
-  // useEffect(() => {
-  //   if (data && total > 1) {
-  //     updateProducts(data)
-  //   }
-  // }, [data, updateProducts])
-
-  // const focusView = () => {
-  //   if (viewRef.current && scrollViewRef.current) {
-  //     // Use findNodeHandle to get the native handle for ScrollView
-  //     const scrollViewNodeHandle = findNodeHandle(scrollViewRef.current)
-
-  //     if (scrollViewNodeHandle) {
-  //       viewRef.current.measureLayout(
-  //         scrollViewNodeHandle,
-  //         (x, y, width, height) => {
-  //           // Scroll to the position of the view
-  //           scrollViewRef.current?.scrollTo({ y, animated: false })
-  //         },
-  //         () => {
-  //           console.log('Measurement failed')
-  //         }
-  //       )
-  //     }
-  //   }
-  // }
 
   const placeOrder = async () => {
     isLoading(true)
@@ -210,17 +182,6 @@ export default function Basket() {
     }
   }, [data, cart])
 
-  const handleToggleAddOn = (addOn: AddOn) => {
-    setSelectedAddOns((prevSelectedAddOns) => {
-      const isSelected = prevSelectedAddOns.some((ao) => ao.Id === addOn.Id)
-      if (isSelected) {
-        return prevSelectedAddOns.filter((ao) => ao.Id !== addOn.Id)
-      } else {
-        return [...prevSelectedAddOns, addOn]
-      }
-    })
-  }
-
   const renderSingleItemBody = ({ item }: { item: Product }) => {
     const singleProductData = data?.find(
       (e) => e.ProductCode === item.productCode
@@ -281,7 +242,8 @@ export default function Basket() {
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            marginVertical: 16,
+            marginTop: 25,
+            marginBottom: 16,
           }}
         >
           <Text
@@ -375,7 +337,7 @@ export default function Basket() {
           </View>
         </Pressable>
 
-        {isPending ? (
+        {/* {isPending ? (
           <View
             style={{
               flexDirection: 'row',
@@ -402,17 +364,17 @@ export default function Basket() {
               </View>
             </View>
           </View>
-        ) : cart.find(
-            (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
-          ) ? null : (
+        ) : null} */}
+
+        {!isPending &&
+        cart.some(
+          (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
+        ) ? null : (
           <>
             {viewAddOns && (
               <AddOns
                 productCodeMap={exemptedOnProducts}
                 realTimeProductData={data}
-                selectedAddOns={selectedAddOns}
-                onToggleAddOn={handleToggleAddOn}
-                // focusView={focusView}
               />
             )}
           </>
