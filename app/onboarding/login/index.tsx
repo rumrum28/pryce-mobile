@@ -1,7 +1,12 @@
 import { useEffect } from 'react'
-import { Image, SafeAreaView, StatusBar, TouchableOpacity } from 'react-native'
-import { Text, View } from 'tamagui'
-import { ToastViewport } from '@tamagui/toast'
+import {
+  Image,
+  SafeAreaView,
+  StatusBar,
+  Text,
+  TouchableOpacity,
+  View,
+} from 'react-native'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
@@ -27,14 +32,6 @@ export default function Page() {
       }}
     >
       {/* <StatusBar hidden /> */}
-      <ToastViewport
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 20,
-        }}
-      />
 
       <View
         style={{

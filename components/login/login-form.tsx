@@ -13,10 +13,11 @@ import { UserInputs } from '~/types/apiresults'
 import { useRouter } from 'expo-router'
 import { queryClient } from '~/hooks/queryClient'
 import { login } from '~/server/api'
-import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { fonts } from '~/utils/fonts'
 import { formatPhoneNumber, mobileOrDigitSchema } from '~/utils/numberChecker'
+import { env } from '~/types/env'
+import { Toast } from 'toastify-react-native'
 
 export default function LoginForm() {
   const [phoneNumber, setPhoneNumber] = useState<string>('')
@@ -25,7 +26,6 @@ export default function LoginForm() {
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const setToken = usePryceStore((state) => state.setToken)
   const setUsers = usePryceStore((state) => state.setUsers)
-  const toast = useToastController()
   const router = useRouter()
 
   const loginResponse = useMutation({
@@ -36,10 +36,7 @@ export default function LoginForm() {
       })
 
       if (data && data.loginResponse?.success) {
-        toast.show('Succesfully Login', {
-          message: 'Welcome to PRYCEGAS!',
-          native: false,
-        })
+        Toast.success('Welcome to PRYCEGAS')
 
         if (data.profileResponse) {
           setToken(data.loginResponse?.access_token)
@@ -47,11 +44,11 @@ export default function LoginForm() {
           router.push('/(tabs)/home')
         }
       } else {
-        toast.show('Error', {
-          message: 'Invalid phone number or password',
-          native: false,
-        })
+        Toast.error('Invalid phone number or password')
       }
+    },
+    onError: (err) => {
+      console.log(err)
     },
   })
 
@@ -156,6 +153,7 @@ export default function LoginForm() {
                 ? colorTokens.light.gray.gray9
                 : colorTokens.light.orange.orange9,
             }}
+            disabled={loginResponse?.isPending}
           >
             {loginResponse?.isPending ? (
               <ActivityIndicator size={32} />

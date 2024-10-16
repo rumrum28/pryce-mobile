@@ -8,72 +8,91 @@ import {
 import {
   View,
   Text,
-  Button,
-  Touchable,
   TouchableOpacity,
   FlatList,
   ListRenderItem,
+  BackHandler,
 } from 'react-native'
 import { colorTokens } from '@tamagui/themes'
 import { Link } from 'expo-router'
 import { Ionicons, MaterialIcons } from '@expo/vector-icons'
-import BouncyCheckBox from 'react-native-bouncy-checkbox'
-import { address } from '~/data/mock'
 import usePryceStore from '~/hooks/pryceStore'
-import { Profile, ProfileProps } from '~/types/userStorage'
+import { Profile } from '~/types/userStorage'
 
 export type Ref = BottomSheetModal
 
 const BottomSheet = forwardRef<Ref>((props, ref) => {
   const users = usePryceStore((state) => state.users)
-  //   const changeAddressTrigger = usePryceStore(
-  //     (state) => state.changeAddressTrigger
-  //   )
-  //   const setChangeAddressTrigger = usePryceStore(
-  //     (state) => state.setChangeAddressTrigger
-  //   )
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
   const addressRef = usePryceStore((state) => state.addressRef)
 
   const token = usePryceStore((state) => state.token)
+  const setChangeAddressTrigger = usePryceStore(
+    (state) => state.setChangeAddressTrigger
+  )
+  const changeAddressTrigger = usePryceStore(
+    (state) => state.changeAddressTrigger
+  )
 
-  const selectUserHandler = (user: Profile) => {
-    setSelectedUser(user.Account_Number__c)
-  }
+  useEffect(() => {
+    if (!token) {
+      setChangeAddressTrigger(false)
+    }
+    if (token && !selectedUser) {
+      setChangeAddressTrigger(true)
+    }
+  }, [selectedUser, changeAddressTrigger, token])
 
   const snapPoints = useMemo(() => ['50%'], [])
   const { dismiss } = useBottomSheetModal()
+
   const renderBackdrop = useCallback(
     (props: any) => (
       <BottomSheetBackdrop
-        appearsOnIndex={0}
+        appearsOnIndex={1}
         disappearsOnIndex={-1}
+        pressBehavior={selectedUser ? 'close' : 'none'}
+        onPress={() => (selectedUser ? setChangeAddressTrigger(false) : {})}
         {...props}
       />
     ),
-    []
+    [changeAddressTrigger]
   )
 
+  useEffect(() => {
+    console.log(changeAddressTrigger)
+  }, [changeAddressTrigger])
+
+  useEffect(() => {
+    const backAction = () => {
+      if (selectedUser) {
+        // dismiss()
+        setChangeAddressTrigger(false)
+      } else {
+        console.log('INVALID_ACTION')
+      }
+      return true
+    }
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction
+    )
+
+    return () => backHandler.remove()
+  }, [selectedUser])
+
+  const selectAddressHandler = (user: Profile) => {
+    setSelectedUser(user.Account_Number__c)
+    setChangeAddressTrigger(false)
+    // dismiss()
+    setChangeAddressTrigger(false)
+  }
+
   const renderItem: ListRenderItem<Profile> = ({ item, index }) => (
-    <TouchableOpacity
-      onPress={() => {
-        selectUserHandler(item)
-        dismiss()
-      }}
-    >
+    <TouchableOpacity onPress={() => selectAddressHandler(item)}>
       <View style={{ flexDirection: 'row', alignItems: 'center', padding: 5 }}>
-        {/* <BouncyCheckBox
-          size={25}
-          fillColor={colorTokens.light.orange.orange9}
-          unFillColor="#FFFFFF"
-          iconStyle={{ borderColor: 'red' }}
-          innerIconStyle={{ borderWidth: 2 }}
-          textStyle={{ fontFamily: 'JosefinSans-Regular' }}
-          onPress={(isChecked: boolean) => {
-            console.log(isChecked)
-          }}
-        /> */}
         <View>
           <MaterialIcons
             name={
@@ -115,91 +134,60 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
         borderRadius: 0,
       }}
       handleIndicatorStyle={{ display: 'none' }}
-      overDragResistanceFactor={0}
+      overDragResistanceFactor={1}
       backdropComponent={renderBackdrop}
       ref={ref}
       snapPoints={snapPoints}
+      enablePanDownToClose={changeAddressTrigger ? false : true}
     >
-      <View style={{ flex: 1 }}>
-        <Text style={{ margin: 10, fontSize: 16, fontWeight: 'bold' }}>
-          Where should we deliver your order?
-        </Text>
-
-        <BottomSheetScrollView showsVerticalScrollIndicator={false}>
-          <View
-            style={{
-              flexDirection: 'row',
-              gap: 8,
-              alignItems: 'center',
-              padding: 10,
-            }}
-          >
-            <FlatList
-              data={users}
-              renderItem={renderItem}
-              keyExtractor={(item) => item.Account_Number__c}
-              scrollEnabled={false}
-            />
-          </View>
-          <Link href={'/(drawer)/shop/(modal)/address'} asChild>
-            <TouchableOpacity
-              style={{
-                flexDirection: 'row',
-                alignItems: 'center',
-                marginHorizontal: 15,
-              }}
-            >
-              <Ionicons
-                name="add-outline"
-                size={24}
-                color={colorTokens.light.orange.orange9}
-              />
-              <Text
-                style={{
-                  margin: 10,
-                  fontSize: 16,
-                  fontWeight: 'bold',
-                  color: colorTokens.light.orange.orange9,
-                }}
-              >
-                Add a new address
-              </Text>
-            </TouchableOpacity>
-          </Link>
-        </BottomSheetScrollView>
-
-        {/* <View
+      <Text style={{ margin: 10, fontSize: 16, fontWeight: 'bold' }}>
+        Where should we deliver your order?
+      </Text>
+      <BottomSheetScrollView style={{ flex: 1 }}>
+        <View
           style={{
-            position: 'absolute',
-            bottom: 0,
-            left: 0,
-            right: 0,
-            height: 100,
+            flexDirection: 'row',
+            gap: 8,
+            alignItems: 'center',
             padding: 10,
-            elevation: 10,
-            shadowColor: 'black',
-            shadowOpacity: 0.1,
-            shadowRadius: 10,
-            shadowOffset: {
-              width: 0,
-              height: -10,
-            },
+            flex: 1,
           }}
         >
-          <TouchableOpacity
-            onPress={() => dismiss()}
+          <FlatList
+            style={{ flex: 1 }}
+            data={users}
+            renderItem={renderItem}
+            keyExtractor={(item) => item.Account_Number__c}
+            scrollEnabled={false}
+          />
+        </View>
+      </BottomSheetScrollView>
+
+      <Link href={'/(drawer)/shop/(modal)/address'} asChild>
+        <TouchableOpacity
+          style={{
+            flexDirection: 'row',
+            alignItems: 'center',
+            marginHorizontal: 15,
+          }}
+        >
+          <Ionicons
+            name="add-outline"
+            size={24}
+            color={colorTokens.light.orange.orange9}
+          />
+          <Text
             style={{
-              backgroundColor: colorTokens.light.orange.orange9,
-              padding: 16,
-              margin: 16,
-              borderRadius: 4,
-              alignItems: 'center',
+              margin: 10,
+              fontSize: 16,
+              fontWeight: 'bold',
+              color: colorTokens.light.orange.orange9,
             }}
           >
-            <Text style={{ color: 'white', fontWeight: 'bold' }}>Confirm</Text>
-          </TouchableOpacity>
-        </View> */}
-      </View>
+            Add a new address
+          </Text>
+        </TouchableOpacity>
+      </Link>
     </BottomSheetModal>
   )
 })

@@ -21,13 +21,12 @@ import { UserInputs } from '~/types/apiresults'
 import { useRouter } from 'expo-router'
 import { queryClient } from '~/hooks/queryClient'
 import { login } from '~/server/api'
-import { useToastController } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
 import { z } from 'zod'
 import { fonts } from '~/utils/fonts'
 import Dropdown from './dropdown'
 import { address } from '~/data/data'
-import DropdownComponent from './dropdown'
+import { Toast } from 'toastify-react-native'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -42,7 +41,6 @@ export default function RegisterForm() {
   const [type, setType] = useState<'password' | 'otp'>('password')
   const setToken = usePryceStore((state) => state.setToken)
   const setUsers = usePryceStore((state) => state.setUsers)
-  const toast = useToastController()
   const router = useRouter()
 
   const loginResponse = useMutation({
@@ -53,18 +51,13 @@ export default function RegisterForm() {
       })
 
       if (data && data.loginResponse?.success) {
-        toast.show('Succesfully Login', {
-          message: 'Welcome to PRYCEGAS!',
-          native: false,
-        })
+        Toast.success('Welcome to PRYCEGAS')
+
         setToken(data.loginResponse?.access_token)
         setUsers(data.profileResponse!)
         router.push('/(drawer)/shop')
       } else {
-        toast.show('Error', {
-          message: 'Invalid phone number or password',
-          native: false,
-        })
+        Toast.error('Invalid phone number or password')
       }
     },
   })

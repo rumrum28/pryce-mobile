@@ -7,11 +7,11 @@ import {
   View,
   Text,
   Platform,
+  Button,
 } from 'react-native'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Dimensions } from 'react-native'
 import { useEffect, useState } from 'react'
-import { ToastViewport, useToastController } from '@tamagui/toast'
 import { useMutation } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { getOtp, login } from '~/server/api'
@@ -20,7 +20,7 @@ import usePryceStore from '~/hooks/pryceStore'
 import { router, useLocalSearchParams } from 'expo-router'
 import { color, colorTokens } from '@tamagui/themes'
 import { fonts } from '~/utils/fonts'
-import { Form } from 'tamagui'
+// import { Form } from 'tamagui'
 import OtpInput from '~/components/login/otp-input'
 import { opacity } from 'react-native-reanimated/lib/typescript/reanimated2/Colors'
 import {
@@ -28,12 +28,12 @@ import {
   formatPhoneNumber,
   mobileOrDigitSchema,
 } from '~/utils/numberChecker'
+import { Toast } from 'toastify-react-native'
 
 export default function VerifyOtp() {
   const setToken = usePryceStore((set) => set.setToken)
   const setUsers = usePryceStore((set) => set.setUsers)
   const [otp, setOtp] = useState<string[]>([])
-  const toast = useToastController()
   const { width } = Dimensions.get('window')
   const [invalidNumber, setInvalidNumber] = useState<boolean>(false)
   const { id } = useLocalSearchParams() as any
@@ -47,10 +47,12 @@ export default function VerifyOtp() {
       })
 
       if (data) {
-        toast.show(`${data.loginResponse.success ? 'Success' : 'Failed'}`, {
-          message: data.loginResponse?.message,
-          native: false,
-        })
+        if (data.loginResponse.success) {
+          Toast.success(data.loginResponse?.message)
+        } else {
+          Toast.error(data.loginResponse?.message)
+        }
+
         if (data.loginResponse.success && data.profileResponse) {
           setToken(data.loginResponse?.access_token)
           setUsers(data.profileResponse)
@@ -59,10 +61,7 @@ export default function VerifyOtp() {
       } else {
         isLoading(false)
         setInvalidNumber(false)
-        toast.show('Error', {
-          message: 'Invalid OTP',
-          native: false,
-        })
+        Toast.error('Invalid OTP')
       }
     },
   })
@@ -76,10 +75,7 @@ export default function VerifyOtp() {
 
     // check if otp is 6 digits
     if (finalOTP.length < 6) {
-      return toast.show('Error', {
-        message: 'Please enter a valid OTP',
-        native: false,
-      })
+      return Toast.error('Please enter a valid OTP')
     }
 
     isLoading(true)
@@ -99,15 +95,6 @@ export default function VerifyOtp() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <ToastViewport
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: Platform.OS === 'ios' ? 65 : 20,
-        }}
-      />
-
       <View style={styles.textContainer}>
         <Text style={styles.headingText}>OTP Verification</Text>
         <Text style={styles.subText}>
@@ -153,34 +140,31 @@ export default function VerifyOtp() {
           </TouchableOpacity>
         </View> */}
 
-        <Form onSubmit={checkOtpHandler}>
-          <View style={{ marginTop: 50, alignItems: 'center' }}>
-            <Form.Trigger asChild disabled={invalidNumber}>
-              <TouchableOpacity
-                style={{
-                  paddingVertical: 10,
-                  borderRadius: 12,
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  backgroundColor: invalidNumber
-                    ? colorTokens.dark.gray.gray8
-                    : colorTokens.light.orange.orange9,
-                  width: width - 32,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 20,
-                    fontFamily: fonts.SemiBold,
-                    color: 'white',
-                  }}
-                >
-                  Submit
-                </Text>
-              </TouchableOpacity>
-            </Form.Trigger>
-          </View>
-        </Form>
+        <View style={{ marginTop: 50, alignItems: 'center' }}>
+          <TouchableOpacity
+            style={{
+              paddingVertical: 10,
+              borderRadius: 12,
+              alignItems: 'center',
+              justifyContent: 'center',
+              backgroundColor: invalidNumber
+                ? colorTokens.dark.gray.gray8
+                : colorTokens.light.orange.orange9,
+              width: width - 32,
+            }}
+            onPress={checkOtpHandler}
+          >
+            <Text
+              style={{
+                fontSize: 20,
+                fontFamily: fonts.SemiBold,
+                color: 'white',
+              }}
+            >
+              Submit
+            </Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </SafeAreaView>
   )

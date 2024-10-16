@@ -1,38 +1,29 @@
 import {
   ActivityIndicator,
+  RefreshControl,
   SafeAreaView,
   ScrollView,
   Text,
-  TouchableOpacity,
 } from 'react-native'
-import React, { useEffect } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import Products from '~/components/shop/products/products'
-import Categories from '~/components/shop/category/categories'
 import { colorTokens } from '@tamagui/themes'
 import AllProducts from '~/components/shop/products/all_products'
-import { ToastViewport } from '@tamagui/toast'
 import usePryceStore from '~/hooks/pryceStore'
-import { useMutation } from '@tanstack/react-query'
-import { changeAddressOnLoad } from '~/server/api'
-import { queryClient } from '~/hooks/queryClient'
-import { Button, Spinner, View, YStack } from 'tamagui'
-import { router } from 'expo-router'
-import ProductGroup from '~/components/productGroup'
+import { View } from 'tamagui'
 import { useFetchProducts } from '~/hooks/fetchProducts'
+import BottomSheet from '~/components/bottom_sheet'
+import { BottomSheetModal } from '@gorhom/bottom-sheet'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const addressRef = usePryceStore((state) => state.addressRef)
-  const favorites = usePryceStore((set) => set.favorites)
   const token = usePryceStore((state) => state.token)
-  const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
-  const setToken = usePryceStore((state) => state.setToken)
-  const setChangeAddressTrigger = usePryceStore(
-    (state) => state.setChangeAddressTrigger
+  const [refreshing, setRefreshing] = useState(false)
+  const bottomSheetRef = useRef<BottomSheetModal>(null)
+  const changeAddressTrigger = usePryceStore(
+    (state) => state.changeAddressTrigger
   )
-  const setUsers = usePryceStore((state) => state.setUsers)
-  const setEmail = usePryceStore((state) => state.setEmail)
 
   useEffect(() => {
     if (selectedUser) {
@@ -43,21 +34,33 @@ export default function Page() {
 
       fetchProducts(userData)
     }
-  }, [selectedUser, fetchProducts])
+  }, [selectedUser])
 
-  // useEffect(() => {
-  //   if (
-  //     !fetchProducts.isPending &&
-  //     (fetchProducts.data === null || !fetchProducts.data)
-  //   ) {
-  //     setSelectedUser(null)
-  //     setToken('')
-  //     setUsers([])
-  //     setEmail('')
-  //     setChangeAddressTrigger(false)
-  //     setAddressRef('')
-  //     router.push('/onboarding/login')
-  //   }
+  useEffect(() => {
+    if (!isPending) {
+      setRefreshing(false)
+    }
+  }, [isPending])
+
+  useEffect(() => {
+    if (changeAddressTrigger) {
+      bottomSheetRef.current?.present()
+    } else {
+      bottomSheetRef.current?.dismiss()
+    }
+  }, [changeAddressTrigger])
+
+  const refreshPage = useCallback(() => {
+    setRefreshing(true)
+    if (selectedUser) {
+      const userData: { token: string; accountNumber: string } = {
+        token: token,
+        accountNumber: selectedUser,
+      }
+
+      fetchProducts(userData)
+    }
+  }, [])
 
   return (
     <SafeAreaView
@@ -66,14 +69,8 @@ export default function Page() {
         justifyContent: 'center',
       }}
     >
-      <ToastViewport
-        style={{
-          width: '100%',
-          justifyContent: 'center',
-          alignItems: 'center',
-          marginTop: 20,
-        }}
-      />
+      <BottomSheet ref={bottomSheetRef} />
+
       {isPending ? (
         <View>
           <ActivityIndicator
@@ -86,7 +83,25 @@ export default function Page() {
           nestedScrollEnabled={true}
           contentContainerStyle={{ paddingBottom: 30, marginHorizontal: 15 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              refreshing={refreshing}
+              onRefresh={() => refreshPage()}
+            />
+          }
         >
+          {/* <Text
+          style={{
+            paddingHorizontal: 10,
+            fontWeight: 'bold',
+            marginTop: 16,
+            fontSize: 18,
+          }}
+        >
+          Top picks in your neighborhood
+        </Text>
+        <Products products={fetchProducts.data?.productsResponse} /> */}
+
           <Text
             style={{
               fontWeight: 'bold',

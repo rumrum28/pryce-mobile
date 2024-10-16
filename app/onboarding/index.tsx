@@ -1,4 +1,11 @@
-import { StyleSheet, View, FlatList, ViewToken } from 'react-native'
+import {
+  StyleSheet,
+  View,
+  FlatList,
+  ViewToken,
+  Linking,
+  Text,
+} from 'react-native'
 import Animated, {
   useSharedValue,
   useAnimatedScrollHandler,
@@ -8,10 +15,31 @@ import { data, OnboardingData } from '~/data/data'
 import RenderOnboardingItem from '~/components/onboarding/render-onboarding'
 import Pagination from '~/components/onboarding/pagination'
 import CustomButton from '~/components/onboarding/custom-button'
-import { useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import usePryceStore from '~/hooks/pryceStore'
 import { router } from 'expo-router'
-import { ToastViewport } from '@tamagui/toast'
+
+const useInitialURL = () => {
+  const [url, setUrl] = useState<string | null>(null)
+  const [processing, setProcessing] = useState(true)
+
+  useEffect(() => {
+    const getUrlAsync = async () => {
+      // Get the deep link used to open the app
+      const initialUrl = await Linking.getInitialURL()
+
+      // The setTimeout is just for testing purpose
+      setTimeout(() => {
+        setUrl(initialUrl)
+        setProcessing(false)
+      }, 1000)
+    }
+
+    getUrlAsync()
+  }, [])
+
+  return { url, processing }
+}
 
 const OnboardingScreen = () => {
   const getStarted = usePryceStore((state) => state.getStarted)
@@ -48,8 +76,16 @@ const OnboardingScreen = () => {
     }
   }, [getStarted, email, token, users])
 
+  const { url: initialUrl, processing } = useInitialURL()
+
   return (
     <View style={styles.container}>
+      <Text>
+        {processing
+          ? 'Processing the initial url from a deep link'
+          : `The deep link is: ${initialUrl || 'None'}`}
+      </Text>
+
       <Animated.FlatList
         ref={flatListRef}
         onScroll={onScroll}

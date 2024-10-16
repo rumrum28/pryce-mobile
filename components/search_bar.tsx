@@ -1,7 +1,7 @@
 import { Feather } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Dimensions, TextInput } from 'react-native'
-import { View } from 'tamagui'
+import { Form, View } from 'tamagui'
 
 const { width } = Dimensions.get('window')
 

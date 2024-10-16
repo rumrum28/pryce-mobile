@@ -2,42 +2,30 @@ import {
   View,
   Text,
   FlatList,
-  TouchableOpacity,
   ActivityIndicator,
-  TextInput,
-  StyleSheet,
   Dimensions,
-  Image,
   Pressable,
   ScrollView,
+  findNodeHandle,
 } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
-import useBasketStore, { AddOn, Product } from '~/utils/basketStore'
 import { formatCurrency } from '~/utils/utils'
 import { colorTokens } from '@tamagui/themes'
-import { Link, router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import SwipeableRow from '~/components/swipeable_row'
 import StyledButton from '~/components/styled_button'
-// import { ScrollView } from 'react-native-gesture-handler'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
-import { PaymentMethod } from '~/components/payment_method'
+import { PaymentMethodComponent } from '~/components/payment_method'
 import { FontAwesome6 } from '@expo/vector-icons'
-import { Toast, useToastController } from '@tamagui/toast'
-import { env } from '~/types/env'
-import { useFetchProducts } from '~/hooks/fetchProducts'
+import useCartStore, { Product } from '~/hooks/productsStore'
+import Skeleton from '~/components/skeleton'
+import AddOns from '~/components/shop/addOns/add_ons'
+import { exemptedOnProducts } from '~/utils/products'
+import { ShakingEmoticonArrow } from '~/components/shaking_animation_arrow'
+import { AddOn } from '~/types/product'
+import { router } from 'expo-router'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
-import BottomSheet from '~/components/bottom_sheet'
-import Entypo from '@expo/vector-icons/Entypo'
-
-type ProductProps = {
-  ProductCode: string
-  Id: string
-  Product2Id: string
-  RegularPrice: number
-  Name: string
-}
 
 export default function Basket() {
   const {
@@ -45,23 +33,19 @@ export default function Basket() {
     data,
     isPending: isFetchingDetails,
   } = useFetchProductsDetails()
-
-  const {
-    mutate: fetchProducts,
-    data: allProductsData,
-    isPending: isFetchingProducts,
-  } = useFetchProducts()
-
-  const { products, total, items, reduceProduct, updateProducts, clearCart } =
-    useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
-  const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
+  const scrollViewRef = useRef<ScrollView>(null)
+  const viewRef = useRef<Text>(null)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState<string>('')
-  const selectedUser = usePryceStore((state) => state.selectedUser)
-  const users = usePryceStore((state) => state.users)
+  const increaseQuantity = useCartStore((state) => state.increaseQuantity)
+  const decreaseQuantity = useCartStore((state) => state.decreaseQuantity)
+  const cart = useCartStore((state) => state.cart)
+  const removeProduct = useCartStore((state) => state.removeProduct)
   const [loading, isLoading] = useState<boolean>(false)
-  const [paymentAmount, setPaymentAmount] = useState('')
-  const toast = useToastController()
+  const [paymentAmount, setPaymentAmount] = useState<number>(0)
+  const [totalAmount, setTotalAmount] = useState<number>(0)
+  const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
+  const [viewAddOns, isViewAddOns] = useState<boolean>(false)
   const { width, height } = Dimensions.get('window')
   const bottomSheetRef = useRef<BottomSheetModal>(null)
   const [checkoutAddress, setCheckoutAddress] =
@@ -70,15 +54,15 @@ export default function Basket() {
   const [checkoutNumber, setCheckoutNumber] = useState<string>('')
   const token = usePryceStore((s) => s.token)
 
-  const handleFetchProducts = useCallback(() => {
-    if (selectedUser) {
-      const userData = {
-        token: token,
-        accountNumber: selectedUser,
-      }
-      fetchProducts(userData)
-    }
-  }, [selectedUser, token, fetchProducts])
+  // const handleFetchProducts = useCallback(() => {
+  //   if (selectedUser) {
+  //     const userData = {
+  //       token: token,
+  //       accountNumber: selectedUser,
+  //     }
+  //     fetchProducts(userData)
+  //   }
+  // }, [selectedUser, token, fetchProducts])
 
   const handleFetchProductDetails = useCallback(() => {
     if (addressRef) {
@@ -86,48 +70,189 @@ export default function Basket() {
     }
   }, [addressRef, fetchProductsDetails])
 
+  // useEffect(() => {
+  //   if (data && total > 1) {
+  //     updateProducts(data)
+  //   }
+  // }, [data, updateProducts])
+
+  // const focusView = () => {
+  //   if (viewRef.current && scrollViewRef.current) {
+  //     // Use findNodeHandle to get the native handle for ScrollView
+  //     const scrollViewNodeHandle = findNodeHandle(scrollViewRef.current)
+
+  //     if (scrollViewNodeHandle) {
+  //       viewRef.current.measureLayout(
+  //         scrollViewNodeHandle,
+  //         (x, y, width, height) => {
+  //           // Scroll to the position of the view
+  //           scrollViewRef.current?.scrollTo({ y, animated: false })
+  //         },
+  //         () => {
+  //           console.log('Measurement failed')
+  //         }
+  //       )
+  //     }
+  //   }
+  // }
+
+  const placeOrder = async () => {
+    isLoading(true)
+    // if (products.length < 1) {
+    //   Toast.error('Please check your orders')
+    //   isLoading(false)
+    //   return
+    // }
+
+    // if (!selectedPaymentMethod) {
+    //   Toast.error('Please select a payment method')
+    //   isLoading(false)
+    //   return
+    // }
+
+    // const orderData = {
+    //   payment_method: selectedPaymentMethod,
+    //   line_items: [],
+    //   payment_amount: paymentAmount,
+    // } as any
+
+    // if (!isPending && data) {
+    //   products.forEach((item) => {
+    //     const productData = data.find(
+    //       (e: ProductProps) => e.ProductCode === item.ProductCode
+    //     )
+
+    //     if (productData) {
+    //       orderData.line_items.push({
+    //         quantity: item.quantity,
+    //         product_id: productData.Id,
+    //         amount: productData.RegularPrice,
+    //         currency: 'PHP',
+    //         description: productData.Name,
+    //         images: [
+    //           `https://prycegas.com/images/product-thumbs/${item.ProductCode}.png`,
+    //         ],
+    //         name: productData.Name,
+    //       })
+
+    //       if (item.addOns && item.addOns.length > 0) {
+    //         item.addOns.forEach((addOn) => {
+    //           orderData.line_items.push({
+    //             quantity: item.quantity,
+    //             product_id: addOn.Id,
+    //             amount: addOn.RegularPrice,
+    //             currency: 'PHP',
+    //             description: addOn.Name,
+    //             images: [
+    //               `https://prycegas.com/images/product-thumbs/${addOn.ProductCode}.png`,
+    //             ],
+    //             name: addOn.Name,
+    //           })
+    //         })
+    //       }
+    //     }
+    //   })
+
+    //   try {
+    //     const response = await fetch(
+    //       `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
+    //       {
+    //         method: 'POST',
+    //         headers: {
+    //           'Content-Type': 'application/json',
+    //           Authorization: `Bearer ${token}`,
+    //         },
+    //         body: JSON.stringify(orderData),
+    //       }
+    //     )
+
+    //     const responseText = await response.json()
+
+    //     if (response.ok) {
+    //       clearCart()
+
+    //       if (selectedPaymentMethod === 'online-payment') {
+    //         if (responseText?.success && responseText?.checkout_url) {
+    //           Toast.success('Your order has been created')
+
+    //           router.push({
+    //             pathname: '/checkout/paymongo_webview',
+    //             params: {
+    //               url: responseText.checkout_url,
+    //             },
+    //           })
+    //         } else {
+    //           Toast.error('Something is wrong with your order')
+    //         }
+    //       } else {
+    //         Toast.success('Your order has been placed')
+
+    //         router.push('/success')
+    //       }
+    //     } else {
+    //       Toast.error('Order placement failed')
+    //     }
+    //   } catch (error) {
+    //     console.error('Order Error:', error)
+    //     Toast.error('Order placement failed')
+    //   } finally {
+    //     isLoading(false)
+    //   }
+    // }
+  }
+
   useEffect(() => {
-    handleFetchProducts()
-    const findUser = users.find((e) => e.Account_Number__c === selectedUser)
+    if (data && cart.length > 0) {
+      const totalPrice = cart.reduce((accumulator, product) => {
+        const UnitPrice = data.find(
+          (e) => e.ProductCode === product.productCode
+        )?.UnitPrice
 
-    if (findUser) {
-      setCheckoutAddress(
-        `${findUser.Primary_Street__c} ${findUser.Primary_Barangay__c}  ${findUser.Primary_State_Province__c}`
-      )
+        const RegularPrice = data.find(
+          (e) => e.ProductCode === product.productCode
+        )?.RegularPrice
 
-      setCheckoutName(`${findUser?.Name}`)
-      setCheckoutNumber(` ${findUser?.Mobile_Number__c}`)
+        if (UnitPrice && RegularPrice) {
+          let price = UnitPrice < RegularPrice ? UnitPrice : RegularPrice
+
+          return accumulator + price * product.quantity
+        }
+
+        return accumulator
+      }, 0)
+
+      setTotalAmount(totalPrice)
     }
-  }, [handleFetchProducts])
+  }, [data, cart])
 
-  useEffect(() => {
-    handleFetchProductDetails()
-  }, [handleFetchProductDetails])
+  const handleToggleAddOn = (addOn: AddOn) => {
+    setSelectedAddOns((prevSelectedAddOns) => {
+      const isSelected = prevSelectedAddOns.some((ao) => ao.Id === addOn.Id)
+      if (isSelected) {
+        return prevSelectedAddOns.filter((ao) => ao.Id !== addOn.Id)
+      } else {
+        return [...prevSelectedAddOns, addOn]
+      }
+    })
+  }
 
-  useEffect(() => {
-    if (data && total > 1) {
-      updateProducts(data)
+  const renderSingleItemBody = ({ item }: { item: Product }) => {
+    const singleProductData = data?.find(
+      (e) => e.ProductCode === item.productCode
+    )
+
+    let price = 0
+
+    if (singleProductData) {
+      price =
+        singleProductData.UnitPrice < singleProductData.RegularPrice
+          ? singleProductData.UnitPrice
+          : singleProductData.RegularPrice
     }
-  }, [data, total, updateProducts])
-
-  const renderItem = ({
-    item,
-  }: {
-    item: Product & { quantity: number; addOns?: Array<AddOn> }
-  }) => {
-    const productPrice = data?.find((e) => e.ProductCode === item.ProductCode)
-    let calculatedPrice = 0
-    if (productPrice) {
-      calculatedPrice =
-        productPrice.UnitPrice < productPrice.RegularPrice
-          ? productPrice.UnitPrice
-          : productPrice.RegularPrice
-    }
-    const formattedPrice = formatCurrency(calculatedPrice * item.quantity)
 
     return (
       <View style={{ paddingVertical: 10, backgroundColor: '#fff' }}>
-        <SwipeableRow onDelete={() => reduceProduct(item)}>
+        <SwipeableRow onDelete={() => removeProduct(item.productCode)}>
           <View
             style={{
               flexDirection: 'row',
@@ -146,521 +271,351 @@ export default function Basket() {
                 padding: 7,
                 fontWeight: 'bold',
                 borderRadius: 5,
-                // marginBottom: 9,
               }}
             >
               {item.quantity}x
             </Text>
             <View style={{ flex: 1 }}>
               <Text style={{ fontSize: 16, fontWeight: '600' }}>
-                {item.Name}
+                {singleProductData?.Name}
               </Text>
             </View>
-            <Text style={{ fontSize: 16 }}>{formattedPrice}</Text>
-          </View>
-          <View
-            style={{
-              flexDirection: 'row',
-              // paddingHorizontal: 15,
-              // paddingTop: 5,
-              paddingLeft: 28,
-              gap: 20,
-              justifyContent: 'space-between',
-              alignItems: 'center',
-            }}
-          >
-            {item.addOns && item.addOns.length > 0 && (
-              <View
-                style={{
-                  flexDirection: 'column',
-                }}
-              >
-                {item.addOns.map((addOn, index) => {
-                  const addOnPrice = data?.find(
-                    (e) => e.ProductCode === addOn.ProductCode
-                  )
-                  let calculatedAddOnPrice = 0
-                  if (addOnPrice) {
-                    calculatedAddOnPrice =
-                      addOnPrice.UnitPrice < addOnPrice.RegularPrice
-                        ? addOnPrice.UnitPrice
-                        : addOnPrice.RegularPrice
-                  }
-                  const formattedAddOnPrice = formatCurrency(
-                    calculatedAddOnPrice * item.quantity
-                  )
-
-                  return (
-                    <View
-                      style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        flex: 1,
-                        width: '100%',
-                        alignItems: 'center',
-
-                        // alignItems: 'center',
-                        // justifyContent: 'center',
-                      }}
-                      key={index}
-                    >
-                      <View
-                        style={{
-                          flexDirection: 'row',
-                          // alignItems: 'center',
-                          // justifyContent: 'center',
-                          paddingLeft: 40,
-                          maxWidth: 220,
-
-                          // paddingHorizontal: 50,
-                        }}
-                      >
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            flexShrink: 1,
-                            flexWrap: 'wrap',
-                            fontWeight: '300',
-                          }}
-                        >
-                          {addOn.Name}
-                          {/* ({item.quantity}x) */}
-                        </Text>
-                      </View>
-                      <View>
-                        <Text
-                          style={{
-                            fontSize: 14,
-                            color: '#666',
-                            // fontWeight: 'bold',
-                            justifyContent: 'flex-end',
-                            flexDirection: 'row',
-                            alignItems: 'flex-end',
-                          }}
-                        >
-                          {formattedAddOnPrice}
-                        </Text>
-                      </View>
-                    </View>
-                  )
-                })}
-              </View>
-            )}
+            <Text style={{ fontSize: 16 }}>{formatCurrency(price)}</Text>
           </View>
         </SwipeableRow>
       </View>
     )
   }
 
-  const placeOrder = async () => {
-    isLoading(true)
-    if (products.length < 1) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please check your orders.',
-        native: false,
-      })
-      return
-    }
-
-    if (!paymentMethod) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please select a payment method.',
-        native: false,
-      })
-      return
-    }
-
-    const orderData = {
-      payment_method: paymentMethod,
-      line_items: [],
-      payment_amount: parseFloat(paymentAmount),
-    } as any
-
-    if (!isFetchingDetails && data) {
-      products.forEach((item) => {
-        const productData = data.find(
-          (e: ProductProps) => e.ProductCode === item.ProductCode
-        )
-
-        if (productData) {
-          orderData.line_items.push({
-            product_id: productData.Id,
-            product_area_code: productData.Product2Id,
-            amount: productData.RegularPrice,
-            currency: 'PHP',
-            description: productData.Name,
-            images: [
-              `https://prycegas.com/images/product-thumbs/${item.ProductCode}.png`,
-            ],
-            name: productData.Name,
-            quantity: item.quantity,
-          })
-
-          if (item.addOns && item.addOns.length > 0) {
-            item.addOns.forEach((addOn) => {
-              orderData.line_items.push({
-                product_id: addOn.Id,
-                product_area_code: addOn.Product2Id,
-                amount: addOn.RegularPrice,
-                currency: 'PHP',
-                description: addOn.Name,
-                images: [
-                  `https://prycegas.com/images/product-thumbs/${addOn.ProductCode}.png`,
-                ],
-                name: addOn.Name,
-                quantity: item.quantity,
-              })
-            })
-          }
-        }
-      })
-
-      console.log('orderData:', JSON.stringify(orderData, null, 2))
-
-      try {
-        const response = await fetch(
-          `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/create`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${token}`,
-            },
-            body: JSON.stringify(orderData),
-          }
-        )
-
-        const responseText = await response.text()
-        console.log('Response Text:', responseText)
-        if (response.ok) {
-          toast.show('Order placed successfully!', {
-            message: 'Your order has been placed.',
-            native: false,
-          })
-          isLoading(false)
-          clearCart()
-          router.push('/success')
-        } else {
-          toast.show('Order placement failed!', {
-            message: 'Please try again.',
-            native: false,
-          })
-        }
-      } catch (error) {
-        console.error('Order Error:', error)
-        toast.show('Order placement failed!', {
-          message: 'Please try again.',
-          native: false,
-        })
-      }
-    }
-  }
-
-  const openModal = () => {
-    bottomSheetRef.current?.present()
-  }
-
-  const RenderAddress = () => {
+  const renderSingleItemHeader = () => {
     return (
-      <Pressable
-        onPress={openModal}
-        style={{
-          paddingHorizontal: 10,
-          backgroundColor: '#fff',
-          marginBottom: 10,
-        }}
-      >
-        {/* <Text
-          style={{
-            fontSize: 18,
-            fontWeight: 'bold',
-          }}
-        >
-          Delivery Address
-        </Text> */}
+      <View style={{ paddingHorizontal: 15, backgroundColor: '#fff' }}>
         <View
           style={{
+            flex: 1,
             flexDirection: 'row',
             alignItems: 'center',
             justifyContent: 'space-between',
-            paddingVertical: 20,
-            paddingHorizontal: 10,
+            marginVertical: 16,
           }}
         >
-          <View style={{ flexDirection: 'row', flex: 1 }}>
-            <View style={{ height: 30, width: 30 }}>
-              <Image
-                source={require('~/assets/images/maps.png')}
-                style={{
-                  height: '100%',
-                  width: '100%',
-                  borderRadius: 5,
-                }}
-                resizeMode="contain"
-              />
-            </View>
-            <View
+          <Text
+            style={{
+              fontSize: 18,
+              fontWeight: 'bold',
+            }}
+          >
+            Order Summary
+          </Text>
+          <Pressable onPress={() => router.push('/(tabs)/home')}>
+            <Text
               style={{
-                flexDirection: 'column',
-                width: '100%',
-                paddingLeft: 10,
+                fontSize: 14,
+                fontWeight: 'bold',
+                color: colorTokens.light.orange.orange9,
               }}
             >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  gap: 5,
-                  paddingBottom: 5,
-                  alignItems: 'center',
-                  flex: 1,
-                }}
-              >
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    color: '#000',
-                  }}
-                >
-                  {checkoutName}
-                </Text>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: '400',
-                    color: colorTokens.light.gray.gray9,
-                  }}
-                >
-                  {checkoutNumber}
-                </Text>
+              Add Items
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    )
+  }
+
+  const renderSingleItemSeparator = () => {
+    return (
+      <View
+        style={{
+          height: 1,
+          backgroundColor: colorTokens.light.gray.gray2,
+          marginHorizontal: 15,
+        }}
+      />
+    )
+  }
+
+  const loader = () => {
+    return (
+      <View>
+        <ActivityIndicator
+          size="large"
+          color={colorTokens.light.orange.orange9}
+        />
+      </View>
+    )
+  }
+
+  const ManangeAddOns = () => {
+    return (
+      <View
+        style={{
+          backgroundColor: 'white',
+        }}
+      >
+        <Pressable
+          style={{
+            paddingVertical: 20,
+            flexDirection: 'row',
+            alignItems: 'center',
+            justifyContent: 'center',
+            paddingHorizontal: 20,
+          }}
+          onPress={() => isViewAddOns(!viewAddOns)}
+        >
+          <Text
+            ref={viewRef}
+            style={{
+              color: colorTokens.light.orange.orange9,
+              flex: 1,
+            }}
+          >
+            Manage Add-ons
+          </Text>
+
+          <View
+            style={{
+              paddingHorizontal: 10,
+            }}
+          >
+            {viewAddOns ? (
+              <FontAwesome6
+                name="angles-down"
+                size={18}
+                color={colorTokens.light.orange.orange9}
+              />
+            ) : (
+              <ShakingEmoticonArrow />
+            )}
+          </View>
+        </Pressable>
+
+        {isFetchingDetails ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: 'white',
+              marginTop: 30,
+            }}
+          >
+            <View
+              style={{
+                flex: 1,
+                justifyContent: 'space-between',
+                flexDirection: 'row',
+                alignItems: 'center',
+              }}
+            >
+              <View style={{ marginLeft: 10 }}>
+                <Skeleton width={30} height={30} />
               </View>
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: '#000',
-                  fontWeight: '300',
-                }}
-              >
-                {checkoutAddress}
-              </Text>
+              <View style={{}}>
+                <Skeleton width={120} height={20} />
+              </View>
+              <View style={{ marginRight: 10 }}>
+                <Skeleton width={90} height={20} />
+              </View>
             </View>
           </View>
-          <View>
-            <Entypo name="chevron-small-right" size={24} color="black" />
+        ) : cart.find(
+            (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
+          ) ? null : (
+          <>
+            {viewAddOns && (
+              <AddOns
+                productCodeMap={exemptedOnProducts}
+                realTimeProductData={data}
+                selectedAddOns={selectedAddOns}
+                onToggleAddOn={handleToggleAddOn}
+                // focusView={focusView}
+              />
+            )}
+          </>
+        )}
+      </View>
+    )
+  }
+
+  const OrderFeesDetail = () => {
+    return (
+      <>
+        <View
+          style={{
+            paddingHorizontal: 15,
+            paddingVertical: 15,
+            backgroundColor: '#fff',
+            borderTopWidth: 1,
+            borderTopColor: colorTokens.light.gray.gray2,
+          }}
+        >
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: 5,
+            }}
+          >
+            <Text style={{ color: colorTokens.light.gray.gray9 }}>
+              Subtotal
+            </Text>
+            <Text>{formatCurrency(totalAmount)}</Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: 5,
+            }}
+          >
+            <Text style={{ color: colorTokens.light.gray.gray9 }}>
+              Island Fee
+            </Text>
+            <Text>0</Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: 5,
+            }}
+          >
+            <Text style={{ color: colorTokens.light.gray.gray9 }}>
+              PGC Discount
+            </Text>
+            <Text>0</Text>
+          </View>
+
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+              paddingVertical: 5,
+            }}
+          >
+            <Text style={{ color: colorTokens.light.gray.gray9 }}>
+              Order Total
+            </Text>
+            <Text>{formatCurrency(totalAmount)}</Text>
           </View>
         </View>
-      </Pressable>
+
+        <View style={{ marginTop: 10, backgroundColor: '#fff' }}>
+          <PaymentMethodComponent
+            paymentMethod={selectedPaymentMethod}
+            setPaymentMethod={setSelectedPaymentMethod}
+            paymentAmount={String(paymentAmount)}
+            setPaymentAmount={setPaymentAmount}
+            totalAmount={totalAmount}
+          />
+        </View>
+      </>
+    )
+  }
+
+  const CheckoutFooter = () => {
+    return (
+      <View
+        style={{
+          position: 'absolute',
+          bottom: 0,
+          left: 0,
+          width: '100%',
+          backgroundColor: '#fff',
+          padding: 10,
+          elevation: 10,
+          shadowColor: 'black',
+          shadowOffset: { width: 0, height: -10 },
+          shadowOpacity: 0.1,
+          shadowRadius: 10,
+          paddingTop: 20,
+          paddingBottom: 100,
+        }}
+      >
+        <SafeAreaView style={{ backgroundColor: '#fff' }} edges={['bottom']}>
+          <View
+            style={{
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 20,
+                padding: 8,
+              }}
+            >
+              Total
+            </Text>
+            <Text
+              style={{
+                color: 'black',
+                fontSize: 16,
+                fontWeight: 'bold',
+                padding: 8,
+              }}
+            >
+              <Text>{formatCurrency(totalAmount)}</Text>
+            </Text>
+          </View>
+          <StyledButton
+            onPress={placeOrder}
+            disabled={isFetchingDetails || loading}
+          >
+            {isFetchingDetails || loading ? (
+              <ActivityIndicator size="large" color="white" />
+            ) : (
+              <Text
+                style={{
+                  color: 'white',
+                  fontSize: 16,
+                  fontWeight: 'bold',
+                  padding: 8,
+                }}
+              >
+                Place Order
+              </Text>
+            )}
+          </StyledButton>
+        </SafeAreaView>
+      </View>
     )
   }
 
   return (
-    <View style={[styles.area, { minHeight: Math.round(height) }]}>
-      {isFetchingProducts || isFetchingDetails ? (
-        <View>
-          <ActivityIndicator
-            size="large"
-            color={colorTokens.light.orange.orange9}
-          />
-        </View>
+    <View
+      style={{
+        flex: 1,
+        justifyContent: 'center',
+        minHeight: Math.round(height),
+      }}
+    >
+      {isFetchingDetails ? (
+        loader()
       ) : (
         <View style={{ flex: 1 }}>
-          <BottomSheet ref={bottomSheetRef} />
           <ScrollView
+            ref={scrollViewRef}
             scrollEventThrottle={16}
             showsVerticalScrollIndicator={false}
             contentContainerStyle={{ paddingBottom: 130 }}
           >
-            <RenderAddress />
             <FlatList
-              data={products}
+              data={cart}
               scrollEnabled={false}
-              renderItem={renderItem}
-              ItemSeparatorComponent={() => (
-                <View
-                  style={{
-                    height: 1,
-                    backgroundColor: colorTokens.light.gray.gray2,
-                    marginHorizontal: 15,
-                  }}
-                />
-              )}
-              ListHeaderComponent={
-                <View
-                  style={{ paddingHorizontal: 15, backgroundColor: '#fff' }}
-                >
-                  <View
-                    style={{
-                      flex: 1,
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'space-between',
-                      marginVertical: 16,
-                    }}
-                  >
-                    <Text
-                      style={{
-                        fontSize: 18,
-                        fontWeight: 'bold',
-                      }}
-                    >
-                      Order Summary
-                    </Text>
-                    <Text
-                      style={{
-                        fontSize: 14,
-                        fontWeight: 'bold',
-                        color: colorTokens.light.orange.orange9,
-                      }}
-                    >
-                      Add Items
-                    </Text>
-                  </View>
-                </View>
-              }
+              renderItem={renderSingleItemBody}
+              ItemSeparatorComponent={renderSingleItemSeparator}
+              ListHeaderComponent={renderSingleItemHeader}
             />
-
-            <View
-              style={{
-                paddingHorizontal: 15,
-                paddingBottom: 15,
-                backgroundColor: '#fff',
-              }}
-            >
-              <View
-                style={{
-                  height: 1,
-                  backgroundColor: colorTokens.light.gray.gray2,
-                }}
-              ></View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingVertical: 5,
-                }}
-              >
-                <Text style={{ color: colorTokens.light.gray.gray9 }}>
-                  Subtotal
-                </Text>
-                <Text>{formatCurrency(total)}</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingVertical: 5,
-                }}
-              >
-                <Text style={{ color: colorTokens.light.gray.gray9 }}>
-                  Delivery Fee
-                </Text>
-                <Text>Free</Text>
-              </View>
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  paddingVertical: 5,
-                }}
-              >
-                <Text style={{ color: colorTokens.light.gray.gray9 }}>
-                  Order Total
-                </Text>
-                <Text>{formatCurrency(total)}</Text>
-              </View>
-            </View>
-
-            <View style={{ marginTop: 10, backgroundColor: '#fff' }}>
-              <PaymentMethod
-                selectedPaymentMethod={selectedPaymentMethod}
-                setSelectedPaymentMethod={setSelectedPaymentMethod}
-                paymentAmount={paymentAmount}
-                setPaymentAmount={setPaymentAmount}
-              />
-            </View>
+            <ManangeAddOns />
+            <OrderFeesDetail />
           </ScrollView>
 
-          <View
-            style={{
-              position: 'absolute',
-              bottom: 0,
-              left: 0,
-              width: '100%',
-              backgroundColor: '#fff',
-              padding: 10,
-              elevation: 10,
-              shadowColor: 'black',
-              shadowOffset: { width: 0, height: -10 },
-              shadowOpacity: 0.1,
-              shadowRadius: 10,
-              paddingTop: 20,
-              paddingBottom: 100,
-            }}
-          >
-            <SafeAreaView
-              style={{ backgroundColor: '#fff' }}
-              edges={['bottom']}
-            >
-              <View
-                style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                }}
-              >
-                <Text
-                  style={{
-                    color: 'black',
-                    fontSize: 20,
-                    padding: 8,
-                  }}
-                >
-                  Total
-                </Text>
-                <Text
-                  style={{
-                    color: 'black',
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    padding: 8,
-                  }}
-                >
-                  <Text>{formatCurrency(total)}</Text>
-                </Text>
-              </View>
-              {/* <Link href="/(modal)/checkout" asChild> */}
-              <StyledButton
-                onPress={placeOrder}
-                disabled={isFetchingDetails || loading}
-              >
-                {isFetchingDetails || loading ? (
-                  <ActivityIndicator size="large" color="white" />
-                ) : (
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 16,
-                      fontWeight: 'bold',
-                      padding: 8,
-                    }}
-                  >
-                    Place Order
-                  </Text>
-                )}
-              </StyledButton>
-              {/* </Link> */}
-            </SafeAreaView>
-          </View>
+          <CheckoutFooter />
         </View>
       )}
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  area: {
-    flex: 1,
-    // alignItems: 'center',
-    justifyContent: 'center',
-    // backgroundColor: '#fff',
-  },
-})

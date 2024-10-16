@@ -6,39 +6,26 @@ import {
   StatusBar,
   Dimensions,
 } from 'react-native'
-import { useEffect, useRef, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Feather, SimpleLineIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { TouchableOpacity } from 'react-native'
-import { Link, useNavigation } from 'expo-router'
-import { DrawerActions } from '@react-navigation/native'
+import { Link } from 'expo-router'
 import { SearchBar } from '~/components/search_bar'
 import usePryceStore from '~/hooks/pryceStore'
 import useCartStore from '~/hooks/productsStore'
 import useBasketStore from '~/utils/basketStore'
-import BottomSheet from './bottom_sheet'
-import { BottomSheetModal } from '@gorhom/bottom-sheet'
+import NetworkStatus from './network_status'
 
 export default function Header() {
-  const token = usePryceStore((state) => state.token)
   const users = usePryceStore((state) => state.users)
   const cart = useCartStore((state) => state.cart)
   const selectedUser = usePryceStore((state) => state.selectedUser)
-  const { items, total } = useBasketStore()
   const [addressText, setAddressText] = useState<string>('Select Address')
   const [cityText, setCityText] = useState<string>('')
-  const navigation = useNavigation()
-  const bottomSheetRef = useRef<BottomSheetModal>(null)
   const setChangeAddressTrigger = usePryceStore(
     (state) => state.setChangeAddressTrigger
   )
-  const changeAddressTrigger = usePryceStore(
-    (state) => state.changeAddressTrigger
-  )
-
-  // const onToggle = () => {
-  //   navigation.dispatch(DrawerActions.openDrawer)
-  // }
 
   useEffect(() => {
     const findUser = users.find((e) => e.Account_Number__c === selectedUser)
@@ -49,11 +36,10 @@ export default function Header() {
 
       setCityText(`${findUser?.Primary_City2__c}`)
     }
-    // ${findUser.Primary_City2__c} ${findUser.Primary_State_Province__c}
   }, [selectedUser])
 
   const openModal = () => {
-    bottomSheetRef.current?.present()
+    setChangeAddressTrigger(true)
   }
 
   return (
@@ -63,7 +49,6 @@ export default function Header() {
         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : 0,
       }}
     >
-      <BottomSheet ref={bottomSheetRef} />
       <View
         style={{
           flexDirection: 'row',
@@ -73,40 +58,42 @@ export default function Header() {
           paddingHorizontal: 20,
         }}
       >
-        <View
-          style={{
-            borderRadius: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          <TouchableOpacity>
-            <SimpleLineIcons name="location-pin" size={24} color="white" />
-          </TouchableOpacity>
-        </View>
-
         <TouchableOpacity
           onPress={openModal}
-          style={{ paddingHorizontal: 10, flex: 1 }}
+          style={{
+            flex: 1,
+            marginRight: 40,
+            flexDirection: 'row',
+            justifyContent: 'flex-start',
+            alignItems: 'center',
+          }}
         >
-          <Text
+          <SimpleLineIcons name="location-pin" size={24} color="white" />
+          <View
             style={{
-              fontSize: 18,
-              fontWeight: 'bold',
-              color: 'white',
+              paddingHorizontal: 10,
+              alignItems: 'flex-start',
             }}
           >
-            {addressText}
-          </Text>
-          <Text
-            style={{
-              fontSize: 14,
-              color: 'white',
-              fontWeight: 'bold',
-            }}
-          >
-            {cityText}
-          </Text>
+            <Text
+              style={{
+                fontSize: 18,
+                fontWeight: 'bold',
+                color: 'white',
+              }}
+            >
+              {addressText}
+            </Text>
+            <Text
+              style={{
+                fontSize: 14,
+                color: 'white',
+                fontWeight: 'bold',
+              }}
+            >
+              {cityText}
+            </Text>
+          </View>
         </TouchableOpacity>
         <View
           style={{
@@ -138,7 +125,7 @@ export default function Header() {
                     fontWeight: 'bold',
                   }}
                 >
-                  {items}
+                  {cart.length}
                 </Text>
               </View>
               <Feather name="shopping-bag" size={24} color="white" />
@@ -148,6 +135,8 @@ export default function Header() {
       </View>
 
       <SearchBar />
+
+      <NetworkStatus customStyle={1} />
     </SafeAreaView>
   )
 }

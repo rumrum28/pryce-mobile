@@ -88,6 +88,7 @@ export default function Register() {
                 color={colorTokens.light.gray.gray8}
               />
             </View>
+
             <TextInput
               style={styles.input}
               placeholder="First Name"
@@ -95,6 +96,7 @@ export default function Register() {
               keyboardType="default"
             />
           </View>
+
           <View style={styles.inputContainer}>
             <View style={{ justifyContent: 'center', marginRight: 10 }}>
               <Ionicons
@@ -103,6 +105,7 @@ export default function Register() {
                 color={colorTokens.light.gray.gray8}
               />
             </View>
+
             <TextInput
               style={styles.input}
               placeholder="Last Name"
@@ -110,6 +113,7 @@ export default function Register() {
               keyboardType="default"
             />
           </View>
+
           <View style={styles.inputContainer}>
             <View style={{ justifyContent: 'center', marginRight: 10 }}>
               <Ionicons
@@ -118,6 +122,7 @@ export default function Register() {
                 color={colorTokens.light.gray.gray8}
               />
             </View>
+
             <TextInput
               style={styles.input}
               placeholder="Password"
@@ -150,6 +155,7 @@ export default function Register() {
               keyboardType="email-address"
             />
           </View>
+
           <View style={styles.inputContainer}>
             <View style={{ justifyContent: 'center', marginRight: 10 }}>
               <Ionicons
@@ -158,6 +164,7 @@ export default function Register() {
                 color={colorTokens.light.gray.gray8}
               />
             </View>
+
             <TextInput
               style={styles.input}
               placeholder="09"
@@ -165,16 +172,19 @@ export default function Register() {
               keyboardType="number-pad"
             />
           </View>
+
           <DropdownComponent
             data={uniqueProvinces}
             onChange={onChangeProvinceHandler}
             placeholder="Select a province"
           />
+
           <DropdownComponent
             data={cityArray}
             onChange={onChangeCityHandler}
             placeholder="Select a city"
           />
+
           <View style={styles.inputContainer}>
             <View style={{ justifyContent: 'center', marginRight: 10 }}>
               <MaterialCommunityIcons

@@ -3,34 +3,25 @@ import {
   Text,
   FlatList,
   ActivityIndicator,
-  ViewBase,
   TextInput,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Dimensions,
 } from 'react-native'
-import { Ionicons, MaterialCommunityIcons } from '@expo/vector-icons'
+import { MaterialCommunityIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import StyledButton from '~/components/styled_button'
-import useCartStore from '~/hooks/productsStore'
 import usePryceStore from '~/hooks/pryceStore'
 import { useEffect, useState } from 'react'
-import { useToastController } from '@tamagui/toast'
-import SwipeableRow from '~/components/swipeable_row'
 import { formatCurrency } from '~/utils/utils'
-import NonePgcmCheckoutAlert from '~/components/none_pgcm_checkout_alert'
-import { ProductSingle } from '~/types/product'
-import { ProductsDetail } from '~/utils/products'
-import { PaymentMethod } from '~/components/payment_method'
+import { PaymentMethodComponent } from '~/components/payment_method'
 import { env } from '~/types/env'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import useBasketStore, { AddOn, Product } from '~/utils/basketStore'
 import { ScrollView } from 'react-native-gesture-handler'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import Skeleton from '~/components/skeleton'
-import FontAwesome6 from '@expo/vector-icons/FontAwesome6'
 import { router } from 'expo-router'
+import { Toast } from 'toastify-react-native'
 
 type ProductProps = {
   ProductCode: string
@@ -46,14 +37,12 @@ export default function CheckoutItem() {
     data,
     isPending,
   } = useFetchProductsDetails()
-  const { products, total, updateProducts, reduceProduct, clearCart } =
-    useBasketStore()
+  const { products, total, updateProducts, clearCart } = useBasketStore()
   const addressRef = usePryceStore((set) => set.addressRef)
-  const toast = useToastController()
   const [paymentMethod, setPaymentMethod] = useState<string>('cash-on-delivery')
   const [loading, isLoading] = useState<boolean>(false)
   const { width, height } = Dimensions.get('window')
-  const [paymentAmount, setPaymentAmount] = useState('')
+  const [paymentAmount, setPaymentAmount] = useState<number>(0)
 
   const token = usePryceStore((s) => s.token)
 
@@ -72,25 +61,21 @@ export default function CheckoutItem() {
   const placeOrder = async () => {
     isLoading(true)
     if (products.length < 1) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please check your orders.',
-        native: false,
-      })
+      Toast.error('Please check your orders')
+
       return
     }
 
     if (!paymentMethod) {
-      toast.show('Something is wrong with your order!', {
-        message: 'Please select a payment method.',
-        native: false,
-      })
+      Toast.error('Please select a payment method')
+
       return
     }
 
     const orderData = {
       payment_method: paymentMethod,
       line_items: [],
-      payment_amount: parseFloat(paymentAmount),
+      payment_amount: paymentAmount,
     } as any
 
     if (!isPending && data) {
@@ -145,25 +130,18 @@ export default function CheckoutItem() {
           }
         )
 
-        // const responseText = await response.text()
-        // console.log('Response Text:', responseText)
+        const responseText = await response.text()
+        console.log('Response Text:', responseText)
+
         if (response.ok) {
-          toast.show('Order placed successfully!', {
-            message: 'Your order has been placed.',
-            native: false,
-          })
+          Toast.error('Your order has been placed')
         } else {
-          toast.show('Order placement failed!', {
-            message: 'Please try again.',
-            native: false,
-          })
+          Toast.error('Order placement failed')
         }
       } catch (error) {
         console.error('Order Error:', error)
-        toast.show('Order placement failed!', {
-          message: 'Please try again.',
-          native: false,
-        })
+
+        Toast.error('Order placement failed')
       }
     }
     isLoading(false)
@@ -447,17 +425,19 @@ export default function CheckoutItem() {
                 </View>
               }
             />
-            {/* <View>
-              <PaymentMethod
+            <View>
+              <PaymentMethodComponent
                 paymentMethod={paymentMethod}
                 setPaymentMethod={setPaymentMethod}
+                paymentAmount={String(paymentAmount)}
+                setPaymentAmount={setPaymentAmount}
+                totalAmount={total}
               />
-            </View> */}
-            <View
+            </View>
+            {/* <View
               style={{
                 flexDirection: 'row',
                 borderColor: colorTokens.light.orange.orange9,
-                // borderBottomWidth: 0.5,
                 borderWidth: 1,
                 borderRadius: 5,
                 height: 50,
@@ -482,7 +462,7 @@ export default function CheckoutItem() {
               <TextInput
                 placeholder="Change For"
                 placeholderTextColor={colorTokens.light.gray.gray8}
-                keyboardType="default"
+                keyboardType="number-pad"
                 style={{
                   flex: 1,
                   height: 40,
@@ -490,10 +470,10 @@ export default function CheckoutItem() {
                   color: colorTokens.light.gray.gray12,
                   fontWeight: 'regular',
                 }}
-                value={paymentAmount}
-                onChangeText={(value) => setPaymentAmount(value)}
+                value={String(paymentAmount)}
+                onChangeText={(e) => setPaymentAmount(Number(e))}
               />
-            </View>
+            </View> */}
           </ScrollView>
         </>
       )}
@@ -568,25 +548,6 @@ export default function CheckoutItem() {
           </StyledButton>
         </SafeAreaView>
       </View>
-
-      {/* <YStack gap="$4" p={10}>
-        <XStack ai="center" gap="$4">
-          <Label
-            htmlFor="select-payment-method"
-            f={1}
-            miw={80}
-            fs={16}
-            fontWeight={'800'}
-          >
-            Payment Method
-          </Label>
-
-          <PaymentMethod
-            paymentMethod={paymentMethod}
-            setPaymentMethod={setPaymentMethod}
-          />
-        </XStack>
-      </YStack> */}
     </SafeAreaView>
   )
 }

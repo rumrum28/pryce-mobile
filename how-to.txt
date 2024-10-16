@@ -14,7 +14,7 @@ ios folder info.plist
       <true/>
       <key>NSExceptionDomains</key>
       <dict>
-        <key>api.orooxygen.com</key>
+        <key>api.prycegases.com</key>
         <dict>
           <key>NSExceptionAllowsInsecureHTTPLoads</key>
           <true />

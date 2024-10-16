@@ -6,10 +6,8 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler'
 import { QueryClientProvider } from '@tanstack/react-query'
 import { queryClient } from '~/hooks/queryClient'
 import { config } from '~/tamagui.config'
-import { ToastProvider } from '@tamagui/toast'
-import { CurrentToast } from '~/components/toast'
 import { BottomSheetModalProvider } from '@gorhom/bottom-sheet'
-import { SelectAddressModal } from '~/components/select_address'
+import ToastManager from 'toastify-react-native'
 
 export default function Layout() {
   const [loaded] = useFonts({
@@ -30,12 +28,9 @@ export default function Layout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
           <BottomSheetModalProvider>
-            <ToastProvider>
-              <CurrentToast />
-              {/* <SelectAddressModal /> */}
+            <ToastManager />
 
-              <Slot />
-            </ToastProvider>
+            <Slot />
           </BottomSheetModalProvider>
         </QueryClientProvider>
       </GestureHandlerRootView>

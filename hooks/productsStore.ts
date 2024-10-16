@@ -2,7 +2,7 @@ import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { cartStorage } from '~/server/mmkv'
 
-type Product = {
+export type Product = {
   productCode: string
   quantity: number
 }
@@ -30,12 +30,16 @@ const useCartStore = create<CartState>()(
             return {
               cart: state.cart.map((p: Product) => {
                 if (p.productCode === product.productCode) {
+                  // return {
+                  //   ...p,
+                  //   quantity:
+                  //     product.quantity > 1
+                  //       ? p.quantity + product.quantity
+                  //       : p.quantity + 1,
+                  // }
                   return {
                     ...p,
-                    quantity:
-                      product.quantity > 1
-                        ? p.quantity + product.quantity
-                        : p.quantity + 1,
+                    quantity: product.quantity,
                   }
                 }
                 return p
@@ -63,27 +67,6 @@ const useCartStore = create<CartState>()(
         }),
       decreaseQuantity: (productCode: string) =>
         set((state) => {
-          // return {
-          //   cart: state.cart.find((p) => {
-          //     if (p.productCode === productCode && p.quantity < 2) {
-          //       const hasProduct = state.cart.find(
-          //         (p: Product) => p.productCode !== productCode
-          //       )
-
-          //       return [...state.cart, hasProduct]
-          //     } else {
-          //       if (p.productCode === productCode) {
-          //         return {
-          //           ...p,
-          //           quantity: p.quantity - 1,
-          //         }
-          //       }
-
-          //       return p
-          //     }
-          //   })
-          // }
-
           return {
             cart: state.cart.map((p) => {
               if (p.productCode === productCode) {
