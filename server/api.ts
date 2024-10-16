@@ -5,7 +5,7 @@ import {
   LoginResponse,
   Profile,
   ProfileProps,
-  UserOrderResponseProps,
+  UserOrderResponse,
 } from '~/types/userStorage'
 
 // const [isFavorite, setIsFavorite] = useMMKVBoolean(`${mediaType}-${id}`); // check if movie is in favorites
@@ -174,10 +174,10 @@ export const getProductById = async (
   return foundProduct
 }
 
-export const fetchOrderByUser = async (token: string) => {
+export const fetchOrderByUser = async (token: string, type: string) => {
   try {
     const response = await fetch(
-      `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/status?type=current`,
+      `${env.EXPO_PUBLIC_LOCAL_URL}/api/order/status?type=${type}`,
       {
         method: 'GET',
         headers: {
@@ -191,9 +191,7 @@ export const fetchOrderByUser = async (token: string) => {
       throw new Error('Failed to fetch orders')
     }
 
-    const orderResponse: UserOrderResponseProps = await response.json()
-
-    // console.log('orderResponse:', JSON.stringify(orderResponse, null, 0))
+    const orderResponse: UserOrderResponse = await response.json()
 
     return orderResponse
   } catch (error) {

@@ -23,15 +23,11 @@ export default function Page() {
     const findUser = users.find((e) => e.Account_Number__c === selectedUser)
 
     setUserDetails(findUser)
-    // console.log('findUser:', findUser)
   }, [selectedUser])
-
-  // console.log(users)
 
   return (
     <View style={styles.container}>
       <UserDetails userDetails={userDetails} />
-
       <View style={{ paddingHorizontal: 15, paddingBottom: 20 }}>
         <TouchableOpacity
           style={styles.logoutBtn}

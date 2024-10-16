@@ -1,90 +1,50 @@
-import { AntDesign, Ionicons } from '@expo/vector-icons'
+import { AntDesign, Entypo, Feather } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
-import { Link, router } from 'expo-router'
 import React, { useEffect } from 'react'
 import {
-  Text,
+  ActivityIndicator,
+  Dimensions,
+  FlatList,
   Image,
   TouchableOpacity,
-  FlatList,
-  Dimensions,
-  Alert,
 } from 'react-native'
-import { Feather, Entypo } from '@expo/vector-icons'
-
-import { Button, View } from 'tamagui'
+import { Text, View } from 'tamagui'
+import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import usePryceStore from '~/hooks/pryceStore'
-import * as Haptics from 'expo-haptics'
-
-import {
-  FavoritesList,
-  ProductDisplayProps,
-  ProductSingle,
-  ProductsProps,
-} from '~/types/product'
-
+import { FavoriteProps } from '~/types/product' // Ensure this type is correct
 import {
   exemptedOnProducts,
   productDisplay,
   ProductsDetail,
 } from '~/utils/products'
 import { formatCurrency } from '~/utils/utils'
+import Skeleton from '../skeleton'
 
-export default function AllProducts({
-  products,
+export default function FavoritesList({
+  favorites,
 }: {
-  products: ProductsProps | undefined
+  favorites: FavoriteProps
 }) {
-  const favorites = usePryceStore((set) => set.favorites)
-  const setFavorites = usePryceStore((set) => set.setFavorites)
+  const {
+    mutate: fetchProductsDetails,
+    data,
+    isPending,
+  } = useFetchProductsDetails()
+  const addressRef = usePryceStore((set) => set.addressRef)
   const { width, height } = Dimensions.get('window')
 
-  const productOnClickHandler = (product: ProductSingle) => {
-    router.push({
-      pathname: '/(modal)/item_details',
-      params: {
-        productCode: product.ProductCode,
-      },
-    })
-  }
-
-  const addToFavoritesHandler = async (f: string) => {
-    const favorites = usePryceStore.getState().favorites
-    const isFavorite = favorites.some((fav) => fav.productCode === f)
-
-    usePryceStore.getState().setFavorites(f)
-
-    const product = products?.find((p) => p.ProductCode === f)
-
-    if (products) {
-      if (isFavorite) {
-        Alert.alert(
-          'Removed from Favorites',
-          `You have removed product ${product?.Name} from your favourites.`
-        )
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
-      } else {
-        Alert.alert(
-          'Added to Favorites',
-          `You have added product ${product?.Name} to your favourites.`
-        )
-        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
-      }
-    } else {
-      console.warn('Product information is undefined')
+  useEffect(() => {
+    if (addressRef) {
+      fetchProductsDetails(addressRef)
     }
-  }
+  }, [])
 
   const renderItem = ({ item }: { item: any }) => {
     const matchedDisplay = productDisplay.find((displayItem) =>
       displayItem.productCode.includes(item.ProductCode)
     )
-
     return (
-      <TouchableOpacity
-        style={{ marginBottom: 20 }}
-        onPress={() => productOnClickHandler(item)}
-      >
+      <TouchableOpacity style={{ marginBottom: 10, marginTop: 20 }}>
         <View style={{ marginBottom: 15 }}>
           <Image
             source={
@@ -98,10 +58,9 @@ export default function AllProducts({
             }}
             resizeMode="cover"
           />
-
           <TouchableOpacity
             style={{ position: 'absolute', top: 0, right: 0, padding: 15 }}
-            onPress={() => addToFavoritesHandler(String(item.ProductCode))}
+            // onPress={() => addToFavoritesHandler(String(item.productCode))}
           >
             {favorites &&
             favorites.find((fav) => fav.productCode === item.ProductCode) ? (
@@ -195,20 +154,64 @@ export default function AllProducts({
       </TouchableOpacity>
     )
   }
-
   return (
-    <FlatList
-      data={
-        products && products.length > 0
-          ? products.filter(
-              (product) =>
-                !exemptedOnProducts.some((e) => e === product.ProductCode)
-            )
-          : []
-      }
-      keyExtractor={(item) => `${item.Id}`}
-      renderItem={renderItem}
-      scrollEnabled={false}
-    />
+    <View>
+      {isPending ? (
+        <View
+          style={{
+            flexDirection: 'column',
+            backgroundColor: 'white',
+            marginTop: 30,
+          }}
+        >
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'column',
+            }}
+          >
+            <View>
+              <Skeleton width={300} height={180} />
+            </View>
+            <View style={{ marginVertical: 10 }}>
+              <Skeleton width={150} height={20} />
+            </View>
+            <View style={{ marginRight: 10 }}>
+              <Skeleton width={120} height={20} />
+            </View>
+          </View>
+        </View>
+      ) : (
+        <View
+          style={{
+            flex: 1,
+          }}
+        >
+          {data && data.length > 0 ? (
+            (() => {
+              const filteredData = data.filter((product) =>
+                favorites.some((fav) => fav.productCode === product.ProductCode)
+              )
+              return filteredData.length > 0 ? (
+                <FlatList
+                  data={filteredData}
+                  keyExtractor={(item) => `${item.ProductCode}`}
+                  renderItem={renderItem}
+                  scrollEnabled={false}
+                />
+              ) : (
+                <View>
+                  <Text>No favourites</Text>
+                </View>
+              )
+            })()
+          ) : (
+            <View>
+              <Text>No data available</Text>
+            </View>
+          )}
+        </View>
+      )}
+    </View>
   )
 }

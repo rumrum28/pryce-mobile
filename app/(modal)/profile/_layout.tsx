@@ -13,13 +13,14 @@ export default function _layout() {
         headerShadowVisible: false,
       }}
     >
-      {/* <Stack.Screen
+      <Stack.Screen
         name="index"
         options={{
-          title: '',
+          presentation: 'fullScreenModal',
+          title: 'Profile',
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.back()}
+              onPress={() => router.push('/(tabs)/account')}
               style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
             >
               <Ionicons
@@ -29,9 +30,8 @@ export default function _layout() {
               />
             </TouchableOpacity>
           ),
-          headerTransparent: true,
         }}
-      /> */}
+      />
     </Stack>
   )
 }

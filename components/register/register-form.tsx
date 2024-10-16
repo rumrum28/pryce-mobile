@@ -27,6 +27,7 @@ import { z } from 'zod'
 import { fonts } from '~/utils/fonts'
 import Dropdown from './dropdown'
 import { address } from '~/data/data'
+import DropdownComponent from './dropdown'
 
 // tell zod to only accept number that start with 09
 const mobileOrDigitSchema = z.string().refine((data) => data.startsWith('09'), {
@@ -57,7 +58,7 @@ export default function RegisterForm() {
           native: false,
         })
         setToken(data.loginResponse?.access_token)
-        setUsers(data.profileResponse)
+        setUsers(data.profileResponse!)
         router.push('/(drawer)/shop')
       } else {
         toast.show('Error', {
@@ -220,15 +221,15 @@ export default function RegisterForm() {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Dropdown
-          // data={formattedCountries}
-          // onChange={console.log}
-          // placeholder="Select country"
+          <DropdownComponent
+            data={formattedCountries}
+            onChange={console.log}
+            placeholder="Select country"
           />
         </View>
-        <View style={styles.inputContainer}>
-          <Dropdown />
-        </View>
+        {/* <View style={styles.inputContainer}>
+          <DropdownComponent />
+        </View> */}
         <View style={styles.inputContainer}>
           <View style={{ justifyContent: 'center', marginRight: 10 }}>
             <Ionicons

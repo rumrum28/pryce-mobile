@@ -1,23 +1,21 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
 import React from 'react'
-import { AntDesign, Entypo } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
-import { Profile } from '~/types/userStorage'
+import { Entypo } from '@expo/vector-icons'
 import { router } from 'expo-router'
 
-export default function UserPerks() {
+export default function UserMembership() {
   return (
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.subTitle}
-        onPress={() => router.push('/(tabs)/account/membership')}
+        onPress={() => router.push('/(tabs)/account/pgc-membership')}
       >
         <View style={styles.subTitleContainer}>
-          <Text>Become a</Text>
           <View style={styles.badgeContainer}>
             <Text style={styles.badgeText}>PGC</Text>
           </View>
-          <Text>member </Text>
+          <Text>Your membership</Text>
         </View>
         <Entypo name="chevron-small-right" size={24} color="black" />
       </TouchableOpacity>
@@ -44,7 +42,7 @@ const styles = StyleSheet.create({
   subTitleContainer: {
     flex: 1,
     flexDirection: 'row',
-    gap: 5,
+    gap: 20,
   },
   badgeContainer: {
     backgroundColor: colorTokens.light.orange.orange9,

@@ -43,10 +43,6 @@ export default function Page() {
 
       fetchProducts(userData)
     }
-
-    // console.log(data?.productsResponse)
-    console.log('selectedUser:', selectedUser)
-    console.log(token)
   }, [selectedUser, fetchProducts])
 
   // useEffect(() => {
@@ -66,7 +62,6 @@ export default function Page() {
   return (
     <SafeAreaView
       style={{
-        // backgroundColor: 'white',
         flex: 1,
         justifyContent: 'center',
       }}
@@ -92,21 +87,8 @@ export default function Page() {
           contentContainerStyle={{ paddingBottom: 30, marginHorizontal: 15 }}
           showsVerticalScrollIndicator={false}
         >
-          {/* <Text
-          style={{
-            paddingHorizontal: 10,
-            fontWeight: 'bold',
-            marginTop: 16,
-            fontSize: 18,
-          }}
-        >
-          Top picks in your neighborhood
-        </Text>
-        <Products products={fetchProducts.data?.productsResponse} /> */}
-
           <Text
             style={{
-              // paddingHorizontal: 10,
               fontWeight: 'bold',
               marginTop: 16,
               fontSize: 18,
@@ -115,15 +97,11 @@ export default function Page() {
             Top picks in your neighborhood
           </Text>
 
-          {/* <ProductGroup /> */}
-
           <Products />
 
           <Text
             style={{
-              // paddingHorizontal: 10,
               fontWeight: 'bold',
-              // marginVertical: 16,
               marginBottom: 10,
               fontSize: 18,
             }}

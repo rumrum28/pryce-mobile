@@ -1,29 +1,40 @@
-import { View, Text, StyleSheet } from 'react-native'
+import { View, Text, StyleSheet, Pressable } from 'react-native'
 import React from 'react'
 import { colorTokens } from '@tamagui/themes'
-import { Entypo, SimpleLineIcons, Ionicons } from '@expo/vector-icons'
+import { Octicons, SimpleLineIcons, Ionicons } from '@expo/vector-icons'
+import { router } from 'expo-router'
 
 export default function UserCard() {
   return (
     <View style={styles.container}>
-      <View style={styles.cardContainer}>
+      <Pressable
+        onPress={() => router.push('/profile')}
+        style={styles.cardContainer}
+      >
+        <Octicons size={24} name="person" color="black" />
+        <Text style={styles.cardTitle} numberOfLines={1}>
+          Profile
+        </Text>
+      </Pressable>
+      <Pressable
+        onPress={() => router.push('/orders')}
+        style={styles.cardContainer}
+      >
         <Ionicons name="clipboard-outline" size={24} color="black" />
         <Text style={styles.cardTitle} numberOfLines={1}>
           Orders
         </Text>
-      </View>
-      <View style={styles.cardContainer}>
-        <Entypo name="heart-outlined" size={24} color="black" />
-        <Text style={styles.cardTitle} numberOfLines={1}>
-          Favourites
-        </Text>
-      </View>
-      <View style={styles.cardContainer}>
+      </Pressable>
+
+      <Pressable
+        onPress={() => router.push('/addresses')}
+        style={styles.cardContainer}
+      >
         <SimpleLineIcons name="location-pin" size={24} color="black" />
         <Text style={styles.cardTitle} numberOfLines={1}>
           Addresses
         </Text>
-      </View>
+      </Pressable>
     </View>
   )
 }

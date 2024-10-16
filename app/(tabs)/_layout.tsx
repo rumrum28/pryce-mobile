@@ -3,6 +3,7 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
   FontAwesome,
+  AntDesign,
   Feather,
 } from '@expo/vector-icons'
 import {
@@ -131,12 +132,12 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="search"
+        name="favourites"
         options={{
-          title: 'Search',
+          title: 'Favourites',
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <Feather name="search" size={26} color={color} />
+            <AntDesign name="hearto" size={26} color={color} />
           ),
           // tabBarButton: (props) => <TabBarCustomButton {...props} />,
         }}

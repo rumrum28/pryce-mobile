@@ -1,53 +1,29 @@
 import { View, Text, ActivityIndicator } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
-import TrackOrder from '~/components/activity/track_order'
-import usePryceStore from '~/hooks/pryceStore'
+import React, { useEffect } from 'react'
 import { useFetchOrderDetails } from '~/hooks/fetchOrderDetails'
+import usePryceStore from '~/hooks/pryceStore'
 import { colorTokens } from '@tamagui/themes'
-import { useFocusEffect } from '@react-navigation/native'
+import UserOrder from '~/components/account/user_order'
 
-const orderStatuses = [
-  'Order Created',
-  'Order Confirmed',
-  'Order Assigned',
-  'Delivered',
-]
-
-export default function Page() {
+export default function Orders() {
   const { fetchOrdersDetails, isPending, error, data } = useFetchOrderDetails()
-
   const token = usePryceStore((state) => state.token)
 
-  const type = 'current'
+  const type = 'delivered'
 
-  // useEffect(() => {
-  //   if (token && selectedUser) {
-  //     fetchOrdersDetails({ token })
-  //     console.log(
-  //       'Fetching orders with token:',
-  //       token,
-  //       'and address:',
-  //       selectedUser
-  //     )
-  //   }
-  // }, [token, selectedUser, fetchOrdersDetails])
+  useEffect(() => {
+    if (token) {
+      fetchOrdersDetails({ token, type })
 
-  useFocusEffect(
-    useCallback(() => {
-      if (token) {
-        fetchOrdersDetails({ token, type })
-      }
-    }, [token, fetchOrdersDetails])
-  )
+      console.log(JSON.stringify(data), null, 2)
+    }
+  }, [token, fetchOrdersDetails])
 
   return (
     <View
       style={{
         flex: 1,
-        backgroundColor: 'white',
         paddingHorizontal: 15,
-
-        // justifyContent: 'center',
       }}
     >
       {isPending ? (
@@ -60,12 +36,13 @@ export default function Page() {
       ) : (
         <>
           {data && data.records && data.records.length > 0 ? (
-            <TrackOrder
+            <UserOrder
               totalSize={data.totalSize}
               done={data.done}
               records={data.records}
             />
           ) : (
+            // <View></View>
             <View
               style={{
                 alignItems: 'center',

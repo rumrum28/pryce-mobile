@@ -7,6 +7,8 @@ import {
   Platform,
   StyleSheet,
   ActivityIndicator,
+  Alert,
+  StatusBar,
 } from 'react-native'
 import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
@@ -66,6 +68,7 @@ export default function ItemDetails() {
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
   const productPrice = data?.find((e) => e.ProductCode === productCode)
   const [loading, isLoading] = useState<boolean>(false)
+  const favorites = usePryceStore((set) => set.favorites)
 
   const { addProduct, reduceProduct, clearCart } = useBasketStore()
 
@@ -206,44 +209,31 @@ export default function ItemDetails() {
     }
   })
 
-  const handleClear = () => {
-    clearCart()
+  const addToFavoritesHandler = async (f: string) => {
+    const favorites = usePryceStore.getState().favorites
+    const isFavorite = favorites.some((fav) => fav.productCode === f)
+
+    usePryceStore.getState().setFavorites(f)
+
+    if (isFavorite) {
+      Alert.alert(
+        'Removed from Favorites',
+        `You have removed product ${data && data.find((e) => e.ProductCode === productCode)?.Name} from your favourites.`
+      )
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+    } else {
+      Alert.alert(
+        'Added to Favorites',
+        `You have added product ${data && data.find((e) => e.ProductCode === productCode)?.Name} to your favourites.`
+      )
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    }
   }
 
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: 'white' }}
-      edges={['bottom']}
-    >
-      <Stack.Screen
-        options={{
-          headerTitle: '',
-          headerLeft: () => (
-            <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                backgroundColor: 'white',
-                borderRadius: 20,
-                padding: 3,
-              }}
-            >
-              <Ionicons
-                name="close"
-                size={24}
-                color={colorTokens.light.orange.orange9}
-              />
-            </TouchableOpacity>
-          ),
-          headerTransparent: true,
-          headerBackground: () => (
-            <Animated.View style={[styles.header, headerAnimatedStyle]}>
-              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                {data && data.find((e) => e.ProductCode === productCode)?.Name}
-              </Text>
-            </Animated.View>
-          ),
-        }}
-      />
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <StatusBar barStyle="default" translucent />
+
       <Animated.ScrollView
         ref={scrollRef}
         scrollEventThrottle={16}
@@ -256,40 +246,21 @@ export default function ItemDetails() {
           entering={FadeIn.duration(400).delay(200)}
         />
 
-        <View style={{ height: 130, backgroundColor: 'white' }}>
+        <View style={styles.animatedHeader}>
           <Animated.Text
-            style={{
-              fontSize: 20,
-              fontWeight: 'bold',
-              margin: 16,
-            }}
+            style={styles.animatedText}
             entering={FadeInLeft.duration(400).delay(200)}
           >
             {data && data.find((e) => e.ProductCode === productCode)?.Name}
           </Animated.Text>
           <Animated.Text
             entering={FadeInLeft.duration(400).delay(400)}
-            style={{
-              fontSize: 16,
-              marginHorizontal: 16,
-              lineHeight: 22,
-              textAlign: 'justify',
-              color: colorTokens.light.gray.gray11,
-            }}
+            style={styles.animatedDesc}
           >
             {ProductsDetail.find((e) => e.id === productCode)?.description}
           </Animated.Text>
         </View>
-        {/* <Animated.Text
-          style={{
-            fontSize: 16,
-            fontWeight: 'bold',
-            margin: 16,
-          }}
-          entering={FadeInLeft.duration(400).delay(200)}
-        >
-          Add-ons
-        </Animated.Text> */}
+
         <TouchableOpacity onPress={clearCart}>
           <Text>Clear</Text>
         </TouchableOpacity>
@@ -435,5 +406,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  animatedHeader: { height: 130, backgroundColor: 'white' },
+  animatedText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    margin: 16,
+  },
+  animatedDesc: {
+    fontSize: 16,
+    marginHorizontal: 16,
+    lineHeight: 22,
+    textAlign: 'justify',
+    color: colorTokens.light.gray.gray11,
   },
 })

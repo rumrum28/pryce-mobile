@@ -9,6 +9,7 @@ import {
   Dimensions,
   Image,
   Pressable,
+  ScrollView,
 } from 'react-native'
 import React, { useCallback, useEffect, useRef, useState } from 'react'
 import useBasketStore, { AddOn, Product } from '~/utils/basketStore'
@@ -18,7 +19,7 @@ import { Link, router } from 'expo-router'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import SwipeableRow from '~/components/swipeable_row'
 import StyledButton from '~/components/styled_button'
-import { ScrollView } from 'react-native-gesture-handler'
+// import { ScrollView } from 'react-native-gesture-handler'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import { PaymentMethod } from '~/components/payment_method'

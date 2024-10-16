@@ -1,6 +1,6 @@
 import { View, Text, Image } from 'react-native'
 import { useState } from 'react'
-import { UserOrderResponseProps } from '~/types/userStorage'
+import { UserOrderResponse } from '~/types/userStorage'
 import { colorTokens } from '@tamagui/themes'
 import { Octicons } from '@expo/vector-icons'
 
@@ -19,7 +19,7 @@ const getStatusStep = (status: string) => {
   }
 }
 
-const TrackOrder: React.FC<UserOrderResponseProps> = ({ records = [] }) => {
+const TrackOrder: React.FC<UserOrderResponse> = ({ records = [] }) => {
   const statuses = [
     {
       status: 'Order Created',
@@ -56,6 +56,8 @@ const TrackOrder: React.FC<UserOrderResponseProps> = ({ records = [] }) => {
 
   const formattedDate = formatDateUTC(records[0].Phone_Order_Deadline__c)
 
+  console.log('records:', records)
+
   return (
     <>
       <View style={{ alignItems: 'center', marginTop: 20 }}>
@@ -91,9 +93,7 @@ const TrackOrder: React.FC<UserOrderResponseProps> = ({ records = [] }) => {
             paddingHorizontal: 15,
           }}
         >
-          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>
-            Order Number{' '}
-          </Text>
+          <Text style={{ fontWeight: 'bold', fontSize: 16 }}>Order Number</Text>
           {records.length > 0 && (
             <Text
               style={{

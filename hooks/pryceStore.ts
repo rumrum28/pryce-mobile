@@ -39,9 +39,7 @@ const usePryceStore = create<PryceState>()(
           const checkFavoriteIfExists = state.favorites.filter(
             (favFind: FavoritesList) => favFind.productCode === fav
           )
-
           if (checkFavoriteIfExists.length > 0) {
-            // Optionally handle the case where the item already exists, for example, by removing it
             return {
               favorites: state.favorites.filter(
                 (favFind: FavoritesList) => favFind.productCode !== fav

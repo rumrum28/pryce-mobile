@@ -4,6 +4,8 @@ import { colorTokens } from '@tamagui/themes'
 import { Profile } from '~/types/userStorage'
 import UserCard from './user_card'
 import UserPerks from './user_perks'
+import UserGeneral from './user_general'
+import UserMembership from './user_membership'
 
 export default function UserDetails({
   userDetails,
@@ -21,12 +23,21 @@ export default function UserDetails({
             </View>
           ) : null}
         </View>
-        <TouchableOpacity>
-          <Text style={styles.profileButton}>View profile</Text>
-        </TouchableOpacity>
         <UserCard />
       </View>
-      <UserPerks />
+      <Text style={styles.title}>Perks for you</Text>
+      <View>
+        {userDetails?.Prycegas_Club_Member__c ? (
+          <>
+            <UserMembership />
+          </>
+        ) : (
+          <>
+            <UserPerks />
+          </>
+        )}
+      </View>
+      <UserGeneral />
     </View>
   )
 }
@@ -61,7 +72,10 @@ const styles = StyleSheet.create({
     color: 'white',
     fontWeight: 'bold',
   },
-  profileButton: {
-    marginTop: 2,
+  title: {
+    fontSize: 14,
+    fontWeight: 'bold',
+    paddingVertical: 15,
+    paddingHorizontal: 15,
   },
 })

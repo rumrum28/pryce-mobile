@@ -130,17 +130,21 @@ export type Profile = {
 
 export type ProfileProps = Profile[]
 
-// Define the attributes structure
 export type Attributes = {
   type: string
   url: string
 }
 
-// Define the OrderItem structure
+export type Product2 = {
+  attributes: Attributes
+  Name: string
+}
+
 export type OrderItem = {
   attributes: Attributes
   OrderId: string
   Product2Id: string
+  Product2: Product2
   Quantity: number
   UnitPrice: number
   TotalPrice: number
@@ -168,17 +172,17 @@ export type Record = {
   ChangeFor__c: number
   Total_PGC_Discount__c: number
   Status: string
-  Order_Delivered_Date_Time__c: string
   Deliver_To_Street__c: string
   Deliver_To_City__c: string
   Deliver_To_Province__c: string
-  Phone_Order_Deadline__c: string
   Contact_Number__c: string
   Total_Items__c: number
+  Order_Delivered_Date_Time__c: string
+  Phone_Order_Deadline__c: string
   OrderItems: OrderItems
 }
 
-export type UserOrderResponseProps = {
+export type UserOrderResponse = {
   totalSize: number
   done: boolean
   records: Record[]

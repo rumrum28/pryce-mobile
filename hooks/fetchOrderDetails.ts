@@ -1,15 +1,15 @@
-import { UserOrderResponseProps } from '~/types/userStorage'
+import { UserOrderResponse } from '~/types/userStorage'
 import { queryClient } from './queryClient'
 import { useMutation } from '@tanstack/react-query'
 import { fetchOrderByUser } from '~/server/api'
 
 export const useFetchOrderDetails = () => {
   const mutation = useMutation<
-    UserOrderResponseProps,
+    UserOrderResponse,
     Error,
-    { token: string }
+    { token: string; type: string }
   >({
-    mutationFn: ({ token }) => fetchOrderByUser(token), // Only token is passed now
+    mutationFn: ({ token, type }) => fetchOrderByUser(token, type),
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['fetchOrdersOnLoad'],
