@@ -10,7 +10,6 @@ import {
   Dimensions,
 } from 'react-native'
 import React from 'react'
-import { Separator } from 'tamagui'
 import { Feather, Ionicons, MaterialIcons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 
@@ -22,10 +21,7 @@ export default function Page() {
         translucent
         // backgroundColor={colorTokens.light.orange.orange9}
       />
-      {/* <Separator
-        height={StatusBar.currentHeight}
-        style={{ height: 0, width: 0 }}
-      /> */}
+
       <View style={styles.backgroundCurvedContainer} />
       {/* <View style={styles.headerContainer}></View> */}
     </SafeAreaView>
