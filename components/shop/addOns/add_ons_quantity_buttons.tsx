@@ -11,15 +11,6 @@ export default function AddOnsQuantityButtons({
 }) {
   const increaseQuantity = useCartStore((s) => s.increaseQuantity)
   const decreaseQuantity = useCartStore((s) => s.decreaseQuantity)
-  const cart = useCartStore((s) => s.cart)
-
-  const incrementQuantity = () => {
-    increaseQuantity(productCode)
-  }
-
-  const decrementQuantity = () => {
-    decreaseQuantity(productCode)
-  }
 
   const styles = StyleSheet.create({
     container: {
@@ -37,7 +28,7 @@ export default function AddOnsQuantityButtons({
       height: 30,
       alignItems: 'center',
       justifyContent: 'center',
-      backgroundColor: 'white', //colorTokens.light.orange.orange9
+      backgroundColor: 'white',
       borderRadius: 25,
       borderWidth: 1,
       borderColor: colorTokens.light.gray.gray9,
@@ -55,13 +46,19 @@ export default function AddOnsQuantityButtons({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.button} onPress={decrementQuantity}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => decreaseQuantity(productCode)}
+      >
         <Text style={styles.buttonText}>-</Text>
       </TouchableOpacity>
 
       <Text style={styles.quantityText}>{quantity}</Text>
 
-      <TouchableOpacity style={styles.button} onPress={incrementQuantity}>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={() => increaseQuantity(productCode)}
+      >
         <Text style={styles.buttonText}>+</Text>
       </TouchableOpacity>
     </View>

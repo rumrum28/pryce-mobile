@@ -229,21 +229,14 @@ export default function CheckoutItem() {
                       flex: 1,
                       width: '100%',
                       alignItems: 'center',
-
-                      // alignItems: 'center',
-                      // justifyContent: 'center',
                     }}
                     key={index}
                   >
                     <View
                       style={{
                         flexDirection: 'row',
-                        // alignItems: 'center',
-                        // justifyContent: 'center',
                         paddingLeft: 40,
                         maxWidth: 220,
-
-                        // paddingHorizontal: 50,
                       }}
                     >
                       <Text
@@ -278,7 +271,6 @@ export default function CheckoutItem() {
             </View>
           )}
         </View>
-        {/* </SwipeableRow> */}
       </View>
     )
   }

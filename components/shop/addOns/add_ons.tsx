@@ -15,23 +15,26 @@ type AddOnsProps = {
 }
 
 const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
-  const [filteredData, setFilteredData] = useState<ProductSingle[]>([])
+  // const [filteredData, setFilteredData] = useState<ProductSingle[]>()
   const addProduct = useCartStore((s) => s.addProduct)
   const cart = useCartStore((s) => s.cart)
   const removeProduct = useCartStore((s) => s.removeProduct)
 
-  useEffect(() => {
-    if (realTimeProductData) {
-      const filtered = realTimeProductData.filter((fp) =>
-        productCodeMap.includes(fp.ProductCode)
-      )
-      setFilteredData(filtered)
-    }
-  }, [productCodeMap, realTimeProductData])
+  // useEffect(() => {
+  //   console.log(productCodeMap)
+
+  //   if (realTimeProductData) {
+  //     const filtered = realTimeProductData.filter((fp) =>
+  //       productCodeMap.includes(fp.ProductCode)
+  //     )
+  //     setFilteredData(filtered)
+  //   }
+  // }, [productCodeMap, realTimeProductData])
 
   const handleToggle = (addOn: AddOn) => {
     const checkProduct = cart.some((c) => c.productCode === addOn.ProductCode)
     if (checkProduct) return removeProduct(addOn.ProductCode)
+
     const singleProductDataInfo = {
       productCode: addOn.ProductCode,
       quantity: 1,
@@ -41,18 +44,6 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
   }
 
   const renderSingleItemBody = (item: ProductSingle) => {
-    const productPrice = filteredData?.find(
-      (e) => e.ProductCode === item.ProductCode
-    )
-    let calculatedPrice = 0
-    if (productPrice) {
-      calculatedPrice =
-        productPrice.UnitPrice < productPrice.RegularPrice
-          ? productPrice.UnitPrice
-          : productPrice.RegularPrice
-    }
-    const formattedPrice = formatCurrency(calculatedPrice)
-
     return (
       <View
         style={{
@@ -145,7 +136,11 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
             color: colorTokens.light.orange.orange9,
           }}
         >
-          {formattedPrice}
+          {formatCurrency(
+            item.UnitPrice < item.RegularPrice
+              ? item.UnitPrice
+              : item.RegularPrice
+          )}
         </Text>
       </View>
     )
@@ -188,7 +183,13 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
       }}
     >
       <FlatList
-        data={filteredData}
+        data={
+          realTimeProductData
+            ? realTimeProductData.filter((fp) =>
+                productCodeMap.includes(fp.ProductCode)
+              )
+            : []
+        }
         scrollEnabled={false}
         ItemSeparatorComponent={renderSingleItemSeparator}
         ListHeaderComponent={renderSingleItemHeader}
