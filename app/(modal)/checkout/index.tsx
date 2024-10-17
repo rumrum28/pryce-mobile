@@ -62,13 +62,11 @@ export default function CheckoutItem() {
     isLoading(true)
     if (products.length < 1) {
       Toast.error('Please check your orders')
-
       return
     }
 
     if (!paymentMethod) {
       Toast.error('Please select a payment method')
-
       return
     }
 
@@ -97,23 +95,6 @@ export default function CheckoutItem() {
             name: productData.Name,
             quantity: item.quantity,
           })
-
-          if (item.addOns && item.addOns.length > 0) {
-            item.addOns.forEach((addOn) => {
-              orderData.line_items.push({
-                product_id: addOn.Id,
-                product_area_code: addOn.Product2Id,
-                amount: addOn.RegularPrice,
-                currency: 'PHP',
-                description: addOn.Name,
-                images: [
-                  `https://prycegas.com/images/product-thumbs/${addOn.ProductCode}.png`,
-                ],
-                name: addOn.Name,
-                quantity: item.quantity,
-              })
-            })
-          }
         }
       })
 

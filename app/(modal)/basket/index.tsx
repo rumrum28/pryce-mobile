@@ -7,7 +7,7 @@ import {
   Pressable,
   ScrollView,
 } from 'react-native'
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { formatCurrency } from '~/utils/utils'
 import { colorTokens } from '@tamagui/themes'
 import { SafeAreaView } from 'react-native-safe-area-context'
