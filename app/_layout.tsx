@@ -28,7 +28,14 @@ export default function Layout() {
       <GestureHandlerRootView style={{ flex: 1 }}>
         <QueryClientProvider client={queryClient}>
           <BottomSheetModalProvider>
-            <ToastManager />
+            <ToastManager
+              width="auto"
+              style={{
+                height: 'auto',
+                paddingRight: 28,
+              }}
+              textStyle={{ fontSize: 15 }}
+            />
 
             <Slot />
           </BottomSheetModalProvider>

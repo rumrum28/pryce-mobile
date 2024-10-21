@@ -91,10 +91,6 @@ export default function ItemDetails() {
     })
   }
 
-  useEffect(() => {
-    console.log(cart)
-  }, [cart])
-
   const addToCart = async () => {
     if (productCode) {
       const singleDataInfo = {
@@ -291,8 +287,6 @@ export default function ItemDetails() {
               <AddOns
                 productCodeMap={exemptedOnProducts}
                 realTimeProductData={data}
-                selectedAddOns={selectedAddOns}
-                onToggleAddOn={handleToggleAddOn}
               />
             </>
           )}
@@ -328,38 +322,42 @@ export default function ItemDetails() {
               />
             ) : (
               <>
-                <TouchableOpacity
-                  onPress={minusHandler}
-                  style={{
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    borderRadius: 20,
-                    padding: 3,
-                  }}
-                >
-                  <AntDesign name="minus" size={20} color="white" />
-                </TouchableOpacity>
-                <Text
-                  style={{
-                    fontSize: 16,
-                    fontWeight: 'bold',
-                    // flex: 1,
-                    textAlign: 'center',
-                    marginHorizontal: 15,
-                  }}
-                >
-                  {quantity}
-                </Text>
-                <TouchableOpacity
-                  onPress={plusHandler}
-                  style={{
-                    backgroundColor: colorTokens.light.orange.orange9,
-                    borderRadius: 20,
-                    padding: 3,
-                    marginRight: 10,
-                  }}
-                >
-                  <Ionicons name="add" size={20} color="white" />
-                </TouchableOpacity>
+                {productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
+                  <>
+                    <TouchableOpacity
+                      onPress={minusHandler}
+                      style={{
+                        backgroundColor: colorTokens.light.orange.orange9,
+                        borderRadius: 20,
+                        padding: 3,
+                      }}
+                    >
+                      <AntDesign name="minus" size={20} color="white" />
+                    </TouchableOpacity>
+                    <Text
+                      style={{
+                        fontSize: 16,
+                        fontWeight: 'bold',
+                        textAlign: 'center',
+                        marginHorizontal: 15,
+                      }}
+                    >
+                      {quantity}
+                    </Text>
+                    <TouchableOpacity
+                      onPress={plusHandler}
+                      style={{
+                        backgroundColor: colorTokens.light.orange.orange9,
+                        borderRadius: 20,
+                        padding: 3,
+                        marginRight: 10,
+                      }}
+                    >
+                      <Ionicons name="add" size={20} color="white" />
+                    </TouchableOpacity>
+                  </>
+                )}
+
                 <StyledButton
                   style={{
                     flex: 1,

@@ -1,9 +1,6 @@
-import { View, Text, TouchableOpacity } from 'react-native'
-import React from 'react'
-import { router, Stack } from 'expo-router'
+import { Stack } from 'expo-router'
 import Header from '~/components/header'
 import { colorTokens } from '@tamagui/themes'
-import { Ionicons } from '@expo/vector-icons'
 
 export default function _layout() {
   return (

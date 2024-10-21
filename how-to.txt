@@ -31,3 +31,6 @@ adb pair 192.168.2.2:41363
 adb tcpip 5555
 adb connect 192.168.2.2:37147
 
+
+#must do
+1. update the url of success order after paying paymongo

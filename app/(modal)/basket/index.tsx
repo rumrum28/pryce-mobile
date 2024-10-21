@@ -61,10 +61,23 @@ export default function Basket() {
       return
     }
 
+    //check if there is a pgcm order on cart and if payment is cod
+    const codOrderCheckPGCM = cart.some(
+      (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
+    )
+
+    if (codOrderCheckPGCM && selectedPaymentMethod === 'cash-on-delivery') {
+      Toast.error(
+        'You can only order a membership with online payment. Please change your mode of payment'
+      )
+      isLoading(false)
+      return null
+    }
+
     if (!selectedPaymentMethod) {
       Toast.error('Please select a payment method')
       isLoading(false)
-      return
+      return null
     }
 
     const orderData = {
@@ -107,7 +120,7 @@ export default function Basket() {
 
         const responseText = await response.json()
 
-        if (response.ok) {
+        if (responseText) {
           clearCart()
 
           if (selectedPaymentMethod === 'online-payment') {
