@@ -5,7 +5,7 @@ export const getProductById = (id: number) => {
   return allProducts.find((product) => product.id === id)
 }
 export const getFilteredProductById = (id: number) => {
-  return filteredProducts.find((filtered_product) => filtered_product.id === id) 
+  return filteredProducts.find((filtered_product) => filtered_product.id === id)
 }
 export const getFilteredProductByCategory = (id: number) => {
   return categories.find((product) => product.id === id)
@@ -384,5 +384,23 @@ export const address = [
     street: 'Block 3 qweqwe',
     city: 'Cagayan De Oro',
     province: 'Misamis Oriental',
+  },
+]
+
+export const order = [
+  {
+    id: 1,
+    title: 'Order Confirmed',
+    subtitle: 'Your order has been received',
+  },
+  {
+    id: 2,
+    title: 'Order Assigned',
+    subtitle: 'Your order has been assigned to our rider',
+  },
+  {
+    id: 3,
+    title: 'Delivered',
+    subtitle: 'Thank you for ordering to us',
   },
 ]

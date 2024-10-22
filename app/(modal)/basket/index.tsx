@@ -51,7 +51,7 @@ export default function Basket() {
     if (addressRef) {
       fetchProductsDetails(addressRef)
     }
-  }, [addressRef, fetchProductsDetails])
+  }, [addressRef])
 
   const placeOrder = async () => {
     isLoading(true)
@@ -61,7 +61,6 @@ export default function Basket() {
       return
     }
 
-    //check if there is a pgcm order on cart and if payment is cod
     const codOrderCheckPGCM = cart.some(
       (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
     )

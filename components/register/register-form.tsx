@@ -54,7 +54,7 @@ export default function RegisterForm() {
         Toast.success('Welcome to PRYCEGAS')
 
         setToken(data.loginResponse?.access_token)
-        setUsers(data.profileResponse)
+        setUsers(data.profileResponse!)
         router.push('/(drawer)/shop')
       } else {
         Toast.error('Invalid phone number or password')
@@ -214,15 +214,15 @@ export default function RegisterForm() {
           />
         </View>
         <View style={styles.inputContainer}>
-          <Dropdown
-          // data={formattedCountries}
-          // onChange={console.log}
-          // placeholder="Select country"
-          />
+          {/* <DropdownComponent
+            data={formattedCountries}
+            onChange={console.log}
+            placeholder="Select country"
+          /> */}
         </View>
-        <View style={styles.inputContainer}>
-          <Dropdown />
-        </View>
+        {/* <View style={styles.inputContainer}>
+          <DropdownComponent />
+        </View> */}
         <View style={styles.inputContainer}>
           <View style={{ justifyContent: 'center', marginRight: 10 }}>
             <Ionicons

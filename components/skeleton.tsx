@@ -1,16 +1,16 @@
-import { Animated, StyleSheet, View } from 'react-native'
+import { Animated, StyleSheet, View, ViewStyle } from 'react-native'
 import React, { useEffect, useRef } from 'react'
 
 interface SkeletonProps {
   variant?: 'box' | 'circle'
-  width: number | string
+  width: number | `${number}%`
   height: number
 }
 
 export default function Skeleton({ width, height, variant }: SkeletonProps) {
   const opacity = useRef(new Animated.Value(0.2))
 
-  let borderRadius = 0
+  let borderRadius = 10
 
   if (variant === 'circle') {
     borderRadius =
@@ -34,15 +34,15 @@ export default function Skeleton({ width, height, variant }: SkeletonProps) {
     ).start()
   }, [])
 
-  // Ensuring `width` is a number or handled correctly
-  const widthStyle = typeof width === 'number' ? width : undefined
+  const widthStyle: ViewStyle['width'] =
+    typeof width === 'number' ? width : width
 
   return (
     <Animated.View
-      style={[
+      style={StyleSheet.flatten([
         { opacity: opacity.current, height, width: widthStyle, borderRadius },
         styles.skeleton,
-      ]}
+      ])}
     />
   )
 }

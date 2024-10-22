@@ -40,5 +40,9 @@ export const useFetchProducts = () => {
     },
   })
 
-  return mutation
+  return {
+    ...mutation,
+    fetchProducts: mutation.mutate,
+    isPending: mutation.isPending,
+  }
 }

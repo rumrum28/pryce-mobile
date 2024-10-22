@@ -122,7 +122,7 @@ export const ProductsDetail = [
       'Prycegas Club Membership',
       'Register to enjoy fixed prices on selected products over a year with 24/7 Free Delivery Service!. If you have any concerns, please call #98000 toll-free.',
     ],
-    image: require('~/assets/images/products/PGCM.png'),
+    image: require('~/assets/images/products/PGCM.jpg'),
   },
   {
     id: 'PGCMV',
@@ -136,7 +136,7 @@ export const ProductsDetail = [
     id: 'MO2TFT',
     name: '20lbs Cylinder with Content',
     description: ['Cylinder with Content'],
-    image: require('~/assets/images/products/MO2TFT.png'),
+    image: require('~/assets/images/products/MO2TFT.jpg'),
   },
   {
     id: 'MO2TST',

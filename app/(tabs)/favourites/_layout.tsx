@@ -13,7 +13,10 @@ export default function _layout() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen name="index" options={{ headerShown: false, title: '' }} />
+      <Stack.Screen
+        name="index"
+        options={{ headerShown: true, title: 'My Favourites' }}
+      />
     </Stack>
   )
 }

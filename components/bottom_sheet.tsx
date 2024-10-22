@@ -25,6 +25,8 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
   const users = usePryceStore((state) => state.users)
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
+  const addressRef = usePryceStore((state) => state.addressRef)
+
   const token = usePryceStore((state) => state.token)
   const setChangeAddressTrigger = usePryceStore(
     (state) => state.setChangeAddressTrigger
@@ -167,6 +169,7 @@ const BottomSheet = forwardRef<Ref>((props, ref) => {
             flexDirection: 'row',
             alignItems: 'center',
             marginHorizontal: 15,
+            marginBottom: 30,
           }}
         >
           <Ionicons

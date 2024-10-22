@@ -13,7 +13,7 @@ export default function _layout() {
         headerShadowVisible: false,
       }}
     >
-      <Stack.Screen
+      {/* <Stack.Screen
         name="index"
         options={{
           title: '',
@@ -31,7 +31,7 @@ export default function _layout() {
           ),
           headerTransparent: true,
         }}
-      />
+      /> */}
     </Stack>
   )
 }

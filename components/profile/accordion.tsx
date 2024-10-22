@@ -5,30 +5,31 @@ import {
   UIManager,
   Platform,
   LayoutAnimation,
-  TouchableOpacity,
-  Pressable,
+  StyleSheet,
+  Animated, // Import Animated API
+  Easing,
 } from 'react-native'
-import React, { useState } from 'react'
-import { AntDesign, MaterialIcons, Entypo, Feather } from '@expo/vector-icons'
-import { ProfileProps } from '~/data/data'
+import React, { useEffect, useState, useRef } from 'react'
+import { MaterialIcons, Entypo } from '@expo/vector-icons'
+import { PGCMembershipProps } from '~/data/data'
 import { colorTokens } from '@tamagui/themes'
-import { Button } from 'tamagui'
-import { Link, router } from 'expo-router'
 
 export default function Accordion({
-  id,
-  name,
+  // name,
   title,
   subtitles,
-}: ProfileProps) {
+}: PGCMembershipProps) {
   const [opened, setOpened] = useState(false)
+  const rotateAnim = useRef(new Animated.Value(0)).current
 
-  if (
-    Platform.OS === 'android' &&
-    UIManager.setLayoutAnimationEnabledExperimental
-  ) {
-    UIManager.setLayoutAnimationEnabledExperimental(true)
-  }
+  useEffect(() => {
+    if (
+      Platform.OS === 'android' &&
+      UIManager.setLayoutAnimationEnabledExperimental
+    ) {
+      UIManager.setLayoutAnimationEnabledExperimental(true)
+    }
+  }, [])
 
   function toggleAccordion() {
     LayoutAnimation.configureNext({
@@ -36,101 +37,85 @@ export default function Accordion({
       create: { type: 'easeIn', property: 'opacity' },
       update: { type: 'linear', springDamping: 0.3, duration: 250 },
     })
+
+    Animated.timing(rotateAnim, {
+      toValue: opened ? 0 : 1,
+      duration: 250,
+      easing: Easing.linear,
+      useNativeDriver: true,
+    }).start()
+
     setOpened(!opened)
   }
 
+  const rotate = rotateAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '-180deg'],
+  })
+
   return (
-    <View
-      style={{
-        marginHorizontal: 10,
-        padding: 15,
-        borderRadius: 6,
-      }}
-    >
+    <View style={styles.container}>
       <TouchableWithoutFeedback onPress={toggleAccordion}>
-        <View
-          style={{
-            flexDirection: 'row',
-            justifyContent: 'space-between',
-            alignItems: 'center',
-          }}
-        >
-          <View
-            style={{
-              alignItems: 'center',
-              flexDirection: 'row',
-            }}
-          >
-            <MaterialIcons
-              name={name.icon}
+        <View style={styles.header}>
+          <View style={styles.textContainer}>
+            {/* <MaterialIcons
+              // name={name.icon}
+              size={24}
+              color={colorTokens.light.orange.orange9}
+            /> */}
+            <Text style={styles.title}>{title}</Text>
+          </View>
+
+          <Animated.View style={{ transform: [{ rotate }] }}>
+            <Entypo
+              name="chevron-down"
               size={24}
               color={colorTokens.light.orange.orange9}
             />
-            <Text
-              style={{
-                textTransform: 'capitalize',
-                marginLeft: 10,
-                fontSize: 20,
-                color: colorTokens.light.gray.gray12,
-              }}
-            >
-              {title}
-            </Text>
-          </View>
-          <AntDesign
-            name={opened ? 'minus' : 'plus'}
-            size={16}
-            color={colorTokens.light.orange.orange9}
-          />
+          </Animated.View>
         </View>
       </TouchableWithoutFeedback>
 
       {opened && (
-        <View
-          style={{
-            flexDirection: 'column',
-            marginTop: 5,
-          }}
-        >
-          {/* {subtitles.map((subtitle) => (
-            <View
-              style={{
-                alignItems: 'center',
-                flexDirection: 'row',
-                marginLeft: 35,
-                marginVertical: 3,
-              }}
-              key={subtitle}
-            >
-              <Pressable
-                onPress={() =>
-                  router.push({
-                    pathname: '/(tabs)/profile/',
-                    params: { id: 1, subtitles: 'address' },
-                  })
-                }
-              >
-                <Text
-                  style={{
-                    textTransform: 'capitalize',
-                    fontSize: 18,
-
-                    color: colorTokens.light.gray.gray12,
-                  }}
-                >
-                  {subtitle}
-                </Text>
-              </Pressable>
-              <Feather
-                name="chevron-right"
-                size={22}
-                color={colorTokens.light.orange.orange9}
-                style={{ alignItems: 'center' }}
-              />
-            </View>
-          ))} */}
+        <View style={styles.content}>
+          <Text style={styles.details}>{subtitles}</Text>
         </View>
       )}
     </View>
   )
 }
+
+const styles = StyleSheet.create({
+  details: {
+    opacity: 0.65,
+    marginTop: 10,
+    // marginLeft: 50,
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: '600',
+  },
+  content: {
+    // marginTop: 8,
+  },
+  container: {
+    marginHorizontal: 15,
+    marginVertical: 5,
+    padding: 15,
+    // backgroundColor: colorTokens.light.orange.orange3,
+    borderRadius: 6,
+    borderColor: colorTokens.light.gray.gray3,
+    borderWidth: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  textContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    // padding: 15,
+    // gap: 10,
+  },
+})

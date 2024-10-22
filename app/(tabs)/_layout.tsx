@@ -3,6 +3,8 @@ import {
   MaterialCommunityIcons,
   MaterialIcons,
   FontAwesome,
+  AntDesign,
+  Feather,
 } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Tabs } from 'expo-router'
@@ -47,12 +49,12 @@ export default function TabLayout() {
       />
 
       <Tabs.Screen
-        name="favorites"
+        name="favourites"
         options={{
-          title: 'Favorites',
+          title: 'Favourites',
           headerShown: false,
           tabBarIcon: ({ color }) => (
-            <FontAwesome name="heart-o" size={26} color={color} />
+            <AntDesign name="hearto" size={26} color={color} />
           ),
         }}
       />

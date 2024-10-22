@@ -13309,38 +13309,54 @@ export type IconProps = {
   size: number
 }
 
-export type ProfileProps = {
-  id: number
-  name: IconProps
-  href: string
+export type PGCMembershipProps = {
+  // name: IconProps
   title: string
   subtitles?: string
 }
 
-export const profile: ProfileProps[] = [
+export const membership: PGCMembershipProps[] = [
   {
-    id: 1,
-    name: { icon: 'account-circle', size: 24 },
-    href: '/',
-    title: 'Prycegas Club Membership',
-    subtitles: 'Subscribe now to enjoy discounted price.',
+    // name: { icon: 'account-circle', size: 24 },
+    title: 'Valid for 1 year',
+    subtitles: 'Subscribe now to enjoy discounted price',
   },
   {
-    id: 2,
-    name: { icon: 'newspaper', size: 24 },
-    href: '/',
-    title: 'News',
+    // name: { icon: 'newspaper', size: 24 },
+    title: 'FREE delivery',
+    subtitles: 'On all orders nationwide',
   },
   {
-    id: 3,
-    name: { icon: 'help-center', size: 24 },
-    href: '/',
-    title: 'Help Center',
+    // name: { icon: 'help-center', size: 24 },
+    title: '24/7 service',
+    subtitles: '24-hour & 7 days a week delivery service',
   },
-  // {
-  //   id: 4,
-  //   name: { icon: 'exclamationcircleo', size: 24 },
-  //   href: '/',
-  //   title: 'About',
-  // },
+]
+
+export type PGCProps = {
+  id: string
+  image: string
+  title: string
+  subtitles?: string
+}
+
+export const pgc: PGCProps[] = [
+  {
+    id: '0',
+    image: require('~/assets/pgc-card-mascot.png'),
+    title: 'Valid for 1 year',
+    subtitles: 'Subscribe now to enjoy discounted price',
+  },
+  {
+    id: '1',
+    image: require('~/assets/hotline.png'),
+    title: 'FREE delivery',
+    subtitles: 'On all orders nationwide',
+  },
+  {
+    id: '2',
+    image: require('~/assets/rider.png'),
+    title: '24/7 service',
+    subtitles: '24-hour & 7 days a week delivery service',
+  },
 ]

@@ -1,4 +1,4 @@
-import { Ionicons } from '@expo/vector-icons'
+import { AntDesign, Ionicons } from '@expo/vector-icons'
 import { colorTokens } from '@tamagui/themes'
 import { Link, router } from 'expo-router'
 import React, { useEffect } from 'react'
@@ -8,12 +8,16 @@ import {
   TouchableOpacity,
   FlatList,
   Dimensions,
+  Alert,
 } from 'react-native'
 import { Feather, Entypo } from '@expo/vector-icons'
 
 import { Button, View } from 'tamagui'
 import usePryceStore from '~/hooks/pryceStore'
+import * as Haptics from 'expo-haptics'
+
 import {
+  FavoritesList,
   ProductDisplayProps,
   ProductSingle,
   ProductsProps,
@@ -34,9 +38,6 @@ export default function AllProducts({
   const favorites = usePryceStore((set) => set.favorites)
   const setFavorites = usePryceStore((set) => set.setFavorites)
   const { width, height } = Dimensions.get('window')
-  const addToFavoritesHandler = async (f: ProductSingle) => {
-    setFavorites(f.ProductCode)
-  }
 
   const productOnClickHandler = (product: ProductSingle) => {
     router.push({
@@ -45,6 +46,33 @@ export default function AllProducts({
         productCode: product.ProductCode,
       },
     })
+  }
+
+  const addToFavoritesHandler = async (f: string) => {
+    const favorites = usePryceStore.getState().favorites
+    const isFavorite = favorites.some((fav) => fav.productCode === f)
+
+    usePryceStore.getState().setFavorites(f)
+
+    const product = products?.find((p) => p.ProductCode === f)
+
+    if (products) {
+      if (isFavorite) {
+        Alert.alert(
+          'Removed from Favorites',
+          `You have removed product ${product?.Name} from your favourites.`
+        )
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+      } else {
+        Alert.alert(
+          'Added to Favorites',
+          `You have added product ${product?.Name} to your favourites.`
+        )
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+      }
+    } else {
+      console.warn('Product information is undefined')
+    }
   }
 
   const renderItem = ({ item }: { item: any }) => {
@@ -70,6 +98,18 @@ export default function AllProducts({
             }}
             resizeMode="cover"
           />
+
+          <TouchableOpacity
+            style={{ position: 'absolute', top: 0, right: 0, padding: 15 }}
+            onPress={() => addToFavoritesHandler(String(item.ProductCode))}
+          >
+            {favorites &&
+            favorites.find((fav) => fav.productCode === item.ProductCode) ? (
+              <AntDesign name="heart" size={24} color="#fff" />
+            ) : (
+              <AntDesign name="hearto" size={24} color="#fff" />
+            )}
+          </TouchableOpacity>
           <View
             style={{
               position: 'absolute',
@@ -92,39 +132,37 @@ export default function AllProducts({
             }}
           >
             <View>
-              <View style={{}}>
-                {item.UnitPrice < item.RegularPrice ? (
-                  <>
-                    <Text
-                      style={{
-                        color: colorTokens.light.gray.gray10,
-                        paddingVertical: 2,
-                        textDecorationLine: 'line-through',
-                        fontSize: 12,
-                      }}
-                    >
-                      {formatCurrency(item.RegularPrice)}
-                    </Text>
-                    <Text
-                      style={{
-                        color: '#FF4500',
-                        paddingVertical: 2,
-                      }}
-                    >
-                      {formatCurrency(item.UnitPrice)}
-                    </Text>
-                  </>
-                ) : (
+              {item.UnitPrice < item.RegularPrice ? (
+                <>
+                  <Text
+                    style={{
+                      color: colorTokens.light.gray.gray10,
+                      paddingVertical: 2,
+                      textDecorationLine: 'line-through',
+                      fontSize: 12,
+                    }}
+                  >
+                    {formatCurrency(item.RegularPrice)}
+                  </Text>
                   <Text
                     style={{
                       color: '#FF4500',
                       paddingVertical: 2,
                     }}
                   >
-                    {formatCurrency(item.RegularPrice)}
+                    {formatCurrency(item.UnitPrice)}
                   </Text>
-                )}
-              </View>
+                </>
+              ) : (
+                <Text
+                  style={{
+                    color: '#FF4500',
+                    paddingVertical: 2,
+                  }}
+                >
+                  {formatCurrency(item.RegularPrice)}
+                </Text>
+              )}
             </View>
           </View>
         </View>

@@ -123,9 +123,68 @@ export type Profile = {
   Primary_Street__c: string
   Primary_Barangay__c: string
   Primary_City2__c: string
+  PGC_ID_Number__c?: string
   Primary_State_Province__c: string
   Pryce_Region__c: string
   ref?: string
 }
 
 export type ProfileProps = Profile[]
+
+export type Attributes = {
+  type: string
+  url: string
+}
+
+export type Product2 = {
+  attributes: Attributes
+  Name: string
+}
+
+export type OrderItem = {
+  attributes: Attributes
+  OrderId: string
+  Product2Id: string
+  Product2: Product2
+  Quantity: number
+  UnitPrice: number
+  TotalPrice: number
+  OrderItemNumber: string
+  OriginalOrderItemId: string | null
+}
+
+export type OrderItems = {
+  totalSize: number
+  done: boolean
+  records: OrderItem[]
+}
+
+export type Record = {
+  attributes: Attributes
+  Id: string
+  Total_Amount_Due__c: number
+  Receipt_Number__c: string | null
+  Name: string | null
+  OrderNumber: string
+  CreatedDateTime__c: string
+  Payment_Option__c: string
+  Paymongo_Reference_ID__c: string | null
+  Dealer_Contact_Name__c: string | null
+  ChangeFor__c: number
+  Total_PGC_Discount__c: number
+  Status: string
+  Deliver_To_Street__c: string
+  Deliver_To_City__c: string
+  Deliver_To_Province__c: string
+  Contact_Number__c: string
+  Total_Items__c: number
+  Order_Delivered_Date_Time__c: string
+  Phone_Order_Deadline__c: string
+  OrderItems: OrderItems
+}
+
+export type UserOrderResponse = {
+  totalSize: number
+  done: boolean
+  records: Record[]
+}

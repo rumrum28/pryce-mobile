@@ -1,13 +1,15 @@
 import {
   View,
   Text,
+  Image,
   TouchableOpacity,
   Dimensions,
   Platform,
   StyleSheet,
   ActivityIndicator,
+  Alert,
 } from 'react-native'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { router, Stack, useLocalSearchParams } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
 import { formatCurrency } from '~/utils/utils'
@@ -20,21 +22,27 @@ import Animated, {
   useAnimatedStyle,
   useScrollViewOffset,
 } from 'react-native-reanimated'
+import * as Haptics from 'expo-haptics'
+import useBasketStore, { AddOn } from '~/utils/basketStore'
 import { AntDesign, Ionicons } from '@expo/vector-icons'
 import StyledButton from '~/components/styled_button'
+import { useMutation } from '@tanstack/react-query'
+import { fetchProductsQuery, getProductById } from '~/server/api'
+import { queryClient } from '~/hooks/queryClient'
 import usePryceStore from '~/hooks/pryceStore'
 import { exemptedOnProducts, ProductsDetail } from '~/utils/products'
+import { Spinner, YStack } from 'tamagui'
+import { ProductSingle } from '~/types/product'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import Skeleton from '~/components/skeleton'
 import AddOns from '~/components/shop/addOns/add_ons'
-import { Toast } from 'toastify-react-native'
-import useCartStore from '~/hooks/productsStore'
-import { AddOn } from '~/types/product'
+import { ScrollView } from 'react-native-gesture-handler'
+import AddOnsQuantityButtons from '~/components/shop/addOns/add_ons_quantity_buttons'
 
 const { width } = Dimensions.get('window')
 const IMG_HEIGHT = 300
 
-let paddingTop = 25 as number
+let paddingTop
 
 if (Platform.OS === 'ios') {
   paddingTop = 45
@@ -51,13 +59,18 @@ export default function ItemDetails() {
   } = useFetchProductsDetails()
 
   const [quantity, setQuantity] = useState(1)
+  const [totalPriceNumber, setTotalPriceNumber] = useState(0)
+  const [items, setItems] = useState(0)
   const addressRef = usePryceStore((set) => set.addressRef)
+  const [item, setItem] = useState<ProductSingle | null>(null)
   const scrollRef = useAnimatedRef<Animated.ScrollView>()
   const scrollOfset = useScrollViewOffset(scrollRef)
   const [selectedAddOns, setSelectedAddOns] = useState<Array<AddOn>>([])
-  const cart = useCartStore((state) => state.cart)
-  const addProduct = useCartStore((state) => state.addProduct)
-  const [totalPrice, setTotalPrice] = useState<number>(0)
+  const productPrice = data?.find((e) => e.ProductCode === productCode)
+  const [loading, isLoading] = useState<boolean>(false)
+  const favorites = usePryceStore((set) => set.favorites)
+
+  const { addProduct, reduceProduct, clearCart } = useBasketStore()
 
   useEffect(() => {
     if (addressRef) {
@@ -66,19 +79,23 @@ export default function ItemDetails() {
   }, [addressRef, fetchProductsDetails])
 
   useEffect(() => {
-    if (data) {
-      const singleProductData = data?.find((e) => e.ProductCode === productCode)
+    const productDetails = async () => {
+      if (addressRef && productCode) {
+        const productCodeString = Array.isArray(productCode)
+          ? productCode[0]
+          : productCode
 
-      if (singleProductData) {
-        const activePrice =
-          singleProductData.UnitPrice < singleProductData.RegularPrice
-            ? singleProductData.UnitPrice
-            : singleProductData.RegularPrice
-
-        setTotalPrice(activePrice)
+        const item = await getProductById(addressRef, productCodeString)
+        if (item) {
+          setItem(item)
+        } else {
+          console.error('Product not found for code:', productCodeString)
+        }
       }
     }
-  }, [data])
+
+    productDetails()
+  }, [addressRef, productCode, data])
 
   const handleToggleAddOn = (addOn: AddOn) => {
     setSelectedAddOns((prevSelectedAddOns) => {
@@ -92,58 +109,78 @@ export default function ItemDetails() {
   }
 
   const addToCart = async () => {
-    if (productCode) {
-      const singleDataInfo = {
-        productCode: String(productCode),
-        quantity,
-      }
+    isLoading(true)
+    if (addressRef && productCode) {
+      const productCodeString = Array.isArray(productCode)
+        ? productCode[0]
+        : productCode
 
-      addProduct(singleDataInfo)
-      router.back()
+      const selectedProduct = await getProductById(
+        addressRef,
+        productCodeString
+      )
+
+      if (selectedProduct) {
+        const unitPrice = selectedProduct.UnitPrice ?? 0
+        const regularPrice = selectedProduct.RegularPrice ?? 0
+        const numQuantity = quantity ?? 1
+
+        const calculatedPrice =
+          unitPrice < regularPrice ? unitPrice : regularPrice
+
+        const totalProductPrice = calculatedPrice * numQuantity
+
+        const totalAddOnsPrice = selectedAddOns.reduce((sum, addOn) => {
+          const addOnUnitPrice = addOn.UnitPrice ?? 0
+          const addOnRegularPrice = addOn.RegularPrice ?? 0
+
+          const effectiveAddOnPrice =
+            addOnUnitPrice < addOnRegularPrice
+              ? addOnUnitPrice
+              : addOnRegularPrice
+
+          return sum + effectiveAddOnPrice * numQuantity
+        }, 0)
+
+        const priceToAdd = totalProductPrice + totalAddOnsPrice
+
+        addProduct(selectedProduct, numQuantity, selectedAddOns)
+
+        setTotalPriceNumber((prevTotal) => prevTotal + priceToAdd)
+        setItems((prevItems) => prevItems + numQuantity)
+
+        Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+        router.back()
+      } else {
+        console.error('Product not found for code:', productCodeString)
+      }
+    }
+    isLoading(false)
+  }
+
+  const removeFromCart = () => {
+    if (item) {
+      if (quantity > 1) {
+        setQuantity(quantity - 1)
+        reduceProduct(item)
+      } else if (quantity === 1) {
+        reduceProduct(item)
+      }
     } else {
-      Toast.error(`Missing product code`)
+      console.error('Cannot remove item from cart: item is null')
     }
   }
 
-  const plusHandler = () => {
-    if (productCode) {
-      const singleProductData = data?.find((e) => e.ProductCode === productCode)
-      if (singleProductData) {
-        const activePrice =
-          singleProductData.UnitPrice < singleProductData.RegularPrice
-            ? singleProductData.UnitPrice
-            : singleProductData.RegularPrice
+  let calculatedPrice = 0
 
-        console.log(quantity)
-
-        if (quantity > 0) {
-          setQuantity(quantity + 1)
-          setTotalPrice((quantity + 1) * activePrice)
-        }
-      }
-    } else {
-      Toast.error(`Cannot add item from cart`)
-    }
+  if (productPrice) {
+    calculatedPrice =
+      productPrice.UnitPrice < productPrice.RegularPrice
+        ? productPrice.UnitPrice
+        : productPrice.RegularPrice
   }
 
-  const minusHandler = () => {
-    if (productCode) {
-      const singleProductData = data?.find((e) => e.ProductCode === productCode)
-      if (singleProductData) {
-        const activePrice =
-          singleProductData.UnitPrice < singleProductData.RegularPrice
-            ? singleProductData.UnitPrice
-            : singleProductData.RegularPrice
-
-        if (quantity > 1) {
-          setQuantity(quantity - 1)
-          setTotalPrice((quantity - 1) * activePrice)
-        }
-      }
-    } else {
-      Toast.error(`Cannot remove item from cart`)
-    }
-  }
+  const totalPrice = quantity * (calculatedPrice || 0)
 
   const imageAnimatedStyle = useAnimatedStyle(() => {
     return {
@@ -172,96 +209,117 @@ export default function ItemDetails() {
     }
   })
 
+  const addToFavoritesHandler = async (f: string) => {
+    const favorites = usePryceStore.getState().favorites
+    const isFavorite = favorites.some((fav) => fav.productCode === f)
+
+    usePryceStore.getState().setFavorites(f)
+
+    if (isFavorite) {
+      Alert.alert(
+        'Removed from Favorites',
+        `You have removed product ${data && data.find((e) => e.ProductCode === productCode)?.Name} from your favourites.`
+      )
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+    } else {
+      Alert.alert(
+        'Added to Favorites',
+        `You have added product ${data && data.find((e) => e.ProductCode === productCode)?.Name} to your favourites.`
+      )
+      Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    }
+  }
+
   return (
-    <SafeAreaView
-      style={{ flex: 1, backgroundColor: 'white' }}
-      edges={['bottom']}
-    >
-      <View style={{ flex: 1, backgroundColor: 'white' }}>
-        <Stack.Screen
-          options={{
-            headerTitle: '',
-            headerLeft: () => (
-              <TouchableOpacity
-                onPress={() => router.back()}
-                style={{
-                  backgroundColor: 'white',
-                  borderRadius: 20,
-                  padding: 3,
-                }}
-              >
-                <Ionicons
-                  name="close"
-                  size={24}
-                  color={colorTokens.light.orange.orange9}
-                />
-              </TouchableOpacity>
-            ),
-            headerTransparent: true,
-            headerBackground: () => (
-              <Animated.View style={[styles.header, headerAnimatedStyle]}>
-                <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
-                  {data &&
-                    data.find((e) => e.ProductCode === productCode)?.Name}
-                </Text>
-              </Animated.View>
-            ),
-          }}
+    <SafeAreaView style={styles.container} edges={['bottom']}>
+      <Stack.Screen
+        options={{
+          headerTitle: '',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 20,
+                padding: 3,
+              }}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          ),
+          headerRight: () => (
+            <TouchableOpacity
+              onPress={() => addToFavoritesHandler(String(productCode))}
+            >
+              {favorites &&
+              favorites.find((fav) => fav.productCode === productCode) ? (
+                <AntDesign name="heart" size={24} color="#fff" />
+              ) : (
+                <AntDesign name="hearto" size={24} color="#fff" />
+              )}
+            </TouchableOpacity>
+          ),
+          headerTransparent: true,
+          headerBackground: () => (
+            <Animated.View style={[styles.header, headerAnimatedStyle]}>
+              <Text style={{ fontSize: 16, fontWeight: 'bold' }}>
+                {data && data.find((e) => e.ProductCode === productCode)?.Name}
+              </Text>
+            </Animated.View>
+          ),
+        }}
+      />
+      <Animated.ScrollView
+        ref={scrollRef}
+        scrollEventThrottle={16}
+        contentContainerStyle={{ paddingBottom: 100 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Animated.Image
+          source={ProductsDetail.find((e) => e.id === productCode)?.image}
+          style={[styles.image, imageAnimatedStyle]}
+          entering={FadeIn.duration(400).delay(200)}
         />
-        <Animated.ScrollView
-          ref={scrollRef}
-          scrollEventThrottle={16}
-          contentContainerStyle={{ paddingBottom: 100 }}
-          showsVerticalScrollIndicator={false}
-        >
-          <Animated.Image
-            source={ProductsDetail.find((e) => e.id === productCode)?.image}
-            style={[styles.image, imageAnimatedStyle]}
-            entering={FadeIn.duration(400).delay(200)}
-          />
 
-          <View style={{ margin: 16 }}>
-            <Animated.Text
-              style={{
-                fontSize: 20,
-                fontWeight: 'bold',
-                paddingBottom: 10,
-              }}
-              entering={FadeInLeft.duration(400).delay(200)}
-            >
-              {data && data.find((e) => e.ProductCode === productCode)?.Name}
-            </Animated.Text>
-            <Animated.Text
-              entering={FadeInLeft.duration(400).delay(400)}
-              style={{
-                fontSize: 16,
-                // marginBottom: 8,
-                color: colorTokens.light.gray.gray11,
-              }}
-            >
-              {ProductsDetail.find((e) => e.id === productCode)?.description}
-            </Animated.Text>
-          </View>
+        <View style={styles.animatedHeader}>
+          <Animated.Text
+            style={styles.animatedText}
+            entering={FadeInLeft.duration(400).delay(200)}
+          >
+            {data && data.find((e) => e.ProductCode === productCode)?.Name}
+          </Animated.Text>
+          <Animated.Text
+            entering={FadeInLeft.duration(400).delay(400)}
+            style={styles.animatedDesc}
+          >
+            {ProductsDetail.find((e) => e.id === productCode)?.description}
+          </Animated.Text>
+        </View>
 
-          {isPending ? (
+
+        {isPending ? (
+          <View
+            style={{
+              flexDirection: 'row',
+              backgroundColor: 'white',
+              marginTop: 30,
+            }}
+          >
             <View
               style={{
+                flex: 1,
+                justifyContent: 'space-between',
                 flexDirection: 'row',
-                backgroundColor: 'white',
-                marginTop: 30,
+                alignItems: 'center',
               }}
             >
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: 'space-between',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                }}
-              >
-                <View style={{ marginLeft: 10 }}>
-                  <Skeleton width={30} height={30} />
-                </View>
+              <View style={{ marginLeft: 10 }}>
+                <Skeleton width={30} height={30} />
+              </View>
 
                 <View style={{}}>
                   <Skeleton width={120} height={20} />
@@ -323,39 +381,7 @@ export default function ItemDetails() {
             ) : (
               <>
                 {productCode === 'PGCM' || productCode === 'PGCMV' ? null : (
-                  <>
-                    <TouchableOpacity
-                      onPress={minusHandler}
-                      style={{
-                        backgroundColor: colorTokens.light.orange.orange9,
-                        borderRadius: 20,
-                        padding: 3,
-                      }}
-                    >
-                      <AntDesign name="minus" size={20} color="white" />
-                    </TouchableOpacity>
-                    <Text
-                      style={{
-                        fontSize: 16,
-                        fontWeight: 'bold',
-                        textAlign: 'center',
-                        marginHorizontal: 15,
-                      }}
-                    >
-                      {quantity}
-                    </Text>
-                    <TouchableOpacity
-                      onPress={plusHandler}
-                      style={{
-                        backgroundColor: colorTokens.light.orange.orange9,
-                        borderRadius: 20,
-                        padding: 3,
-                        marginRight: 10,
-                      }}
-                    >
-                      <Ionicons name="add" size={20} color="white" />
-                    </TouchableOpacity>
-                  </>
+                  <AddOnsQuantityButtons productCode={productCode} quantity={quantity} />
                 )}
 
                 <StyledButton
@@ -398,5 +424,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingTop,
+  },
+  container: {
+    flex: 1,
+    backgroundColor: 'white',
+  },
+  animatedHeader: { height: 130, backgroundColor: 'white' },
+  animatedText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    margin: 16,
+  },
+  animatedDesc: {
+    fontSize: 16,
+    marginHorizontal: 16,
+    lineHeight: 22,
+    textAlign: 'justify',
+    color: colorTokens.light.gray.gray11,
   },
 })
