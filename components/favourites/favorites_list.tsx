@@ -8,12 +8,13 @@ import {
   FlatList,
   Image,
   Platform,
+  ScrollView,
   TouchableOpacity,
 } from 'react-native'
 import { Text, View } from 'tamagui'
 import { useFetchProductsDetails } from '~/hooks/fetchProductDetails'
 import usePryceStore from '~/hooks/pryceStore'
-import { FavoriteProps } from '~/types/product' // Ensure this type is correct
+import { FavoriteProps, ProductSingle } from '~/types/product' // Ensure this type is correct
 import {
   exemptedOnProducts,
   productDisplay,
@@ -25,22 +26,12 @@ import * as Haptics from 'expo-haptics'
 
 export default function FavoritesList({
   favorites,
+  data,
 }: {
   favorites: FavoriteProps
+  data: ProductSingle[]
 }) {
-  const {
-    mutate: fetchProductsDetails,
-    data,
-    isPending,
-  } = useFetchProductsDetails()
-  const addressRef = usePryceStore((set) => set.addressRef)
-  const { width, height } = Dimensions.get('window')
-
-  useEffect(() => {
-    if (addressRef) {
-      fetchProductsDetails(addressRef)
-    }
-  }, [])
+  const { width } = Dimensions.get('window')
 
   const addToFavoritesHandler = async (productCode: string) => {
     const favorites = usePryceStore.getState().favorites
@@ -71,10 +62,7 @@ export default function FavoritesList({
     )
     return (
       <TouchableOpacity
-        style={{
-          marginBottom: 10,
-          marginTop: 20,
-        }}
+        style={{ marginBottom: 10, marginTop: 20, marginHorizontal: 15 }}
       >
         <View style={{ marginBottom: 15 }}>
           <Image
@@ -185,66 +173,19 @@ export default function FavoritesList({
     )
   }
   return (
-    <View>
-      {isPending ? (
-        <View
-          style={{
-            flexDirection: 'column',
-            backgroundColor: 'white',
-            marginTop: 10,
-          }}
-        >
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'column',
-            }}
-          >
-            <View>
-              <Skeleton width="100%" height={180} />
-            </View>
-            <View style={{ marginVertical: 10 }}>
-              <Skeleton width={150} height={20} />
-            </View>
-            <View style={{ marginRight: 10 }}>
-              <Skeleton width={120} height={20} />
-            </View>
-          </View>
-        </View>
-      ) : (
-        <View
-          style={{
-            flex: 1,
-            marginTop: 10,
-            alignItems: 'center',
-            justifyContent: 'center',
-          }}
-        >
-          {data && data.length > 0 ? (
-            (() => {
-              const filteredData = data.filter((product) =>
-                favorites.some((fav) => fav.productCode === product.ProductCode)
-              )
-              return filteredData.length > 0 ? (
-                <FlatList
-                  data={filteredData}
-                  keyExtractor={(item) => `${item.ProductCode}`}
-                  renderItem={renderItem}
-                  scrollEnabled={false}
-                />
-              ) : (
-                <View>
-                  <Text>No favourites saved</Text>
-                </View>
-              )
-            })()
-          ) : (
-            <View>
-              <Text>No data available</Text>
-            </View>
-          )}
-        </View>
-      )}
-    </View>
+    <ScrollView
+      nestedScrollEnabled={true}
+      contentContainerStyle={{
+        paddingBottom: 30,
+      }}
+      showsVerticalScrollIndicator={false}
+    >
+      <FlatList
+        data={data}
+        keyExtractor={(item) => `${item.ProductCode}`}
+        renderItem={renderItem}
+        scrollEnabled={false}
+      />
+    </ScrollView>
   )
 }
