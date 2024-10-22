@@ -349,7 +349,7 @@ export default function ItemDetails() {
           left: 0,
           width: '100%',
           backgroundColor: 'white',
-          padding: 10,
+          padding: 20,
           elevation: 10,
           shadowColor: 'black',
           shadowOffset: { width: 0, height: -10 },

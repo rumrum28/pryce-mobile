@@ -13,32 +13,47 @@ export default function _layout() {
       screenOptions={{
         headerShown: true,
         headerTintColor: 'black',
-        headerShadowVisible: true,
+        headerShadowVisible: false,
       }}
     >
       <Stack.Screen
         name="index"
         options={{
           title: 'Account',
-
-          headerShown: true,
         }}
       />
       <Stack.Screen
         name="membership/index"
         options={{
-          title: 'PRYCEGAS Club',
-
+          title: 'Prycegas Club',
           headerShown: true,
-          headerShadowVisible: false,
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
+              style={{
+                backgroundColor: 'white',
+                borderRadius: 20,
+                padding: 3,
+              }}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          ),
         }}
       />
-      <Stack.Screen
+
+      {/* <Stack.Screen
         name="pgc-membership/index"
         options={{
           title: '',
+          presentation: 'fullScreenModal',
           headerShown: true,
           headerShadowVisible: false,
+          headerTintColor: '#fff',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -53,7 +68,7 @@ export default function _layout() {
           ),
           headerTransparent: true,
         }}
-      />
+      /> */}
     </Stack>
   )
 }

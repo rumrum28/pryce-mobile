@@ -3,9 +3,11 @@ import { colorTokens } from '@tamagui/themes'
 import React, { useEffect } from 'react'
 import {
   ActivityIndicator,
+  Alert,
   Dimensions,
   FlatList,
   Image,
+  Platform,
   TouchableOpacity,
 } from 'react-native'
 import { Text, View } from 'tamagui'
@@ -19,6 +21,7 @@ import {
 } from '~/utils/products'
 import { formatCurrency } from '~/utils/utils'
 import Skeleton from '../skeleton'
+import * as Haptics from 'expo-haptics'
 
 export default function FavoritesList({
   favorites,
@@ -39,18 +42,45 @@ export default function FavoritesList({
     }
   }, [])
 
+  const addToFavoritesHandler = async (productCode: string) => {
+    const favorites = usePryceStore.getState().favorites
+    const isFavorite = favorites.some((fav) => fav.productCode === productCode)
+
+    usePryceStore.getState().setFavorites(productCode)
+
+    const productName = data?.find((e) => e.ProductCode === productCode)?.Name
+
+    if (isFavorite) {
+      Alert.alert(
+        'Removed from Favorites',
+        `You have removed product ${productName || 'Unknown Product'} from your favourites.`
+      )
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Warning)
+    } else {
+      Alert.alert(
+        'Added to Favorites',
+        `You have added product ${productName || 'Unknown Product'} to your favourites.`
+      )
+      await Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success)
+    }
+  }
+
   const renderItem = ({ item }: { item: any }) => {
     const matchedDisplay = productDisplay.find((displayItem) =>
       displayItem.productCode.includes(item.ProductCode)
     )
     return (
-      <TouchableOpacity style={{ marginBottom: 10, marginTop: 20 }}>
+      <TouchableOpacity
+        style={{
+          marginBottom: 10,
+          marginTop: 20,
+        }}
+      >
         <View style={{ marginBottom: 15 }}>
           <Image
             source={
               ProductsDetail.find((p) => p.id === item.ProductCode)?.image
             }
-            // source={item.image}
             style={{
               height: 200,
               width: '100%',
@@ -60,7 +90,7 @@ export default function FavoritesList({
           />
           <TouchableOpacity
             style={{ position: 'absolute', top: 0, right: 0, padding: 15 }}
-            // onPress={() => addToFavoritesHandler(String(item.productCode))}
+            onPress={() => addToFavoritesHandler(String(item.ProductCode))}
           >
             {favorites &&
             favorites.find((fav) => fav.productCode === item.ProductCode) ? (
@@ -161,7 +191,7 @@ export default function FavoritesList({
           style={{
             flexDirection: 'column',
             backgroundColor: 'white',
-            marginTop: 30,
+            marginTop: 10,
           }}
         >
           <View
@@ -171,7 +201,7 @@ export default function FavoritesList({
             }}
           >
             <View>
-              <Skeleton width={400} height={180} />
+              <Skeleton width="100%" height={180} />
             </View>
             <View style={{ marginVertical: 10 }}>
               <Skeleton width={150} height={20} />
@@ -185,6 +215,9 @@ export default function FavoritesList({
         <View
           style={{
             flex: 1,
+            marginTop: 10,
+            alignItems: 'center',
+            justifyContent: 'center',
           }}
         >
           {data && data.length > 0 ? (
@@ -201,7 +234,7 @@ export default function FavoritesList({
                 />
               ) : (
                 <View>
-                  <Text>No favourites</Text>
+                  <Text>No favourites saved</Text>
                 </View>
               )
             })()

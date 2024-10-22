@@ -123,6 +123,7 @@ export type Profile = {
   Primary_Street__c: string
   Primary_Barangay__c: string
   Primary_City2__c: string
+  PGC_ID_Number__c?: string
   Primary_State_Province__c: string
   Pryce_Region__c: string
   ref?: string

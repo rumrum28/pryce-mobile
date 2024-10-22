@@ -46,8 +46,6 @@ export default function Page() {
         flex: 1,
         backgroundColor: 'white',
         paddingHorizontal: 15,
-
-        // justifyContent: 'center',
       }}
     >
       {isPending ? (

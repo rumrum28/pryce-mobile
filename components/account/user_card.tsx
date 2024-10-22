@@ -50,16 +50,17 @@ const styles = StyleSheet.create({
   cardContainer: {
     flex: 1, // Ensures equal width for all cards
     borderRadius: 10,
-    borderColor: colorTokens.light.gray.gray9,
+    borderColor: colorTokens.light.gray.gray7,
     borderWidth: 1,
-    padding: 10,
-    paddingVertical: 20,
+    padding: 15,
+    gap: 15,
+    // paddingVertical: 5,
     alignItems: 'center',
     backgroundColor: '#fff',
   },
   cardTitle: {
     // fontWeight: 'bold',
-    paddingVertical: 5,
+    // paddingVertical: 15,
     textAlign: 'center',
     fontSize: 12,
     width: '100%',

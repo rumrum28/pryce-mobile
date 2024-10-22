@@ -57,7 +57,7 @@ export function PaymentMethodComponent({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-          marginVertical: 15,
+          marginVertical: 30,
         }}
       >
         <Text

@@ -1,60 +1,59 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import { AntDesign, Entypo } from '@expo/vector-icons'
-import { colorTokens } from '@tamagui/themes'
-import { Profile } from '~/types/userStorage'
+import { Entypo } from '@expo/vector-icons'
 import { router } from 'expo-router'
+import { LinearGradient } from 'expo-linear-gradient'
 
 export default function UserPerks() {
   return (
-    <View style={styles.container}>
+    <View>
       <TouchableOpacity
-        style={styles.subTitle}
+        style={styles.touchable}
         onPress={() => router.push('/(tabs)/account/membership')}
       >
-        <View style={styles.subTitleContainer}>
-          <Text>Become a</Text>
-          <View style={styles.badgeContainer}>
-            <Text style={styles.badgeText}>PGC</Text>
-          </View>
-          <Text>member </Text>
+        <LinearGradient
+          colors={['#FFA500', '#FF4500']}
+          style={styles.gradient}
+          start={[0, 0]}
+          end={[1, 1]}
+        />
+        <Text style={styles.title}>Subscribe to</Text>
+        <View style={styles.imageCon}>
+          <Image source={require('~/assets/club.png')} style={styles.image} />
         </View>
-        <Entypo name="chevron-small-right" size={24} color="black" />
       </TouchableOpacity>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
-  container: {
-    backgroundColor: '#fff',
-    position: 'relative',
-    paddingHorizontal: 15,
-  },
   title: {
-    fontSize: 14,
-    fontWeight: 'bold',
-    paddingVertical: 15,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000',
+    // marginBottom: 10,
   },
-  subTitle: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 15,
+  gradient: {
+    ...StyleSheet.absoluteFillObject,
+    borderRadius: 15,
+    opacity: 0.4,
   },
-  subTitleContainer: {
-    flex: 1,
-    flexDirection: 'row',
-    gap: 5,
+  touchable: {
+    borderRadius: 15,
+    overflow: 'hidden',
+    padding: 25,
+    position: 'relative',
   },
-  badgeContainer: {
-    backgroundColor: colorTokens.light.orange.orange9,
-    paddingVertical: 2,
-    paddingHorizontal: 6,
-    borderRadius: 10,
+  imageCon: {
+    position: 'absolute',
+    right: 20,
+    bottom: -20,
+    width: 120,
+    height: 120,
   },
-  badgeText: {
-    fontSize: 10,
-    color: 'white',
-    fontWeight: 'bold',
+  image: {
+    width: '100%', // Make the image fill the container
+    height: '100%', // Make the image fill the container
+    resizeMode: 'contain',
   },
 })

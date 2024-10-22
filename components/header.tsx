@@ -96,6 +96,7 @@ export default function Header() {
             </Text>
           </View>
         </TouchableOpacity>
+
         <View
           style={{
             flexDirection: 'row',
