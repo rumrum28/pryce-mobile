@@ -110,9 +110,9 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
                 style={{
                   paddingLeft: 8,
                   fontSize: 13,
-                  width: '70%',
+                  width: '90%',
                 }}
-                numberOfLines={2}
+                numberOfLines={1}
               >
                 {item.Name}
               </Text>

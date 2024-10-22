@@ -57,12 +57,8 @@ export function PaymentMethodComponent({
           flexDirection: 'row',
           alignItems: 'center',
           justifyContent: 'space-between',
-<<<<<<< HEAD
           marginTop: 25,
           marginBottom: 16,
-=======
-          marginVertical: 30,
->>>>>>> origin/warrenbranch
         }}
       >
         <Text

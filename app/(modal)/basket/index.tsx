@@ -380,7 +380,7 @@ export default function Basket() {
                 </View>
               ) : null}
 
-              {cart.some(
+              {/* {cart.some(
                 (e) => e.productCode === 'PGCM' || e.productCode === 'PGCMV'
               ) ? null : (
                 <>
@@ -391,6 +391,13 @@ export default function Basket() {
                     />
                   )}
                 </>
+              )} */}
+
+              {viewAddOns && (
+                <AddOns
+                  productCodeMap={exemptedOnProducts}
+                  realTimeProductData={data}
+                />
               )}
             </View>
 
