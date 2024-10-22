@@ -397,6 +397,7 @@ export default function Basket() {
                 <AddOns
                   productCodeMap={exemptedOnProducts}
                   realTimeProductData={data}
+                  isViewAddOns={isViewAddOns}
                 />
               )}
             </View>

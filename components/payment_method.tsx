@@ -80,7 +80,6 @@ export function PaymentMethodComponent({
               flexDirection: 'row',
               height: 60,
               alignItems: 'center',
-              // marginTop: 10,
               paddingHorizontal: 20,
               borderWidth: 2,
               borderRadius: 10,

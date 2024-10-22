@@ -1,10 +1,9 @@
 import { View, Text, ActivityIndicator } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useEffect } from 'react'
 import TrackOrder from '~/components/activity/track_order'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchOrderDetails } from '~/hooks/fetchOrderDetails'
 import { colorTokens } from '@tamagui/themes'
-import { useFocusEffect } from '@react-navigation/native'
 
 const orderStatuses = [
   'Order Created',
@@ -15,30 +14,14 @@ const orderStatuses = [
 
 export default function Page() {
   const { fetchOrdersDetails, isPending, error, data } = useFetchOrderDetails()
-
   const token = usePryceStore((state) => state.token)
-
   const type = 'current'
 
-  // useEffect(() => {
-  //   if (token && selectedUser) {
-  //     fetchOrdersDetails({ token })
-  //     console.log(
-  //       'Fetching orders with token:',
-  //       token,
-  //       'and address:',
-  //       selectedUser
-  //     )
-  //   }
-  // }, [token, selectedUser, fetchOrdersDetails])
-
-  useFocusEffect(
-    useCallback(() => {
-      if (token) {
-        fetchOrdersDetails({ token, type })
-      }
-    }, [token, fetchOrdersDetails])
-  )
+  useEffect(() => {
+    if (token) {
+      fetchOrdersDetails({ token, type })
+    }
+  }, [token])
 
   return (
     <View

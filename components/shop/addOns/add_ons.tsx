@@ -1,5 +1,4 @@
-import { FlatList, Text, View } from 'react-native'
-import React, { useEffect, useState } from 'react'
+import { FlatList, Animated, Pressable, Text, View } from 'react-native'
 import { AddOn, ProductSingle } from '~/types/product'
 import { Image } from 'tamagui'
 import { ProductsDetail } from '~/utils/products'
@@ -8,17 +7,24 @@ import { formatCurrency } from '~/utils/utils'
 import BouncyCheckbox from 'react-native-bouncy-checkbox'
 import AddOnsQuantityButtons from './add_ons_quantity_buttons'
 import useCartStore from '~/hooks/productsStore'
+import { useRef } from 'react'
 
 type AddOnsProps = {
   productCodeMap: string[]
   realTimeProductData: ProductSingle[] | undefined
+  isViewAddOns: (v: boolean) => void
 }
 
-const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
+const AddOns = ({
+  productCodeMap,
+  realTimeProductData,
+  isViewAddOns,
+}: AddOnsProps) => {
   // const [filteredData, setFilteredData] = useState<ProductSingle[]>()
   const addProduct = useCartStore((s) => s.addProduct)
   const cart = useCartStore((s) => s.cart)
   const removeProduct = useCartStore((s) => s.removeProduct)
+  const animation = useRef(new Animated.Value(0)).current
 
   // useEffect(() => {
   //   console.log(productCodeMap)
@@ -45,7 +51,7 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
 
   const renderSingleItemBody = (item: ProductSingle) => {
     return (
-      <View
+      <Animated.View
         style={{
           flexDirection: 'row',
           padding: 10,
@@ -142,7 +148,7 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
               : item.RegularPrice
           )}
         </Text>
-      </View>
+      </Animated.View>
     )
   }
 
@@ -175,6 +181,10 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
     )
   }
 
+  const springAnimation = () => {
+    isViewAddOns(false)
+  }
+
   return (
     <View
       style={{
@@ -195,6 +205,18 @@ const AddOns = ({ productCodeMap, realTimeProductData }: AddOnsProps) => {
         ListHeaderComponent={renderSingleItemHeader}
         renderItem={({ item }) => renderSingleItemBody(item)}
       />
+
+      <Pressable onPress={() => springAnimation()}>
+        <Text
+          style={{
+            textAlign: 'center',
+            color: colorTokens.light.red.red9,
+            textDecorationLine: 'underline',
+          }}
+        >
+          Hide add-ons
+        </Text>
+      </Pressable>
     </View>
   )
 }
