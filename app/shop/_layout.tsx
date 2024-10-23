@@ -14,20 +14,20 @@ export default function _layout() {
       }}
     >
       <Stack.Screen
-        name="index"
+        name="basket/index"
         options={{
           presentation: 'fullScreenModal',
-          title: 'Add New Address',
-          headerStyle: {
-            backgroundColor: colorTokens.light.gray.gray3,
-          },
+          title: 'Cart',
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => {
-                router.back()
-              }}
+              onPress={() => router.back()}
+              style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
             >
-              <Ionicons name="close-outline" size={28} />
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
             </TouchableOpacity>
           ),
         }}

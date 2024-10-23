@@ -41,7 +41,7 @@ export default function AllProducts({
 
   const productOnClickHandler = (product: ProductSingle) => {
     router.push({
-      pathname: '/(modal)/item_details',
+      pathname: '/shop/item_details',
       params: {
         productCode: product.ProductCode,
       },

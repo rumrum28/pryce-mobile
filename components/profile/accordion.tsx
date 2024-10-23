@@ -6,19 +6,16 @@ import {
   Platform,
   LayoutAnimation,
   StyleSheet,
-  Animated, // Import Animated API
+  Animated,
   Easing,
+  Dimensions,
 } from 'react-native'
 import React, { useEffect, useState, useRef } from 'react'
-import { MaterialIcons, Entypo } from '@expo/vector-icons'
+import { Entypo } from '@expo/vector-icons'
 import { PGCMembershipProps } from '~/data/data'
 import { colorTokens } from '@tamagui/themes'
 
-export default function Accordion({
-  // name,
-  title,
-  subtitles,
-}: PGCMembershipProps) {
+export default function Accordion({ title, subtitles }: PGCMembershipProps) {
   const [opened, setOpened] = useState(false)
   const rotateAnim = useRef(new Animated.Value(0)).current
 
@@ -58,14 +55,8 @@ export default function Accordion({
       <TouchableWithoutFeedback onPress={toggleAccordion}>
         <View style={styles.header}>
           <View style={styles.textContainer}>
-            {/* <MaterialIcons
-              // name={name.icon}
-              size={24}
-              color={colorTokens.light.orange.orange9}
-            /> */}
             <Text style={styles.title}>{title}</Text>
           </View>
-
           <Animated.View style={{ transform: [{ rotate }] }}>
             <Entypo
               name="chevron-down"
@@ -85,24 +76,26 @@ export default function Accordion({
   )
 }
 
+// Helper function to get a responsive font size based on screen width
+const { width } = Dimensions.get('window')
+const getResponsiveFontSize = (baseFontSize: any) => {
+  const scaleFactor = width / 375 // 375 is a standard width (e.g., iPhone 11)
+  return Math.round(baseFontSize * scaleFactor)
+}
+
 const styles = StyleSheet.create({
   details: {
     opacity: 0.65,
     marginTop: 10,
-    // marginLeft: 50,
   },
   title: {
-    fontSize: 18,
+    fontSize: getResponsiveFontSize(14),
     fontWeight: '600',
   },
-  content: {
-    // marginTop: 8,
-  },
+  content: {},
   container: {
-    marginHorizontal: 15,
     marginVertical: 5,
     padding: 15,
-    // backgroundColor: colorTokens.light.orange.orange3,
     borderRadius: 6,
     borderColor: colorTokens.light.gray.gray3,
     borderWidth: 1,
@@ -115,7 +108,5 @@ const styles = StyleSheet.create({
   textContainer: {
     flexDirection: 'row',
     alignItems: 'center',
-    // padding: 15,
-    // gap: 10,
   },
 })

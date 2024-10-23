@@ -1,11 +1,8 @@
 import { View, Text, TouchableOpacity } from 'react-native'
 import React from 'react'
-import { Link, router, Stack } from 'expo-router'
+import { router, Stack } from 'expo-router'
 import { colorTokens } from '@tamagui/themes'
-import EvilIcons from '@expo/vector-icons/EvilIcons'
-
-import Header from '~/components/header'
-import { Ionicons, Octicons } from '@expo/vector-icons'
+import { Ionicons } from '@expo/vector-icons'
 
 export default function _layout() {
   return (
@@ -17,25 +14,14 @@ export default function _layout() {
       }}
     >
       <Stack.Screen
-        name="index"
+        name="profile/index"
         options={{
-          title: 'Account',
-        }}
-      />
-
-      {/* <Stack.Screen
-        name="membership/index"
-        options={{
-          title: 'Prycegas Club',
-          headerShown: true,
+          presentation: 'modal',
+          title: 'Profile',
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.back()}
-              style={{
-                backgroundColor: 'white',
-                borderRadius: 20,
-                padding: 3,
-              }}
+              onPress={() => router.push('/(tabs)/account')}
+              style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
             >
               <Ionicons
                 name="close"
@@ -45,16 +31,31 @@ export default function _layout() {
             </TouchableOpacity>
           ),
         }}
-      /> */}
-
-      {/* <Stack.Screen
-        name="pgc-membership/index"
+      />
+      <Stack.Screen
+        name="orders/index"
         options={{
-          title: '',
-          presentation: 'fullScreenModal',
-          headerShown: true,
-          headerShadowVisible: false,
-          headerTintColor: '#fff',
+          presentation: 'modal',
+          title: 'Orders',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.push('/(tabs)/account')}
+              style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+      <Stack.Screen
+        name="addresses/index"
+        options={{
+          presentation: 'modal',
+          title: 'Addresses',
           headerLeft: () => (
             <TouchableOpacity
               onPress={() => router.back()}
@@ -67,9 +68,8 @@ export default function _layout() {
               />
             </TouchableOpacity>
           ),
-          headerTransparent: true,
         }}
-      /> */}
+      />
     </Stack>
   )
 }

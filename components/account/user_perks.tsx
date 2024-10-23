@@ -9,7 +9,7 @@ export default function UserPerks() {
     <View>
       <TouchableOpacity
         style={styles.touchable}
-        onPress={() => router.push('/(tabs)/account/membership')}
+        onPress={() => router.push('/(modal)/membership_terms')}
       >
         <LinearGradient
           colors={['#FFA500', '#FF4500']}

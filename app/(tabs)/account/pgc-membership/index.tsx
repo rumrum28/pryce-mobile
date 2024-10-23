@@ -7,6 +7,7 @@ import {
   Dimensions,
   ScrollView,
   TouchableOpacity,
+  Pressable,
 } from 'react-native'
 import Animated, {
   FadeIn,
@@ -17,7 +18,7 @@ import Animated, {
   useScrollViewOffset,
 } from 'react-native-reanimated'
 import React, { useEffect, useState } from 'react'
-import { router, Stack, useLocalSearchParams } from 'expo-router'
+import { Link, router, Stack, useLocalSearchParams } from 'expo-router'
 import usePryceStore from '~/hooks/pryceStore'
 import { Profile } from '~/types/userStorage'
 import { colorTokens } from '@tamagui/themes'
@@ -162,12 +163,6 @@ export default function Page() {
         })}
 
         <View style={styles.faqContainer}>
-          {/* <LinearGradient
-            colors={['#FFA500', '#FF4500']}
-            style={styles.gradient}
-            start={[0, 0]}
-            end={[1, 1]}
-          /> */}
           <Text style={styles.faqTitle}>Frequently Asked Questions</Text>
           {membership.map((item, index) => {
             return (
@@ -179,6 +174,19 @@ export default function Page() {
               />
             )
           })}
+          <Pressable>
+            <Text style={styles.seeAll}>See all FAQs</Text>
+          </Pressable>
+        </View>
+        <View style={styles.faqTerms}>
+          <View style={styles.textWrapper}>
+            <Text>
+              To learn more, check out the{' '}
+              <Link href={'/'} asChild>
+                <Text style={styles.linkText}>Terms and Conditions</Text>
+              </Link>
+            </Text>
+          </View>
         </View>
       </Animated.ScrollView>
     </SafeAreaView>
@@ -202,7 +210,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: 'white',
   },
-  animatedHeader: { height: 100, backgroundColor: 'white' },
+  animatedHeader: { height: 110, backgroundColor: 'white' },
   animatedText: {
     fontSize: 24,
     fontWeight: 'bold',
@@ -262,8 +270,10 @@ const styles = StyleSheet.create({
 
   faqContainer: {
     marginVertical: 30,
-
-    // backgroundColor: colorTokens.light.orange.orange3,
+    borderBottomColor: colorTokens.light.gray.gray3,
+    borderBottomWidth: 1,
+    marginHorizontal: 15,
+    paddingBottom: 30,
   },
   faqTitle: {
     textAlign: 'center',
@@ -277,5 +287,25 @@ const styles = StyleSheet.create({
     ...StyleSheet.absoluteFillObject,
     borderTopLeftRadius: 15,
     borderTopRightRadius: 15,
+  },
+  seeAll: {
+    textAlign: 'center',
+    marginTop: 30,
+    fontSize: 16,
+    fontWeight: '700',
+    color: colorTokens.light.gray.gray9,
+  },
+  faqTerms: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 30,
+  },
+  textWrapper: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  linkText: {
+    color: colorTokens.light.blue.blue9,
   },
 })

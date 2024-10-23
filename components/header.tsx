@@ -105,7 +105,7 @@ export default function Header() {
             marginRight: 10,
           }}
         >
-          <Link href="/(modal)/basket" asChild>
+          <Link href="/shop/basket" asChild>
             <TouchableOpacity>
               <View
                 style={{

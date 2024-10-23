@@ -14,13 +14,33 @@ export default function _layout() {
       }}
     >
       <Stack.Screen
-        name="index"
+        name="membership_terms/index"
         options={{
-          presentation: 'fullScreenModal',
-          title: 'Profile',
+          presentation: 'modal',
+          title: 'Terms and Conditions',
           headerLeft: () => (
             <TouchableOpacity
-              onPress={() => router.push('/(tabs)/account')}
+              onPress={() => router.back()}
+              style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
+            >
+              <Ionicons
+                name="close"
+                size={24}
+                color={colorTokens.light.orange.orange9}
+              />
+            </TouchableOpacity>
+          ),
+        }}
+      />
+
+      <Stack.Screen
+        name="address/index"
+        options={{
+          presentation: 'modal',
+          title: 'Cart',
+          headerLeft: () => (
+            <TouchableOpacity
+              onPress={() => router.back()}
               style={{ backgroundColor: 'white', borderRadius: 20, padding: 3 }}
             >
               <Ionicons

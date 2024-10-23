@@ -13323,13 +13323,21 @@ export const membership: PGCMembershipProps[] = [
   },
   {
     // name: { icon: 'newspaper', size: 24 },
-    title: 'FREE delivery',
-    subtitles: 'On all orders nationwide',
+    title: 'How long is the validity of my membership?',
+    subtitles:
+      'Membership is valid for 12 months from the day the membership fee is paid.',
   },
   {
     // name: { icon: 'help-center', size: 24 },
-    title: '24/7 service',
-    subtitles: '24-hour & 7 days a week delivery service',
+    title: 'How can I apply for the PRYCEGAS Club Membership',
+    subtitles:
+      'To apply for a PRYCEGAS Club Membership, you may visit any of our Official Prycegas Plants or Sales Centers, chat us on our Official Facebook Page or website, or call our Hotline #98000.',
+  },
+  {
+    // name: { icon: 'help-center', size: 24 },
+    title: 'When can I start using my benefits?',
+    subtitles:
+      'Membership benefits can be used immediately after the activation of the member’s sales force account. A text message will be sent informing the member that he/she is officially a member.',
   },
 ]
 
@@ -13351,12 +13359,19 @@ export const pgc: PGCProps[] = [
     id: '1',
     image: require('~/assets/hotline.png'),
     title: 'FREE delivery',
-    subtitles: 'On all orders nationwide',
+    subtitles: 'Free delivery to your stated address',
   },
   {
     id: '2',
     image: require('~/assets/rider.png'),
     title: '24/7 service',
     subtitles: '24-hour & 7 days a week delivery service',
+  },
+  {
+    id: '3',
+    image: require('~/assets/approved.png'),
+    title: 'Products with Price Protection',
+    subtitles:
+      'Price protection is based on the current Hotline price upon payment of membership fee and choice of stated address.',
   },
 ]

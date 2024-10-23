@@ -4,7 +4,7 @@ import { MaterialCommunityIcons } from '@expo/vector-icons'
 import usePryceStore from '~/hooks/pryceStore'
 import { Profile } from '~/types/userStorage'
 
-export default function Favourites() {
+export default function ProfilePage() {
   const users = usePryceStore((state) => state.users)
   const selectedUser = usePryceStore((state) => state.selectedUser)
   const [userDetails, setUserDetails] = useState<Profile | undefined>()

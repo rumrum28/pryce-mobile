@@ -104,7 +104,7 @@ const Details = () => {
     return (
       <Link
         href={{
-          pathname: '/(modal)/item_details',
+          pathname: '/shop/item_details',
           params: { productCode },
         }}
         asChild

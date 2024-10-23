@@ -1,10 +1,17 @@
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native'
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Platform,
+} from 'react-native'
 import React, { useEffect, useState } from 'react'
 import usePryceStore from '~/hooks/pryceStore'
-import { router } from 'expo-router'
+import { Link, router } from 'expo-router'
 import UserDetails from '~/components/account/user_details'
 import { Profile } from '~/types/userStorage'
 import { colorTokens } from '@tamagui/themes'
+import { StatusBar } from 'expo-status-bar'
 
 export default function Page() {
   const setSelectedUser = usePryceStore((state) => state.setSelectedUser)
@@ -27,7 +34,10 @@ export default function Page() {
 
   return (
     <View style={styles.container}>
+      {/* <StatusBar style={Platform.OS === 'ios' ? 'auto' : 'auto'} /> */}
+
       <UserDetails userDetails={userDetails} />
+
       <View style={{ paddingHorizontal: 15, paddingBottom: 20 }}>
         <TouchableOpacity
           style={styles.logoutBtn}

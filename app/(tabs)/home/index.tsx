@@ -1,8 +1,10 @@
 import {
   ActivityIndicator,
+  Platform,
   RefreshControl,
   SafeAreaView,
   ScrollView,
+  StyleSheet,
   Text,
 } from 'react-native'
 import { useCallback, useEffect, useRef, useState } from 'react'
@@ -15,6 +17,7 @@ import { useFetchProducts } from '~/hooks/fetchProducts'
 import BottomSheet from '~/components/bottom_sheet'
 import { BottomSheetModal } from '@gorhom/bottom-sheet'
 import { ProductSingle } from '~/types/product'
+import { StatusBar } from 'expo-status-bar'
 
 export default function Page() {
   const { mutate: fetchProducts, data, error, isPending } = useFetchProducts()
@@ -95,12 +98,9 @@ export default function Page() {
   }, [])
 
   return (
-    <SafeAreaView
-      style={{
-        flex: 1,
-        justifyContent: 'center',
-      }}
-    >
+    <SafeAreaView style={styles.container}>
+      <StatusBar style="auto" />
+
       <BottomSheet ref={bottomSheetRef} />
 
       {isPending ? (
@@ -173,3 +173,10 @@ export default function Page() {
     </SafeAreaView>
   )
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+  },
+})

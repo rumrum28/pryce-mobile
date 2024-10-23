@@ -1,10 +1,11 @@
-import { View, Text, ActivityIndicator } from 'react-native'
+import { View, Text, ActivityIndicator, Platform } from 'react-native'
 import React, { useCallback, useEffect, useState } from 'react'
 import TrackOrder from '~/components/activity/track_order'
 import usePryceStore from '~/hooks/pryceStore'
 import { useFetchOrderDetails } from '~/hooks/fetchOrderDetails'
 import { colorTokens } from '@tamagui/themes'
 import { useFocusEffect } from '@react-navigation/native'
+import { StatusBar } from 'expo-status-bar'
 
 const orderStatuses = [
   'Order Created',
@@ -48,6 +49,8 @@ export default function Page() {
         paddingHorizontal: 15,
       }}
     >
+      {/* <StatusBar style={Platform.OS === 'ios' ? 'auto' : 'light'} /> */}
+
       {isPending ? (
         <View style={{ flex: 1, justifyContent: 'center' }}>
           <ActivityIndicator

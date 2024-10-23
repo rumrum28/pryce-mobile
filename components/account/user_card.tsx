@@ -8,7 +8,7 @@ export default function UserCard() {
   return (
     <View style={styles.container}>
       <Pressable
-        onPress={() => router.push('/profile')}
+        onPress={() => router.push('/account/profile')}
         style={styles.cardContainer}
       >
         <Octicons size={24} name="person" color="black" />
@@ -17,7 +17,7 @@ export default function UserCard() {
         </Text>
       </Pressable>
       <Pressable
-        onPress={() => router.push('/orders')}
+        onPress={() => router.push('/account/orders')}
         style={styles.cardContainer}
       >
         <Ionicons name="clipboard-outline" size={24} color="black" />
@@ -27,7 +27,7 @@ export default function UserCard() {
       </Pressable>
 
       <Pressable
-        onPress={() => router.push('/addresses')}
+        onPress={() => router.push('/account/addresses')}
         style={styles.cardContainer}
       >
         <SimpleLineIcons name="location-pin" size={24} color="black" />
